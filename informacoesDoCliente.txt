@@ -1,0 +1,48 @@
+- informações do cliente
+- o que ele respondeu
+- horario em que respondeu cada pergunta
+- hora que começou 
+- hora que terminou 
+- status final 
+
+informações do cliente
+  ip 
+  geolocalização?
+  navegador
+  id_usuario?
+  nome_usuario?
+intençãoDeDoar: today/this week/future
+respostas
+  peso
+    { 
+      value: positive/negative/unknown 
+      hora de resposta
+    }
+  idade? (depende se esta logado)
+    {
+      value: positive/negative/unknown 
+      hora de resposta
+    }
+horaQueComecou 
+horaQueTerminou 
+status
+
+
+
+
+////
+"@element-plus/nuxt",
+"@nuxtjs/fonts",
+"@nuxt/image",
+"@pinia/nuxt",
+"nuxt-bugsnag",
+
+
+//rotas 
+- para iniciar (post) (assim que ele acessa)
+- para atualizar a formResponse sempre que responder (put) 
+- para pegar o ultimo estado (get)
+- separar o put inicial de quando vai doar do put de resposta
+POST /v1/form-response - iniciar
+PUT /v1/form-response/answer - responder uma pergunta
+GET /v1/form-response/:id
