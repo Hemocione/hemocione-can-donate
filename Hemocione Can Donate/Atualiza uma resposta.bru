@@ -1,0 +1,19 @@
+meta {
+  name: Atualiza uma resposta
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:3000/api/v1/formResponse/6720dfdaeb22e3a4f8de1a9c/answers/weight
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "value": "positive",
+    "answeredAt": "2024-10-29T10:30:00Z"
+  }
+  
+}

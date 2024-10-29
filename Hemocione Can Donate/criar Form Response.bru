@@ -1,0 +1,25 @@
+meta {
+  name: criar Form Response
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api_url}}/v1/formResponse
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "ip": "123.456.789.123",
+    "geolocation": {
+      "latitude": -22.9068,
+      "longitude": -43.1729
+    },
+    "browser": "Chrome",
+    "idUser": "use23",
+    "nameUser": "John Doe"
+  }
+  
+}

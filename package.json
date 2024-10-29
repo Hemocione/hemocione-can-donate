@@ -26,6 +26,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.5.5",
     "jsonwebtoken": "^9.0.2",
-    "pinia": "^2.2.4"
+    "pinia": "^2.2.4",
+    "zod": "^3.23.8"
   }
 }

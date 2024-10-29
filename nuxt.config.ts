@@ -41,6 +41,7 @@ export default defineNuxtConfig({
     dbName: process.env.DB_NAME || "canDonate",
     public: {
       bugsnagApiKey: process.env.NUXT_PUBLIC_BUGSNAG_API_KEY || "",
+      authCookieKey: process.env.NUXT_PUBLIC_AUTH_COOKIE_KEY || "auth_token",
     },
   },
 
@@ -76,5 +77,5 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: "2024-10-17"
+  compatibilityDate: "2024-10-17",
 });

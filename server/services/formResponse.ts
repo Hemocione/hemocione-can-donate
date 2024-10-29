@@ -1,52 +1,22 @@
-import { FormResponse } from "../models/formResponse";
+import { InferSchemaType } from "mongoose";
+import { FormResponse, FormResponseSchema } from "../models/formResponse";
 import { HemocioneUserAuthTokenData } from "./auth";
 
 // Função para criar uma resposta de formulário e salvar no banco de dados
 export async function createFormResponse(
-  user: HemocioneUserAuthTokenData | null,
-  formData: {
-    ip: string;
-    geolocation?: { latitude: number; longitude: number };
-    browser: string;
-    idUser?: string;
-    nameUser?: string;
-    donationIntent: "today" | "this week" | "future";
-    responses: {
-      weight: {
-        value: "positive" | "negative" | "unknown";
-        horaResposta: Date;
-      };
-      age: { value: "positive" | "negative" | "unknown"; horaResposta: Date };
-    };
-    startTime: Date;
-    endTime: Date;
-    status: "completed" | "incomplete" | "error";
-  }
+  user: HemocioneUserAuthTokenData | null
 ) {
-  // Se o usuário estiver logado, preenchemos os campos `idUser` e `nameUser` automaticamente
-  const clientData = {
-    ip: formData.ip,
-    geolocation: formData.geolocation,
-    browser: formData.browser,
-    idUser: user ? user.id : formData.idUser, // Se o usuário está logado, usa o ID do token
-    nameUser: user ? user.givenName : formData.nameUser, // Se o usuário está logado, usa o nome do token
-  };
+  // Se o usuário estiver logado, preenchemos os campos `user` automaticamente
+  const mode = user ? "logged-in" : "anonymous";
+
+  const userData = user
+    ? { id: user.id, name: user.givenName, email: user.email }
+    : {};
 
   // Criar uma nova instância de FormResponse com os dados do formulário
   const formResponse = new FormResponse({
-    client: clientData,
-    donationIntent: formData.donationIntent,
-    responses: {
-      weight: {
-        value: formData.responses.weight,
-      },
-      age: {
-        value: formData.responses.age,
-      },
-    },
-    startTime: formData.startTime,
-    endTime: formData.endTime,
-    status: formData.status,
+    mode,
+    user: userData,
   });
 
   // Salvar a resposta no banco de dados
@@ -54,4 +24,24 @@ export async function createFormResponse(
 
   // Retornar o objeto salvo como um JSON
   return formResponse.toObject();
+}
+
+type FormResponseType = InferSchemaType<typeof FormResponseSchema>;
+
+export async function updateFormResponse(
+  formId: string,
+  updates: Partial<FormResponseType>
+) {
+  const formResponse = await FormResponse.findById(formId);
+  if (!formResponse) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "FormResponse not found",
+    });
+  }
+
+  Object.assign(formResponse, updates); // Atualiza apenas os campos que estão em `updates`
+  await formResponse.save();
+
+  return formResponse;
 }

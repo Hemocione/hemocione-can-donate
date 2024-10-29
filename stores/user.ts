@@ -1,5 +1,6 @@
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
 
+//tirar
 interface Subscription {
   eventSlug: string;
   hemocioneId: string;

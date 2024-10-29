@@ -46,3 +46,13 @@ status
 POST /v1/form-response - iniciar
 PUT /v1/form-response/answer - responder uma pergunta
 GET /v1/form-response/:id
+
+//no front
+const questionsToAsk = []
+if (intention === 'today') {
+  questionsToAsk.push(perguntasDeAgora)
+}
+if (!loggedIn) {
+  questionToAsk.push(ageRangeQuestion)
+}
+questionsToAsk.push(defaultQuestions)

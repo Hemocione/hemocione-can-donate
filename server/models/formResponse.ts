@@ -1,76 +1,90 @@
 import { InferSchemaType, Schema, Types, model } from "mongoose";
 
-const ResponsesSchema = new Schema({
+export const formModes = ["anonymous", "logged-in"] as const;
+
+export const donationIntents = ["today", "this-week", "future"] as const;
+
+export const formStatuses = [
+  "able-to-donate",
+  "unable-to-donate",
+  "unknown",
+  "ongoing",
+] as const;
+
+export const answerValues = ["positive", "negative", "unknown"] as const;
+
+const AnswerSchema = new Schema({
   value: {
     type: String,
-    enum: ["positive", "negative", "unknown"],
-    required: true,
+    enum: answerValues,
   },
-  horaResposta: {
+  answeredAt: {
     type: Date,
-    required: true,
   },
 });
 
-const FormResponseSchema = new Schema({
-  client: {
-    ip: {
+const FormResponseSchema = new Schema(
+  {
+    mode: {
       type: String,
+      enum: formModes,
+    },
+    client: {
+      ip: {
+        type: String,
+      },
+      geolocation: {
+        type: {
+          latitude: { type: Number },
+          longitude: { type: Number },
+        },
+      },
+      browser: {
+        type: String,
+      },
+    },
+    user: {
+      id: String,
+      name: String,
+      email: String,
+    },
+    donationIntent: {
+      type: String,
+      enum: donationIntents,
+    },
+    answers: {
+      weight: AnswerSchema,
+      age: AnswerSchema,
+      ateToday: AnswerSchema,
+      sleptOk: AnswerSchema,
+      drankYesterday: AnswerSchema,
+      medicine: AnswerSchema,
+      sexRisk: AnswerSchema,
+      tattooOrPiercing: AnswerSchema,
+      mouthPiercing: AnswerSchema,
+      medicalTreatmentOrSurgery: AnswerSchema,
+      seriousDisease: AnswerSchema,
+      traveled: AnswerSchema,
+      vaccine: AnswerSchema,
+    },
+    startedAt: {
+      type: Date,
       required: true,
+      default: () => new Date(),
     },
-    geolocation: {
-      type: {
-        latitude: { type: Number, required: true },
-        longitude: { type: Number, required: true },
-      },
-      required: false,
+    finishedAt: {
+      type: Date,
     },
-    browser: {
+    status: {
       type: String,
-      required: true,
-    },
-    idUser: {
-      type: String,
-      required: false,
-    },
-    nameUser: {
-      type: String,
-      required: false,
+      enum: formStatuses,
+      default: "ongoing",
     },
   },
-  donationIntent: {
-    type: String,
-    enum: ["today", "this week", "future"],
-    required: true,
-  },
-  responses: {
-    weight: {
-      value: {
-        type: ResponsesSchema,
-        required: true,
-      },
-    },
-    age: {
-      value: {
-        type: ResponsesSchema,
-        required: true,
-      },
-    },
-  },
-  startTime: {
-    type: Date,
-    required: true,
-  },
-  endTime: {
-    type: Date,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["completed", "incomplete", "error"],
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 export type FormResponseSchema = InferSchemaType<typeof FormResponseSchema>;
 
@@ -78,3 +92,4 @@ export const FormResponse = model<FormResponseSchema>(
   "FormResponse",
   FormResponseSchema
 );
+export { FormResponseSchema };
