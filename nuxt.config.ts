@@ -59,6 +59,10 @@ export default defineNuxtConfig({
     "@element-plus/nuxt",
   ],
 
+  css: [
+    "@/assets/css/global.css", // Caminho relativo ao arquivo global.css
+  ],
+
   // Configuração do Nitro (ferramenta de execução do Nuxt)
   nitro: {
     preset: "vercel", // Deploy no Vercel
