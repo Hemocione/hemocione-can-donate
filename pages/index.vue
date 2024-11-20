@@ -23,22 +23,24 @@
     </main>
 
     <div class="button-container">
-      <button class="register-button">Cadastre e descubra se pode doar</button>
-      <NuxtLink to="/intro" class="continue-button"
-        >Continuar sem cadastro →</NuxtLink
-      >
+      <button class="register-button">
+        Cadastre-se e descubra se pode doar
+      </button>
+      <button class="continue-button" @click="goToIntention">
+        Continuar sem cadastro →
+      </button>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "EligibilityPage",
-};
+<script setup>
+import { useRouter } from "vue-router";
 
-// definePageMeta({
-//   middleware: ["auth"],
-// });
+const router = useRouter();
+
+function goToIntention() {
+  router.push("/intention");
+}
 </script>
 
 <style scoped>

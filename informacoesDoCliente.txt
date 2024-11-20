@@ -48,7 +48,7 @@ PUT /v1/form-response/answer - responder uma pergunta
 GET /v1/form-response/:id
 
 //no front
-const questionsToAsk = []
+const questionsToAsk = computed(() => {
 if (intention === 'today') {
   questionsToAsk.push(perguntasDeAgora)
 }
@@ -56,3 +56,22 @@ if (!loggedIn) {
   questionToAsk.push(ageRangeQuestion)
 }
 questionsToAsk.push(defaultQuestions)
+})
+
+
+//voltar para a pagina anterior
+const router = useRouter()
+router.push(-1)
+
+//definir layout
+
+primeira pergunta ser "separada" das outras, pois é a intençãoDeDoar 
+
+//auto animate
+
+
+
+
+tarefas 
+//tirar o não sei da interface 
+//animacoes entre telas

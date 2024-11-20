@@ -12,45 +12,17 @@
       <button class="go-back-button" @click="goBack">
         <ElIconArrowLeftBold />
       </button>
-
       <span>Posso doar?</span>
     </header>
 
-    <main class="content"></main>
-
-    <!-- Drawer com conteúdo informativo -->
-    <el-drawer
-      v-model="drawer"
-      :with-header="false"
-      :direction="direction"
-      :before-close="handleClose"
-    >
-      <p>
-        Este questionário serve como uma orientação inicial com perguntas
-        frequentes sobre a doação, mas não substitui a triagem realizada por
-        profissionais de saúde no dia e no local da doação.
-      </p>
-
-      <el-button class="start-button"> Quero responder </el-button>
-    </el-drawer>
+    <main class="content">
+      <slot />
+      <!-- Espaço para conteúdo específico -->
+    </main>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import type { DrawerProps } from "element-plus";
-
-const drawer = ref(false);
-const direction = ref<DrawerProps["direction"]>("btt");
-
-const handleClose = (done: () => void) => {
-  done();
-};
-
-onMounted(() => {
-  drawer.value = true;
-});
-
+<script setup>
 function goBack() {
   navigateTo("/");
 }
@@ -99,20 +71,6 @@ function goBack() {
 
 .second-header p {
   font-size: 1.2rem;
-}
-
-.start-button {
-  background-color: #b44236;
-  color: #fff;
-  padding: 15px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  max-width: 300px;
-  width: 100%;
-  margin-top: 20px;
 }
 
 .go-back-button {

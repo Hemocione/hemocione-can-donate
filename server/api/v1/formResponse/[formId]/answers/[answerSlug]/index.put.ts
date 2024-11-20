@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 422,
       statusMessage: "Invalid answer data",
-      data: parsed.error.errors, // Inclui detalhes do erro de validação
+      data: parsed.error.errors,
     });
   }
 

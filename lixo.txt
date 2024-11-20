@@ -1,0 +1,57 @@
+<!-- pages/[questionSlug]/intro.vue -->
+<template>
+  <QuestionnaireLayout>
+    <p>
+      Bem-vindo ao questionário! Responda às perguntas para saber se você está
+      apto a doar.
+    </p>
+    <el-button class="start-button" @click="startQuestions">Começar</el-button>
+  </QuestionnaireLayout>
+</template>
+
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import { useUserStore } from "~/stores/user";
+import QuestionnaireLayout from "~/layouts/questionnaire.vue";
+
+const router = useRouter();
+const userStore = useUserStore();
+
+function startQuestions() {
+  // Verifica se donationIntent está definido
+  if (userStore.donationIntent) {
+    const nextSlug = determineNextQuestionSlug(userStore.donationIntent);
+    router.push(`/${nextSlug}`); // Navega para a próxima pergunta com base no questionSlug
+  } else {
+    console.error("Intenção de doação não definida"); 
+    // Redireciona para uma página padrão ou exibe uma mensagem de erro
+    router.push('/error'); // Substitua '/error' com o caminho desejado
+  }
+}
+
+
+function determineNextQuestionSlug(intent: string) {
+  // Define o slug de pergunta inicial com base na intenção
+  return intent === "today"
+    ? "question-today"
+    : intent === "this-week"
+    ? "question-week"
+    : "question-future";
+}
+</script>
+
+<style scoped>
+.start-button {
+  background-color: #b44236;
+  color: #fff;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  max-width: 300px;
+  width: 100%;
+  margin-top: 20px;
+}
+</style>
