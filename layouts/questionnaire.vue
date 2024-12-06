@@ -16,16 +16,59 @@
     </header>
 
     <main class="content">
-      <slot />
+      <div v-if="isQuestionsRoute" class="progress-bar">
+        <div
+          v-for="(question, index) in questions"
+          :key="index"
+          class="progress-dot"
+          :class="{
+            active: index === currentQuestionIndex,
+            completed: index < currentQuestionIndex,
+          }"
+        ></div>
+      </div>
+      <slot/>
       <!-- Espaço para conteúdo específico -->
     </main>
   </div>
 </template>
 
-<script setup>
-function goBack() {
-  navigateTo("/");
-}
+<script setup lang="ts">
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useUserStore } from "~/stores/user";
+
+const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
+
+const isQuestionsRoute = computed(() => {
+  return route.path.startsWith("/questions");
+});
+
+const currentQuestionSlug = computed(() => {
+  return route.params.questionSlug;
+});
+
+const questions = computed(() => {
+  console.log(
+    "Recomputing questions based on donationIntent:",
+    userStore.donationIntent
+  );
+  return userStore.formQuestions;
+});
+
+const currentQuestionIndex = computed(() => {
+  return questions.value.findIndex((question) => {
+    return question.slug == currentQuestionSlug.value;
+  });
+});
+
+const questionsLength = computed(() => {
+  return questions.value.length;
+});
+
+function goBack() {}
 </script>
 
 <style scoped>
@@ -43,7 +86,7 @@ function goBack() {
   align-items: center;
   gap: 1rem;
   width: 100%;
-  height: fit-content;
+  height: 55px;
   background-color: var(--hemo-color-black-100);
 }
 
@@ -53,8 +96,10 @@ function goBack() {
   gap: 1rem;
   padding: 1rem;
   width: 100%;
-  height: fit-content;
+  max-width: 768px;
+  height: 53px;
   border-bottom: 2px solid var(--hemo-color-text-secondary-opaque);
+  background-color: var(--hemo-color-white);
 }
 
 .logo {
@@ -63,6 +108,13 @@ function goBack() {
   margin-top: 5px;
 }
 
+.content {
+  width: 100%;
+  max-width: 768px;
+  background-color: var(--hemo-color-white);
+  height: calc(100vh - 108px);
+  padding: 0 1rem;
+}
 .content p {
   font-size: 1rem;
   margin-bottom: 20px;
@@ -84,5 +136,34 @@ function goBack() {
 .go-back-button svg {
   width: 1rem;
   height: 1rem;
+}
+
+.progress-bar {
+  display: flex; /* Define layout em linha */
+  justify-content: center; /* Centraliza a barra */
+  align-items: center; /* Alinha verticalmente */
+  flex-wrap: nowrap; /* Evita que os itens quebrem de linha */
+  gap: 10px; /* Define espaçamento fixo entre os elementos */
+  margin: 20px 0;
+  padding: 0 5px;
+  overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
+}
+
+.progress-dot {
+  width: calc(
+    100% / v-bind(questionsLength)
+  ); 
+  height: 8px; 
+  border-radius: 20px; 
+  background-color: #e0e0e0; /* Cor padrão (não ativa) */
+  transition: background-color 0.3s;
+}
+
+.progress-dot.active {
+  background-color: #b44236; /* Cor da pergunta atual */
+}
+
+.progress-dot.completed {
+  background-color: #ffcccc; /* Cor das perguntas já respondidas */
 }
 </style>

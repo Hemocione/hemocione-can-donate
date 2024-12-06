@@ -1,37 +1,36 @@
 <template>
-  <QuestionnaireLayout>
-    <el-drawer
-      v-model="drawer"
-      :with-header="false"
-      :direction="direction"
-      :before-close="handleClose"
-    >
-      <p>
-        Bem-vindo ao questionário! Este questionário serve como uma orientação
-        inicial com perguntas frequentes sobre a doação, mas não substitui a
-        triagem realizada por profissionais de saúde no dia e no local da
-        doação.
-      </p>
-      <el-button class="start-button" @click="startQuestionnaire">
-        Começar
-      </el-button>
-    </el-drawer>
+  <!-- <QuestionnaireLayout> -->
+  <el-drawer
+    v-model="drawer"
+    :with-header="false"
+    :direction="direction"
+    :before-close="handleClose"
+  >
+    <p>
+      Bem-vindo ao questionário! Este questionário serve como uma orientação
+      inicial com perguntas frequentes sobre a doação, mas não substitui a
+      triagem realizada por profissionais de saúde no dia e no local da doação.
+    </p>
+    <el-button class="start-button" @click="startQuestionnaire">
+      Começar
+    </el-button>
+  </el-drawer>
 
-    <div v-if="showFirstQuestion" class="first-question">
-      <p>Qual é a sua intenção de doação?</p>
-      <div class="intention-buttons">
-        <el-button class="intention-button" @click="selectIntent('today')">
-          Hoje
-        </el-button>
-        <el-button class="intention-button" @click="selectIntent('this-week')">
-          Esta Semana
-        </el-button>
-        <el-button class="intention-button" @click="selectIntent('future')">
-          Futuro
-        </el-button>
-      </div>
+  <div class="first-question">
+    <p>Qual é a sua intenção de doação?</p>
+    <div class="intention-buttons">
+      <el-button class="intention-button" @click="selectIntent('today')">
+        Hoje
+      </el-button>
+      <el-button class="intention-button" @click="selectIntent('this-week')">
+        Esta Semana
+      </el-button>
+      <el-button class="intention-button" @click="selectIntent('future')">
+        Futuro
+      </el-button>
     </div>
-  </QuestionnaireLayout>
+  </div>
+  <!-- </QuestionnaireLayout> -->
 </template>
 
 <script setup lang="ts">
@@ -39,7 +38,8 @@ import { ref, onMounted } from "vue";
 import type { DrawerProps } from "element-plus";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
-import QuestionnaireLayout from "~/layouts/questionnaire.vue";
+
+definePageMeta({ layout: "questionnaire" });
 
 const drawer = ref(false);
 const direction = ref<DrawerProps["direction"]>("btt");
@@ -71,10 +71,11 @@ async function startQuestionnaire() {
   console.log("FormResponse created in startQuestionnaire");
 }
 
+//TODO - ir para a primeira pergunta
 function selectIntent(intent: "today" | "this-week" | "future") {
   userStore.setDonationIntent(intent);
   userStore.updateDonationIntent(intent);
-  router.push("/[questionSlug]/intro");
+  router.push("/questions/[questionSlug]");
 }
 </script>
 
@@ -96,6 +97,7 @@ function selectIntent(intent: "today" | "this-week" | "future") {
 .first-question {
   margin-top: 20px;
   text-align: center;
+  height: 100%;
 }
 
 .intention-buttons {

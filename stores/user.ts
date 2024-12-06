@@ -15,7 +15,7 @@ export const useUserStore = defineStore("user", {
       const baseQuestions = [
         {
           question: "Você tem 50kg ou mais?",
-          id: "weight",
+          slug: "weight",
           description:
             "O peso mínimo para doar sangue é 50kg para garantir a sua segurança.",
         },
@@ -28,7 +28,7 @@ export const useUserStore = defineStore("user", {
         console.log("Adding questions for anonymous users.");
         questions.push({
           question: "Você tem 16 anos ou mais?",
-          id: "age",
+          slug: "age",
           description: "É importante saber sua idade",
         });
       }
@@ -40,39 +40,39 @@ export const useUserStore = defineStore("user", {
           ...questions,
           {
             question: "Se alimentou bem hoje?",
-            id: "ateToday",
+            slug: "ateToday",
             description: "É importante estar bem alimentado",
           },
           {
             question: "Teve uma boa noite de sono?",
-            id: "sleptOk",
+            slug: "sleptOk",
             description: "É importante ter dormido bem",
           },
           {
             question: "Ingeriu bebidas alcoólicas nas últimas 12 horas?",
-            id: "alcohol",
+            slug: "alcohol",
             description:
               "É importante não usar quantidades industriais de droga",
           },
           {
             question:
               "Participou de alguma atividade sexual de risco nos últimos 3 meses?",
-            id: "sexRisk",
+            slug: "sexRisk",
             description: "Descricao sexual",
           },
           {
             question: "Fez tatuagem ou piercing nos últimos 6 meses?",
-            id: "tattooOrPiercing",
+            slug: "tattooOrPiercing",
             description: "Descricao piercing",
           },
           {
             question: "Possui piercing na boca ou genital?",
-            id: "mouthPiercing",
+            slug: "mouthPiercing",
             description: "LALALLLALLAL piercing na boca",
           },
           {
             question: "Fez algum tratamento médico nos últimos 6 meses?",
-            id: "medicalTreatmentOrSurgery",
+            slug: "medicalTreatmentOrSurgery",
             description: "Tratamento médico",
           },
         ];
@@ -82,22 +82,22 @@ export const useUserStore = defineStore("user", {
           ...questions,
           {
             question: "Participou de atividade sexual de risco?",
-            id: "sexRisk",
+            slug: "sexRisk",
             description: "É importante sex",
           },
           {
             question: "Fez tatuagem ou piercing recente?",
-            id: "tattooOrPiercing",
+            slug: "tattooOrPiercing",
             description: "É importante piercing",
           },
           {
             question: "Possui piercing na boca ou genital?",
-            id: "mouthPiercing",
+            slug: "mouthPiercing",
             description: "É importante piercicng boca",
           },
           {
             question: "Fez tratamento médico recente?",
-            id: "medicalTreatmentOrSurgery",
+            slug: "medicalTreatmentOrSurgery",
             description: "É importante médicoe",
           },
         ];
@@ -107,12 +107,12 @@ export const useUserStore = defineStore("user", {
           ...questions,
           {
             question: "Are you open to donate in the next month?",
-            id: "futureAvailability",
+            slug: "futureAvailability",
             description: "É importante proximo mes",
           },
           {
             question: "Do you have any planned medical treatments?",
-            id: "plannedTreatments",
+            slug: "plannedTreatments",
             description: "É importante tratamentos",
           },
         ];

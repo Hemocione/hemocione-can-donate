@@ -1,56 +1,49 @@
 <template>
-  <QuestionnaireLayout>
-    <div class="progress-bar">
-      <div
-        v-for="(question, index) in questions"
-        :key="index"
-        class="progress-dot"
-        :class="{
-          active: index === currentQuestion,
-          completed: index < currentQuestion,
-        }"
-      ></div>
+  <div class="question-container">
+    <div v-if="currentQuestion < questions.length" class="question">
+      <NuxtImg
+        src="images/hemocioneCake.png"
+        alt="Foto celebrativa"
+        class="bolo"
+      />
+      <h2 class="question">{{ questions[currentQuestion].question }}</h2>
+      <p class="why">Por que essa pergunta?</p>
+      <p class="question-subtext">
+        {{ questions[currentQuestion].description }}
+      </p>
+      <!-- <a href="#" class="learn-more">Saiba mais</a> -->
+    </div>
+    <div v-else class="completion-message">
+      <p>Você completou o questionário. Obrigado!</p>
     </div>
 
-    <div class="question-container">
-      <div v-if="currentQuestion < questions.length" class="question">
-        <NuxtImg
-          src="images/hemocioneCake.png"
-          alt="Foto celebrativa"
-          class="bolo"
-        />
-        <h2>{{ questions[currentQuestion].question }}</h2>
-        <p class="motivo">Por que essa pergunta?</p>
-        <p class="question-subtext">
-          {{ questions[currentQuestion].description }}
-        </p>
-        <a href="#" class="learn-more">Saiba mais</a>
-      </div>
-      <div v-else class="completion-message">
-        <p>Você completou o questionário. Obrigado!</p>
-      </div>
-
-      <!-- Fixed button container at the bottom -->
-      <div class="fixed-buttons">
-        <el-button class="answer-button" @click="answerQuestion('positive')">
-          Sim
-        </el-button>
-        <el-button class="answer-button" @click="answerQuestion('negative')">
-          Não
-        </el-button>
-      </div>
+    <!-- Fixed button container at the bottom -->
+    <div class="fixed-buttons">
+      <el-button class="answer-button" @click="answerQuestion('positive')">
+        Sim
+      </el-button>
+      <el-button class="answer-button" @click="answerQuestion('negative')">
+        Não
+      </el-button>
     </div>
-  </QuestionnaireLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "~/stores/user";
-import QuestionnaireLayout from "~/layouts/questionnaire.vue";
+
+definePageMeta({ layout: "questionnaire" });
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
+
+const question = route.params.questionSlug;
+
+//depois que a pessoa responder o sim ou não, eu vou mandar router.push para a proxima pergunta
+//tenho a lista ordenada já na store
 
 onMounted(() => {
   console.log("Questions on mount:", questions.value);
@@ -62,6 +55,10 @@ const questions = computed(() => {
     userStore.donationIntent
   );
   return userStore.formQuestions;
+});
+
+const questionsLength = computed(() => {
+  return questions.value.length;
 });
 
 // Watch for updates to formQuestions
@@ -121,9 +118,11 @@ function finishQuestionnaire() {
 }
 
 .question {
-  flex-grow: 1;
+  /* flex-grow: 1; */
   padding: 20px;
-  overflow-y: auto;
+  /* overflow-y: auto; */
+  color: var(--hemo-color-primary-less-dark);
+  left: 50%;
 }
 
 .fixed-buttons {
@@ -136,20 +135,22 @@ function finishQuestionnaire() {
   position: fixed;
   bottom: 0;
   width: 100%;
+  max-width: 768px;
   margin: 0 auto;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .answer-button {
-  background-color: #b44236;
-  color: #fff;
+  background-color: var(--hemo-color-white);
+  color: #b44236;
   font-weight: bold;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
   width: 160px;
   height: 48px;
+  border: 2px solid #b44236;
 }
 
 .question-subtext {
@@ -182,7 +183,9 @@ function finishQuestionnaire() {
 }
 
 .progress-dot {
-  width: 40px; /* Largura maior para o formato de pílula */
+  width: calc(
+    100% / v-bind(questionsLength)
+  ); /* Largura maior para o formato de pílula */
   height: 8px; /* Altura menor para deixar achatado */
   border-radius: 20px; /* Border-radius grande para o formato arredondado */
   background-color: #e0e0e0; /* Cor padrão (não ativa) */

@@ -75,3 +75,17 @@ primeira pergunta ser "separada" das outras, pois é a intençãoDeDoar
 tarefas 
 //tirar o não sei da interface 
 //animacoes entre telas
+
+
+
+//vw
+100vw
+10 perguntas
+calc(100vw/10)
+
+
+//botar os tracinhos no layout 
+//fazer o layout ficar certinho no mobile 
+//ajeitar as perguntas 
+
+//quando clicar no sim ou nao mudar a cor 
