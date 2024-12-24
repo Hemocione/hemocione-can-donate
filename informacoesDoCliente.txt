@@ -99,3 +99,16 @@ failingsResponses = ['negative', 'unknown']
 failingReason: "...."
 
 //tela de pode doar ou nao 
+
+
+
+hoje: 
+//ajustar as failing reasons (só a ultima ta aparecendo, em vez de todas)
+//adicionar imagem para intentions
+//ver pq ta demorando para subir drawer e para carregar imagens 
+//deixar barrinha completa no final 
+//adicionar textos na tela final e fazer os botoes redirecionarem 
+//ajeitar bordas (da pagina inicial e dos drawers)
+//pegar ip do usuario 
+//adicionar transicoes 
+//fazer o fluxo de cadastro 

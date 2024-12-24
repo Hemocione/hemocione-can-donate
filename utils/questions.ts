@@ -84,6 +84,17 @@ const questions: Question[] = [
     image: "images/tattooOrPiercing.png",
   },
   {
+    question: "Morou ou viajou para fora do Brasil (em áreas de risco) ou para Amazônia Legal nos últimos 12 meses?",
+    slug: "traveledAbroad",
+    description:
+      "Viagens recentes para fora do Brasil ou para a Amazônia Legal podem apresentar riscos de exposição a doenças endêmicas, como malária, febre amarela e outras, que podem comprometer a segurança da doação.",
+    donationIntents: ["today", "this-week"],
+    failingResponses: ["positive", "unknown"],
+    failingReason:
+      "Viagens recentes para áreas de risco impedem a doação de sangue temporariamente para garantir a segurança do receptor.",
+    image: "images/traveledAbroad.png",
+  },  
+  {
     question: "Você possui piercing na boca ou genital?",
     slug: "mouthPiercing",
     description:
@@ -91,7 +102,7 @@ const questions: Question[] = [
     donationIntents: ["today", "this-week"],
     failingResponses: ["positive", "unknown"],
     failingReason: "Piercings na boca ou genital impedem a doação de sangue.",
-    image: "images/mouthPiercing.png",
+    image: "images/mouthPiercing.svg",
   },
   {
     question: "Você fez algum tratamento médico nos últimos 6 meses?",
@@ -104,14 +115,14 @@ const questions: Question[] = [
     image: "images/medicalTreatmentOrSurgery.png",
   },
   {
-    question: "Você está aberto a doar sangue no próximo mês?",
+    question: "Você tem alguma viagem agendada para áreas de risco (fora do Brasil ou Amazônia Legal)?",
     slug: "futureAvailability",
     description:
-      "Queremos saber se você está disponível para doar sangue em breve.",
+      "Viagens para locais com maior risco à contração de doenças podem impedir a sua doação.",
     donationIntents: ["future"],
-    failingResponses: ["negative", "unknown"],
-    failingReason: "É necessário estar disponível para doar sangue no futuro.",
-    image: "images/futureAvailability.png",
+    failingResponses: ["positive", "unknown"],
+    failingReason: "Viagens para locais de risco impedem a doação, confira a possibilidade de doar antes.",
+    image: "images/traveledAbroad.png",
   },
   {
     question: "Você tem algum tratamento médico planejado?",

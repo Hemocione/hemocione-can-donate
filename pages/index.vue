@@ -51,7 +51,6 @@ function goToIntention() {
   text-align: center;
   /* background-color: var(--hemo-color-primary-extra-light); */
 }
-
 .logo {
   width: 130px;
   margin-bottom: 5px;

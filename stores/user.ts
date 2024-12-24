@@ -29,7 +29,7 @@ export const useUserStore = defineStore("user", {
       this.formResponse = formResponse;
       console.log("Form response set in the store:", this.formResponse);
     },
-    setDonationIntent(intent: "today" | "this-week" | "future") {
+    setDonationIntent(intent: "today" | "this-week" | "future"|null) {
       this.donationIntent = intent;
     },
     isFormFailed() {

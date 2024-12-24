@@ -2,7 +2,7 @@ import { InferSchemaType, Schema, Types, model } from "mongoose";
 
 export const formModes = ["anonymous", "logged-in"] as const;
 
-export const donationIntents = ["today", "this-week", "future"] as const;
+export const donationIntents = ["today", "this-week", "future", null] as const;
 
 export type DonationIntent = typeof donationIntents[number];
 

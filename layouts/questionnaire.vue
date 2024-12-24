@@ -18,6 +18,24 @@
       </button>
     </header>
 
+    <el-drawer
+      v-model="drawer"
+      :with-header="false"
+      :direction="direction"
+      :before-close="handleClose"
+    >
+      <p>
+        Deseja sair do questionário? Suas respostas não serão salvas, mas você
+        pode voltar e refazer em outro momento.
+      </p>
+      <el-button class="exit-button" @click="exitQuestionnaire">
+        Sair do questionário
+      </el-button>
+      <el-button class="continue-button" @click="closeDrawer">
+        Continuar questionário
+      </el-button>
+    </el-drawer>
+
     <main class="content">
       <div v-if="isQuestionsRoute" class="progress-bar">
         <div
@@ -41,10 +59,19 @@
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import type { DrawerProps } from "element-plus";
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const drawer = ref(false);
+const direction = ref<DrawerProps["direction"]>("btt");
+const selectedIntent = ref<"today" | "this-week" | "future" | null>(null);
+
+const handleClose = (done: () => void) => {
+  drawer.value = false;
+  done();
+};
 
 const isQuestionsRoute = computed(() => {
   return route.path.startsWith("/questions");
@@ -78,8 +105,31 @@ function goBack() {
 
 function close() {
   // Lógica para fechar
-  console.log("Close");
-  // Exemplo: redirecionar ou fechar o layout
+  drawer.value = true;
+}
+
+function closeDrawer() {
+  drawer.value = false; // Fecha o drawer
+}
+
+function resetSelection() {
+  selectedIntent.value = null; // Reseta a intenção selecionada
+}
+
+function exitQuestionnaire() {
+  console.log("Saindo do questionário...");
+
+   // Limpa o sessionStorage
+   sessionStorage.removeItem("questionnaireStarted");
+  sessionStorage.removeItem("selectedIntent");
+
+  // Reseta o estado no userStore
+  userStore.setFormResponse(null);
+  userStore.setDonationIntent(null);
+
+  resetSelection();
+
+  router.push("/"); 
 }
 </script>
 
@@ -151,12 +201,39 @@ function close() {
 }
 
 .close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
+  all: unset; /* Remove estilos padrão */
   cursor: pointer;
   display: flex;
-  align-items: right; 
+  align-items: center;
+  justify-content: center;
+  margin-left: auto; /* Alinha o botão no extremo direito */
+}
+
+.close-button svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.exit-button {
+  background-color: #b44236;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 10px 20px;
+  width: 90%;
+  height: 48px; 
+}
+
+.continue-button {
+  background: none;
+  color: #b44236;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  padding-top: 20px; 
+  margin-top: 15px;
+  height: 48px; 
 }
 
 .progress-bar {
