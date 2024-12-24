@@ -150,6 +150,15 @@ function close() {
   height: 1rem;
 }
 
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: right; 
+}
+
 .progress-bar {
   display: flex; /* Define layout em linha */
   justify-content: center; /* Centraliza a barra */
