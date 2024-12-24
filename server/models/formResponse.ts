@@ -4,6 +4,8 @@ export const formModes = ["anonymous", "logged-in"] as const;
 
 export const donationIntents = ["today", "this-week", "future"] as const;
 
+export type DonationIntent = typeof donationIntents[number];
+
 export const formStatuses = [
   "able-to-donate",
   "unable-to-donate",

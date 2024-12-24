@@ -1,125 +1,21 @@
 import { defineStore } from "pinia";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
+import questions, { getQuestionsFromContext } from "~/utils/questions";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
     user: null as CurrentUserData | null,
     token: null as string | null,
     formResponse: null as any, // To be replaced with a specific type if available
-    donationIntent: null as "today" | "this-week" | "future" | null,
+    donationIntent: "null" as "today" | "this-week" | "future" | null,
   }),
   getters: {
-    formQuestions: (state) => {
-      console.log("Getting formQuestions for intent:", state.donationIntent);
-
-      const baseQuestions = [
-        {
-          question: "Você tem 50kg ou mais?",
-          slug: "weight",
-          description:
-            "O peso mínimo para doar sangue é 50kg para garantir a sua segurança.",
-        },
-      ];
-
-      let questions = [...baseQuestions];
-
-      // Add questions for anonymous users
-      if (!state.user) {
-        console.log("Adding questions for anonymous users.");
-        questions.push({
-          question: "Você tem 16 anos ou mais?",
-          slug: "age",
-          description: "É importante saber sua idade",
-        });
-      }
-
-      // Add questions based on donation intent
-      if (state.donationIntent === "today") {
-        console.log("Adding questions for 'today' intent.");
-        questions = [
-          ...questions,
-          {
-            question: "Se alimentou bem hoje?",
-            slug: "ateToday",
-            description: "É importante estar bem alimentado",
-          },
-          {
-            question: "Teve uma boa noite de sono?",
-            slug: "sleptOk",
-            description: "É importante ter dormido bem",
-          },
-          {
-            question: "Ingeriu bebidas alcoólicas nas últimas 12 horas?",
-            slug: "alcohol",
-            description:
-              "É importante não usar quantidades industriais de droga",
-          },
-          {
-            question:
-              "Participou de alguma atividade sexual de risco nos últimos 3 meses?",
-            slug: "sexRisk",
-            description: "Descricao sexual",
-          },
-          {
-            question: "Fez tatuagem ou piercing nos últimos 6 meses?",
-            slug: "tattooOrPiercing",
-            description: "Descricao piercing",
-          },
-          {
-            question: "Possui piercing na boca ou genital?",
-            slug: "mouthPiercing",
-            description: "LALALLLALLAL piercing na boca",
-          },
-          {
-            question: "Fez algum tratamento médico nos últimos 6 meses?",
-            slug: "medicalTreatmentOrSurgery",
-            description: "Tratamento médico",
-          },
-        ];
-      } else if (state.donationIntent === "this-week") {
-        console.log("Adding questions for 'this-week' intent.");
-        questions = [
-          ...questions,
-          {
-            question: "Participou de atividade sexual de risco?",
-            slug: "sexRisk",
-            description: "É importante sex",
-          },
-          {
-            question: "Fez tatuagem ou piercing recente?",
-            slug: "tattooOrPiercing",
-            description: "É importante piercing",
-          },
-          {
-            question: "Possui piercing na boca ou genital?",
-            slug: "mouthPiercing",
-            description: "É importante piercicng boca",
-          },
-          {
-            question: "Fez tratamento médico recente?",
-            slug: "medicalTreatmentOrSurgery",
-            description: "É importante médicoe",
-          },
-        ];
-      } else if (state.donationIntent === "future") {
-        console.log("Adding questions for 'future' intent.");
-        questions = [
-          ...questions,
-          {
-            question: "Are you open to donate in the next month?",
-            slug: "futureAvailability",
-            description: "É importante proximo mes",
-          },
-          {
-            question: "Do you have any planned medical treatments?",
-            slug: "plannedTreatments",
-            description: "É importante tratamentos",
-          },
-        ];
-      }
-
-      console.log("Final question list:", questions);
-      return questions;
+    formQuestions(state) {
+      const isAnonymous = !state.user;
+      return getQuestionsFromContext(state.donationIntent, isAnonymous);
+    },
+    failingReason: (state) => {
+      return state.formResponse?.failingReason || "Nenhum motivo registrado.";
     },
   },
   actions: {
@@ -136,10 +32,30 @@ export const useUserStore = defineStore("user", {
     setDonationIntent(intent: "today" | "this-week" | "future") {
       this.donationIntent = intent;
     },
+    isFormFailed() {
+      return this.formResponse?.status === "failed";
+    },
+    // failingReason() {
+    //   return this.formResponse?.failingReason || "Nenhum motivo registrado.";
+    // },
+
+    async ensureFormResponse() {
+      if (!this.formResponse || !this.formResponse._id) {
+        console.log("Form response not found. Creating a new one...");
+        const response = await this.createFormResponse();
+        if (response) {
+          this.setFormResponse(response);
+          console.log("New form response created:", response);
+        } else {
+          console.error("Failed to create a form response.");
+          throw new Error("Failed to create form response");
+        }
+      }
+    },
 
     async createFormResponse() {
       try {
-        const userStore = useUserStore(); // Use caso tenha informações do usuário
+        const userStore = useUserStore();
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
@@ -148,12 +64,12 @@ export const useUserStore = defineStore("user", {
           body: JSON.stringify({
             mode: userStore.user ? "logged-in" : "anonymous",
             client: {
-              ip: "123.456.789.123", // Isso pode ser recuperado do servidor, se possível
+              ip: "123.456.789.123",
               geolocation: {
                 latitude: -22.9068,
                 longitude: -43.1729,
               },
-              browser: navigator.userAgent, // Pega o user agent do navegador
+              browser: navigator.userAgent,
             },
             user: userStore.user
               ? {
@@ -162,50 +78,13 @@ export const useUserStore = defineStore("user", {
                   email: userStore.user.email,
                 }
               : null,
-            donationIntent: userStore.donationIntent, // A intenção inicial se estiver disponível
+            donationIntent: userStore.donationIntent,
             status: "ongoing",
-            async createFormResponse() {
-              try {
-                const userStore = useUserStore(); // Use caso tenha informações do usuário
-                const formResponse = await $fetch("/api/v1/formResponse", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    mode: userStore.user ? "logged-in" : "anonymous",
-                    client: {
-                      ip: "123.456.789.123", // Isso pode ser recuperado do servidor, se possível
-                      geolocation: {
-                        latitude: -22.9068,
-                        longitude: -43.1729,
-                      },
-                      browser: navigator.userAgent, // Pega o user agent do navegador
-                    },
-                    user: userStore.user
-                      ? {
-                          id: userStore.user.id,
-                          name: userStore.user.surName,
-                          email: userStore.user.email,
-                        }
-                      : null,
-                    donationIntent: userStore.donationIntent, // A intenção inicial se estiver disponível
-                    status: "ongoing", // Status inicial
-                  }),
-                });
-
-                this.setFormResponse(formResponse); // Armazena a resposta no estado da store
-
-                return formResponse;
-              } catch (error) {
-                console.error("Error creating form response:", error);
-              }
-            },
+            answers: {}, // Inicializa o campo answers como objeto vazio
           }),
         });
 
-        this.setFormResponse(formResponse); // Armazena a resposta no estado da store
-
+        this.setFormResponse(formResponse);
         return formResponse;
       } catch (error) {
         console.error("Error creating form response:", error);
@@ -213,6 +92,7 @@ export const useUserStore = defineStore("user", {
     },
 
     async updateDonationIntent(intent: "today" | "this-week" | "future") {
+      await this.ensureFormResponse(); // Garante que formResponse está definido
       try {
         const updatedIntentResponse = await $fetch(
           `/api/v1/formResponse/${this.formResponse._id}/intention`,
@@ -223,9 +103,6 @@ export const useUserStore = defineStore("user", {
           }
         );
 
-        this.donationIntent = intent; // Update the donation intent in the store
-
-        // Merge the updated intent response with the existing formResponse data
         this.setFormResponse({
           ...this.formResponse,
           donationIntent: updatedIntentResponse.updatedIntent,
@@ -239,15 +116,7 @@ export const useUserStore = defineStore("user", {
       answerSlug: string,
       answerData: { value: string; answeredAt: Date }
     ) {
-      // Verify that `answerSlug` and `formResponse._id` are defined
-      if (!answerSlug || !this.formResponse || !this.formResponse._id) {
-        console.error("answerSlug or formResponse._id is missing:", {
-          answerSlug,
-          formResponseId: this.formResponse?._id,
-        });
-        return;
-      }
-
+      await this.ensureFormResponse(); // Garante que formResponse está definido
       try {
         const updatedAnswerResponse = await $fetch(
           `/api/v1/formResponse/${this.formResponse._id}/answers/${answerSlug}`,
@@ -260,20 +129,29 @@ export const useUserStore = defineStore("user", {
 
         console.log("Answer updated successfully:", updatedAnswerResponse);
 
-        // Merge the updated answer into the existing formResponse.answers without replacing the whole formResponse
-        this.setFormResponse({
-          ...this.formResponse,
-          answers: {
-            ...this.formResponse.answers,
-            [answerSlug]: updatedAnswerResponse.updatedAnswer,
-          },
-        });
+        const question = questions.find((q) => q.slug === answerSlug);
+        if (question && question.failingResponses.includes(answerData.value)) {
+          this.setFormResponse({
+            ...this.formResponse,
+            status: "failed",
+            failingReason: question.failingReason,
+          });
+        } else {
+          this.setFormResponse({
+            ...this.formResponse,
+            answers: {
+              ...this.formResponse.answers,
+              [answerSlug]: updatedAnswerResponse.updatedAnswer,
+            },
+          });
+        }
       } catch (error) {
         console.error("Error updating answer:", error);
       }
     },
 
     async fetchFormResponse() {
+      await this.ensureFormResponse(); // Garante que formResponse está definido
       try {
         const formResponse = await $fetch(
           `/api/v1/formResponse/${this.formResponse._id}`,

@@ -50,6 +50,8 @@ export default defineNuxtConfig({
     "/": { prerender: true }, // Prerenderizar a página inicial
   },
 
+  pages: true, // Ativa o sistema de páginas para rotas automáticas
+
   // Módulos utilizados no projeto
   modules: [
     "nuxt-bugsnag",

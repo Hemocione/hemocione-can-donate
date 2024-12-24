@@ -13,6 +13,9 @@
         <ElIconArrowLeftBold />
       </button>
       <span>Posso doar?</span>
+      <button class="close-button" @click="close">
+        <ElIconClose />
+      </button>
     </header>
 
     <main class="content">
@@ -25,9 +28,10 @@
             active: index === currentQuestionIndex,
             completed: index < currentQuestionIndex,
           }"
+          :style="{ width: `${100 / questions.length}%` }"
         ></div>
       </div>
-      <slot/>
+      <slot />
       <!-- Espaço para conteúdo específico -->
     </main>
   </div>
@@ -68,7 +72,15 @@ const questionsLength = computed(() => {
   return questions.value.length;
 });
 
-function goBack() {}
+function goBack() {
+  router.back();
+}
+
+function close() {
+  // Lógica para fechar
+  console.log("Close");
+  // Exemplo: redirecionar ou fechar o layout
+}
 </script>
 
 <style scoped>
@@ -150,11 +162,9 @@ function goBack() {}
 }
 
 .progress-dot {
-  width: calc(
-    100% / v-bind(questionsLength)
-  ); 
-  height: 8px; 
-  border-radius: 20px; 
+  width: calc(100% / v-bind(questionsLength));
+  height: 8px;
+  border-radius: 20px;
   background-color: #e0e0e0; /* Cor padrão (não ativa) */
   transition: background-color 0.3s;
 }

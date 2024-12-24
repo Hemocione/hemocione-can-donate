@@ -84,8 +84,18 @@ tarefas
 calc(100vw/10)
 
 
-//botar os tracinhos no layout 
-//fazer o layout ficar certinho no mobile 
-//ajeitar as perguntas 
+tarefas
+//sim|não acender e ficar marcado quando voltar 
+//bordinha no dialog e ocupar menos espaço 
+//descentralizar texto - p esquerda 
+//não precisa subir de novo o negócio de começar quando volta ✅
+//transições 
+//sim e não ocupar todo o espaço 
+//ajeitar tela de intenção (botoes verticais)
+//Trocar a cor das ilustrações (variar ilustrações entre perguntas)
 
-//quando clicar no sim ou nao mudar a cor 
+//array com estados de falha das perguntas✅
+failingsResponses = ['negative', 'unknown']
+failingReason: "...."
+
+//tela de pode doar ou nao 

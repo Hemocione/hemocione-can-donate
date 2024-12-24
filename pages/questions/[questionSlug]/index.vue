@@ -1,28 +1,43 @@
 <template>
   <div class="question-container">
-    <div v-if="currentQuestion < questions.length" class="question">
+    <!-- Pergunta Atual -->
+    <div
+      v-if="currentQuestionIndex < questions.length"
+      class="question-content"
+    >
       <NuxtImg
-        src="images/hemocioneCake.png"
+        :src="questions[currentQuestionIndex]?.image"
         alt="Foto celebrativa"
         class="bolo"
       />
-      <h2 class="question">{{ questions[currentQuestion].question }}</h2>
+      <h2 class="question-title">
+        {{ questions[currentQuestionIndex]?.question }}
+      </h2>
       <p class="why">Por que essa pergunta?</p>
-      <p class="question-subtext">
-        {{ questions[currentQuestion].description }}
+      <p class="question-description">
+        {{ questions[currentQuestionIndex]?.description }}
       </p>
-      <!-- <a href="#" class="learn-more">Saiba mais</a> -->
     </div>
+
+    <!-- Mensagem de Conclusão -->
     <div v-else class="completion-message">
       <p>Você completou o questionário. Obrigado!</p>
     </div>
 
-    <!-- Fixed button container at the bottom -->
+    <!-- Botões fixos na parte inferior -->
     <div class="fixed-buttons">
-      <el-button class="answer-button" @click="answerQuestion('positive')">
+      <el-button
+        class="answer-button"
+        :class="{ selected: selectedAnswer === 'positive' }"
+        @click="answerQuestion('positive')"
+      >
         Sim
       </el-button>
-      <el-button class="answer-button" @click="answerQuestion('negative')">
+      <el-button
+        class="answer-button"
+        :class="{ selected: selectedAnswer === 'negative' }"
+        @click="answerQuestion('negative')"
+      >
         Não
       </el-button>
     </div>
@@ -30,25 +45,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "~/stores/user";
 
+// Define o layout do questionário
 definePageMeta({ layout: "questionnaire" });
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const selectedAnswer = ref<string | null>(null); // Armazena a resposta selecionada para a pergunta atual
 
-const question = route.params.questionSlug;
-
-//depois que a pessoa responder o sim ou não, eu vou mandar router.push para a proxima pergunta
-//tenho a lista ordenada já na store
-
-onMounted(() => {
-  console.log("Questions on mount:", questions.value);
-});
-
+// Obtemos as perguntas ordenadas da store
 const questions = computed(() => {
   console.log(
     "Recomputing questions based on donationIntent:",
@@ -57,27 +66,32 @@ const questions = computed(() => {
   return userStore.formQuestions;
 });
 
-const questionsLength = computed(() => {
-  return questions.value.length;
+// Encontramos o índice da pergunta atual com base no slug da rota
+const currentQuestionIndex = computed(() => {
+  const currentSlug = route.params.questionSlug;
+  return questions.value.findIndex((question) => question.slug === currentSlug);
 });
 
-// Watch for updates to formQuestions
+// Atualizamos sempre que as perguntas mudarem
 watch(
   () => userStore.formQuestions,
   (newQuestions) => {
     console.log("Questions updated:", newQuestions);
   }
 );
-const currentQuestion = ref(0); // Controla a pergunta
 
-// Avança para a próxima pergunta
+// Função chamada ao responder uma pergunta
 async function answerQuestion(answer: string) {
-  const questionId = questions.value[currentQuestion.value]?.id;
+  const currentIndex = currentQuestionIndex.value;
 
+  selectedAnswer.value = answer;
+
+  // Obtemos a pergunta atual e o ID dela
+  const questionId = String(questions.value[currentIndex]?.slug);
   console.log("Answer Slug (Question ID):", questionId);
 
   if (!userStore.formResponse || !userStore.formResponse._id) {
-    console.error("Form response ID is missing in intro.vue.");
+    console.error("Form response ID is missing.");
     return;
   }
 
@@ -87,27 +101,67 @@ async function answerQuestion(answer: string) {
   };
 
   console.log(
-    `Resposta para "${
-      questions.value[currentQuestion.value].question
-    }": ${answer}`
+    `Resposta para "${questions.value[currentIndex].question}": ${answer}`
   );
 
-  // Chama a ação da store para atualizar a resposta no banco
+  // Atualizamos a resposta na store e no banco de dados
   await userStore.updateAnswer(questionId, answerData);
-  //DESCOMENTAR
 
-  // Avança para a próxima pergunta
-  if (currentQuestion.value < questions.value.length - 1) {
-    currentQuestion.value += 1;
+  const updatedAnswers = {
+    ...userStore.formResponse.answers,
+    [questionId]: { value: answer, answeredAt: new Date() },
+  };
+
+  userStore.setFormResponse({
+    ...userStore.formResponse,
+    answers: updatedAnswers,
+  });
+
+  console.log("Resposta atualizada:", updatedAnswers);
+
+  // Redirecionamos para a próxima pergunta, se existir
+  const nextIndex = currentIndex + 1;
+  if (nextIndex < questions.value.length) {
+    const nextQuestionSlug = questions.value[nextIndex]?.slug;
+
+    if (nextQuestionSlug) {
+      router.push(`/questions/${nextQuestionSlug}`);
+    } else {
+      console.error(
+        "Próxima pergunta não encontrada. Finalizando o questionário."
+      );
+      finishQuestionnaire();
+    }
   } else {
     finishQuestionnaire();
   }
 }
 
-// Finaliza o questionário
+// Finaliza o questionário após a última pergunta
 function finishQuestionnaire() {
-  router.push("/"); // Navega para a página de término ou home, ajuste conforme necessário
+  const isFailed = userStore.isFormFailed();
+  if (isFailed) {
+    router.push("/questions/result?status=failed");
+  } else {
+    router.push("/questions/result?status=success");
+  }
 }
+
+// Log para depuração no carregamento da página
+onMounted(() => {
+  const currentIndex = currentQuestionIndex.value;
+  const currentQuestionSlug = String(questions.value[currentIndex]?.slug);
+
+  // Garante que answers existe antes de tentar acessá-lo
+  const existingAnswer =
+    userStore.formResponse?.answers?.[currentQuestionSlug]?.value || null;
+
+  selectedAnswer.value = existingAnswer;
+
+  // console.log("Questions on mount:", questions.value);
+  // console.log("Current Question Index:", currentQuestionIndex.value);
+  console.log("Resposta existente ao carregar:", existingAnswer);
+});
 </script>
 
 <style scoped>
@@ -123,6 +177,12 @@ function finishQuestionnaire() {
   /* overflow-y: auto; */
   color: var(--hemo-color-primary-less-dark);
   left: 50%;
+}
+
+.question-title{
+  color: var(--hemo-color-primary-less-dark);
+  text-align: left;
+  margin-left: 20px; 
 }
 
 .fixed-buttons {
@@ -142,21 +202,48 @@ function finishQuestionnaire() {
 }
 
 .answer-button {
-  background-color: var(--hemo-color-white);
-  color: #b44236;
+  background-color: var(--hemo-color-white); /* Fundo padrão branco */
+  color: #b44236; /* Texto vermelho */
   font-weight: bold;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
   width: 160px;
   height: 48px;
-  border: 2px solid #b44236;
+  border: 2px solid #b44236; /* Borda vermelha */
+  transition: all 0.3s ease; /* Transição suave */
+}
+
+.answer-button:hover {
+  background-color: #ffd6d6; /* Fundo mais claro ao passar o mouse */
+  color: #b44236; /* Texto permanece vermelho */
+  border-color: #b44236; /* Borda permanece vermelha */
+}
+
+.answer-button.selected {
+  background-color: #b44236; /* Fundo vermelho escuro ao ser selecionado */
+  color: #fff; /* Texto branco */
+  border-color: #b44236; /* Mesma cor do fundo */
+}
+
+.why{
+  color: var(--hemo-color-black-80);
+  font-weight: bold; 
+  font-size: 1.1rem; 
+  margin-top: 10px;
+  text-align: left;
+  margin-left: 20px; 
 }
 
 .question-subtext {
   color: #555;
   font-size: 0.9rem;
   margin-top: 10px;
+}
+
+.question-description{
+  text-align: left;
+  margin-left: 20px; 
 }
 
 .learn-more {
@@ -182,10 +269,19 @@ function finishQuestionnaire() {
   overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
 }
 
-.progress-dot {
+/* .progress-dot {
   width: calc(
     100% / v-bind(questionsLength)
-  ); /* Largura maior para o formato de pílula */
+  ); 
+  height: 8px; 
+  border-radius: 20px; 
+  background-color: #e0e0e0;  */
+/* transition: background-color 0.3s; */
+/* } */
+
+.progress-dot {
+  flex: 1; /* Cada dot ocupa o mesmo espaço proporcional */
+  max-width: 40px; /* Define um limite máximo para a largura */
   height: 8px; /* Altura menor para deixar achatado */
   border-radius: 20px; /* Border-radius grande para o formato arredondado */
   background-color: #e0e0e0; /* Cor padrão (não ativa) */
