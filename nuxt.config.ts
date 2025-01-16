@@ -42,7 +42,23 @@ export default defineNuxtConfig({
     public: {
       bugsnagApiKey: process.env.NUXT_PUBLIC_BUGSNAG_API_KEY || "",
       authCookieKey: process.env.NUXT_PUBLIC_AUTH_COOKIE_KEY || "auth_token",
+      hemocioneIdApiUrl:
+        process.env.NUXT_HEMOCIONE_ID_API_URL ||
+        "https://hemocione-id-dev.cpt.hemocione.com.br",
+      hemocioneIdUrl:
+        process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
     },
+    hemocioneIdJwtSecretKey:
+      process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "secret",
+    hemocioneIdIntegrationSecret:
+      process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",
+    secret: process.env.API_SECRET ?? "secret",
+    inngestKey: process.env.INNGEST_EVENT_KEY ?? "mock-key",
+    digitalStandApiUrl:
+      process.env.DIGITAL_STAND_API_URL ??
+      "https://us-east1-estande-digital.cloudfunctions.net/api",
+    digitalStandApiSecret: process.env.DIGITAL_STAND_API_SECRET ?? "",
+    donationsQueueUrl: process.env.DONATIONS_QUEUE_URL ?? "secret-queue-url",
   },
 
   // Configurações de rotas
@@ -59,6 +75,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxt/image",
     "@element-plus/nuxt",
+    "@formkit/auto-animate/nuxt",
   ],
 
   css: [

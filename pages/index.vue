@@ -23,7 +23,7 @@
     </main>
 
     <div class="button-container">
-      <button class="register-button">
+      <button class="register-button" @click="goRegister">
         Cadastre-se e descubra se pode doar
       </button>
       <button class="continue-button" @click="goToIntention">
@@ -35,11 +35,17 @@
 
 <script setup>
 import { useRouter } from "vue-router";
+import { redirectToID } from "~/middleware/auth";
 
 const router = useRouter();
 
 function goToIntention() {
   router.push("/intention");
+}
+
+function goRegister() {
+  const redirectPath = "/register";
+  redirectToID(redirectPath);
 }
 </script>
 
@@ -49,7 +55,7 @@ function goToIntention() {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  /* background-color: var(--hemo-color-primary-extra-light); */
+  background-color: var(--hemo-color-white);
 }
 .logo {
   width: 130px;
@@ -69,8 +75,8 @@ function goToIntention() {
   background-color: var(--hemo-color-primary-extra-light);
   color: var(--hemo-color-white);
   padding: 20px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
   padding-bottom: 100px;
   width: 100%;
 }
@@ -89,7 +95,7 @@ function goToIntention() {
 .illustration {
   width: 100%;
   max-width: 300px;
-  margin: 20px 0;
+  /* margin: 20px 0; */
 }
 
 .button-container {
@@ -102,26 +108,24 @@ function goToIntention() {
 }
 
 .register-button {
-  background-color: #b44236;
+  background-color: var(--hemo-color-primary-less-light);
   color: var(--hemo-color-white);
   padding: 15px 20px;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: bold;
   cursor: pointer;
   margin-top: 20px;
-  max-width: 300px;
-  width: 100%;
+  max-width: 400px;
+  width: 90%;
 }
 
 .continue-button {
   background: none;
-  color: #b44236;
+  color: var(--hemo-color-primary);
   font-size: 1rem;
   margin-top: 15px;
   border: none;
   cursor: pointer;
-  text-decoration: underline;
 }
 </style>

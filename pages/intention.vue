@@ -201,6 +201,4 @@ async function selectIntent(intent: "today" | "this-week" | "future") {
   border-color: #b44236; /* Mesma cor do fundo */
   font-weight: bold; /* Texto em negrito */
 }
-
-
 </style>

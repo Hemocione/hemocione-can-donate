@@ -1,28 +1,31 @@
 <template>
   <div class="question-container">
     <!-- Pergunta Atual -->
-    <div
-      v-if="currentQuestionIndex < questions.length"
-      class="question-content"
-    >
-      <NuxtImg
-        :src="questions[currentQuestionIndex]?.image"
-        alt="Foto celebrativa"
-        class="bolo"
-      />
-      <h2 class="question-title">
-        {{ questions[currentQuestionIndex]?.question }}
-      </h2>
-      <p class="why">Por que essa pergunta?</p>
-      <p class="question-description">
-        {{ questions[currentQuestionIndex]?.description }}
-      </p>
-    </div>
+    <transition name="fade">
+      <div
+        v-if="!isLastQuestion"
+        :key="`question-${currentQuestionIndex}`"
+        class="question-content"
+      >
+        <NuxtImg
+          :src="questions[currentQuestionIndex]?.image"
+          alt="Foto celebrativa"
+          class="bolo"
+        />
+        <h2 class="question-title">
+          {{ questions[currentQuestionIndex]?.question }}
+        </h2>
+        <p class="why">Por que essa pergunta?</p>
+        <p class="question-description">
+          {{ questions[currentQuestionIndex]?.description }}
+        </p>
+      </div>
 
-    <!-- Mensagem de Conclusão -->
-    <div v-else class="completion-message">
-      <p>Você completou o questionário. Obrigado!</p>
-    </div>
+      <!-- Mensagem de Conclusão -->
+      <div v-else :key="'completion'" class="completion-message">
+        <p>Você completou o questionário. Obrigado!</p>
+      </div>
+    </transition>
 
     <!-- Botões fixos na parte inferior -->
     <div class="fixed-buttons">
@@ -80,11 +83,24 @@ watch(
   }
 );
 
+watch(
+  () => currentQuestionIndex.value,
+  (newIndex, oldIndex) => {
+    console.log(`Transição de ${oldIndex} para ${newIndex}`);
+  }
+);
+
+const isLastQuestion = computed(
+  () => currentQuestionIndex.value >= questions.value.length
+);
+
 // Função chamada ao responder uma pergunta
 async function answerQuestion(answer: string) {
   const currentIndex = currentQuestionIndex.value;
 
   selectedAnswer.value = answer;
+
+  console.log("Current Question Index:", currentQuestionIndex.value);
 
   // Obtemos a pergunta atual e o ID dela
   const questionId = String(questions.value[currentIndex]?.slug);
@@ -137,6 +153,8 @@ async function answerQuestion(answer: string) {
   }
 }
 
+await nextTick(); // Aguarda o Vue atualizar o DOM
+
 // Finaliza o questionário após a última pergunta
 function finishQuestionnaire() {
   const isFailed = userStore.isFormFailed();
@@ -179,10 +197,10 @@ onMounted(() => {
   left: 50%;
 }
 
-.question-title{
+.question-title {
   color: var(--hemo-color-primary-less-dark);
   text-align: left;
-  margin-left: 20px; 
+  margin-left: 20px;
 }
 
 .fixed-buttons {
@@ -226,13 +244,13 @@ onMounted(() => {
   border-color: #b44236; /* Mesma cor do fundo */
 }
 
-.why{
+.why {
   color: var(--hemo-color-black-80);
-  font-weight: bold; 
-  font-size: 1.1rem; 
+  font-weight: bold;
+  font-size: 1.1rem;
   margin-top: 10px;
   text-align: left;
-  margin-left: 20px; 
+  margin-left: 20px;
 }
 
 .question-subtext {
@@ -241,9 +259,9 @@ onMounted(() => {
   margin-top: 10px;
 }
 
-.question-description{
+.question-description {
   text-align: left;
-  margin-left: 20px; 
+  margin-left: 20px;
 }
 
 .learn-more {
@@ -294,5 +312,29 @@ onMounted(() => {
 
 .progress-dot.completed {
   background-color: #ffcccc; /* Cor das perguntas já respondidas */
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
