@@ -19,7 +19,7 @@ const questions: Question[] = [
     description:
       "O peso mínimo para doar sangue é 50kg para garantir sua segurança durante o procedimento.",
     failingResponses: ["negative", "unknown"],
-    failingReason: "Peso insuficiente para doar sangue.",
+    failingReason: "Peso insuficiente.",
     image: "images/weight.png",
   },
   {
@@ -29,7 +29,7 @@ const questions: Question[] = [
       "A idade mínima para doação de sangue é 16 anos, com consentimento dos responsáveis.",
     anonymousOnly: true,
     failingResponses: ["negative", "unknown"],
-    failingReason: "Idade insuficiente para doação de sangue.",
+    failingReason: "Idade insuficiente.",
     image: "images/age.png",
   },
   {
@@ -63,7 +63,8 @@ const questions: Question[] = [
     image: "images/alcohol.png",
   },
   {
-    question: "Você participou de atividades sexuais de risco nos últimos 3 meses?",
+    question:
+      "Você participou de atividades sexuais de risco nos últimos 3 meses?",
     slug: "sexRisk",
     description:
       "Atividades sexuais de risco podem representar um perigo à segurança do receptor do sangue.",
@@ -84,16 +85,17 @@ const questions: Question[] = [
     image: "images/tattooOrPiercing.png",
   },
   {
-    question: "Morou ou viajou para fora do Brasil (em áreas de risco) ou para Amazônia Legal nos últimos 12 meses?",
+    question:
+      "Morou ou viajou para fora do Brasil (em áreas de risco) ou para Amazônia Legal nos últimos 12 meses?",
     slug: "traveledAbroad",
     description:
       "Viagens recentes para fora do Brasil ou para a Amazônia Legal podem apresentar riscos de exposição a doenças endêmicas, como malária, febre amarela e outras, que podem comprometer a segurança da doação.",
     donationIntents: ["today", "this-week"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Viagens recentes para áreas de risco impedem a doação de sangue temporariamente para garantir a segurança do receptor.",
+      "Viagens recentes para áreas de risco impedem a doação de sangue temporariamente.",
     image: "images/traveledAbroad.png",
-  },  
+  },
   {
     question: "Você possui piercing na boca ou genital?",
     slug: "mouthPiercing",
@@ -115,13 +117,15 @@ const questions: Question[] = [
     image: "images/medicalTreatmentOrSurgery.png",
   },
   {
-    question: "Você tem alguma viagem agendada para áreas de risco (fora do Brasil ou Amazônia Legal)?",
+    question:
+      "Você tem alguma viagem agendada para áreas de risco (fora do Brasil ou Amazônia Legal)?",
     slug: "futureAvailability",
     description:
       "Viagens para locais com maior risco à contração de doenças podem impedir a sua doação.",
     donationIntents: ["future"],
     failingResponses: ["positive", "unknown"],
-    failingReason: "Viagens para locais de risco impedem a doação, confira a possibilidade de doar antes.",
+    failingReason:
+      "Viagens para locais de risco impedem a doação, confira a possibilidade de doar antes.",
     image: "images/traveledAbroad.png",
   },
   {
@@ -135,7 +139,6 @@ const questions: Question[] = [
     image: "images/plannedTreatments.png",
   },
 ];
-
 
 export function getQuestionsFromContext(
   donationIntent: DonationIntent | null,

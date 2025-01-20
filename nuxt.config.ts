@@ -15,7 +15,7 @@ const getSiteUrl = () => {
 
     return networkAddress || "http://localhost:3000";
   }
-  return "https://eventos.hemocione.com.br";
+  return "https://possodoar.hemocione.com.br";
 };
 const getCurrentEnv = () => {
   if (process.env.VERCEL_ENV === "preview") {
@@ -49,9 +49,9 @@ export default defineNuxtConfig({
         process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
     },
     hemocioneIdJwtSecretKey:
-      process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "secret",
+    process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "secret",
     hemocioneIdIntegrationSecret:
-      process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",
+    process.env.HEMOCIONE_ID_INTEGRATION_SECRET ?? "secret",
     secret: process.env.API_SECRET ?? "secret",
     inngestKey: process.env.INNGEST_EVENT_KEY ?? "mock-key",
     digitalStandApiUrl:
@@ -78,14 +78,24 @@ export default defineNuxtConfig({
     "@formkit/auto-animate/nuxt",
   ],
 
-  css: [
-    "@/assets/css/global.css", // Caminho relativo ao arquivo global.css
-  ],
+  css: ["~/assets/css/global.css", "~/assets/css/transitions.css"],
 
   // Configuração do Nitro (ferramenta de execução do Nuxt)
   nitro: {
     preset: "vercel", // Deploy no Vercel
     plugins: ["~/server/plugins/mongoose.ts"], // Plugin do MongoDB
+  },
+
+  app: {
+    pageTransition: {
+      name: "slide-left",
+      mode: "out-in",
+      // appear: true,
+    },
+    layoutTransition: {
+      name: "slide-left",
+      mode: "out-in",
+    },
   },
 
   bugsnag: {

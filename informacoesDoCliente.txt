@@ -112,3 +112,17 @@ hoje:
 //pegar ip do usuario 
 //adicionar transicoes 
 //fazer o fluxo de cadastro 
+
+
+
+
+
+
+
+
+
+
+
+
+//deixar full os negocinhos da pergunta (verde pra sim e amarelo pra não)
+//ajeitar no banco para o ongoing virar finalizado na ultima página 

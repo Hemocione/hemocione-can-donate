@@ -17,7 +17,7 @@
   </el-drawer>
 
   <div class="first-question">
-    <h2>Qual é a sua intenção de doação?</h2>
+    <h2>Quando você pretende doar?</h2>
     <div class="fixed-buttons">
       <div class="intention-buttons">
         <el-button
@@ -169,9 +169,10 @@ async function selectIntent(intent: "today" | "this-week" | "future") {
 .intention-buttons {
   display: flex;
   flex-direction: column; /* Alinha os botões verticalmente */
-  gap: 15px; /* Espaçamento vertical entre os botões */
-  width: 90%; /* Largura responsiva dos botões */
-  max-width: 400px; /* Largura máxima */
+  gap: 8px; /* Espaçamento vertical entre os botões */
+  width: 100%; /* Largura responsiva dos botões */
+  /* max-width: 400px;  */
+  padding: 0 16px; 
 }
 
 .intention-button {

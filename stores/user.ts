@@ -14,8 +14,28 @@ export const useUserStore = defineStore("user", {
       const isAnonymous = !state.user;
       return getQuestionsFromContext(state.donationIntent, isAnonymous);
     },
-    failingReason: (state) => {
-      return state.formResponse?.failingReason || "Nenhum motivo registrado.";
+    failingReasons: (state) => {
+      // Verifica se há respostas no formulário
+      if (!state.formResponse?.answers) {
+        return "Nenhum motivo registrado.";
+      }
+
+      // Itera sobre as respostas e acumula razões de falha
+      const reasons = Object.keys(state.formResponse.answers)
+        .map((answerSlug) => {
+          const question = questions.find((q) => q.slug === answerSlug);
+          const answer = state.formResponse.answers[answerSlug];
+          if (question && question.failingResponses.includes(answer.value)) {
+            return question.failingReason;
+          }
+          return null;
+        })
+        .filter((reason) => reason !== null); // Remove valores nulos ou indefinidos
+
+      // Junta as razões com vírgulas
+      return reasons.length > 0
+        ? reasons.join(" ")
+        : "Nenhum motivo registrado.";
     },
   },
   actions: {
@@ -29,7 +49,7 @@ export const useUserStore = defineStore("user", {
       this.formResponse = formResponse;
       console.log("Form response set in the store:", this.formResponse);
     },
-    setDonationIntent(intent: "today" | "this-week" | "future"|null) {
+    setDonationIntent(intent: "today" | "this-week" | "future" | null) {
       this.donationIntent = intent;
     },
     isFormFailed() {
@@ -52,6 +72,7 @@ export const useUserStore = defineStore("user", {
         }
       }
     },
+    
 
     async createFormResponse() {
       try {

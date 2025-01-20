@@ -5,14 +5,16 @@
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
       </h2>
-      <p class="result-reason">{{ failingReason }}</p>
+      <p class="result-reason">
+        {{ userStore.failingReasons }}
+      </p>
       <p class="result-subtext">
         Você pode colaborar com o Hemocione e ajudar a salvar ainda mais vidas.
       </p>
       <div class="fixed-buttons">
-      <el-button class="action-button">Seja um Irmão de Sangue</el-button>
-      <el-button class="secondary-button" @click="goBack">Voltar</el-button>
-    </div>
+        <el-button class="action-button">Seja um Irmão de Sangue</el-button>
+        <el-button class="secondary-button" @click="goBack">Voltar</el-button>
+      </div>
     </div>
 
     <div v-else class="result-success">
@@ -49,7 +51,7 @@ const router = useRouter();
 
 // Computed properties para verificar o estado do formulário
 const isFailed = computed(() => userStore.isFormFailed());
-const failingReason = computed(() => userStore.failingReason);
+// const failingReason = computed(() => userStore.failingReason);
 
 // Função para voltar à tela anterior
 function goBack() {

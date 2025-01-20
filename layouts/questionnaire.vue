@@ -49,6 +49,7 @@
           :style="{ width: `${100 / questions.length}%` }"
         ></div>
       </div>
+      
       <slot />
       <!-- Espaço para conteúdo específico -->
     </main>
@@ -119,8 +120,8 @@ function resetSelection() {
 function exitQuestionnaire() {
   console.log("Saindo do questionário...");
 
-   // Limpa o sessionStorage
-   sessionStorage.removeItem("questionnaireStarted");
+  // Limpa o sessionStorage
+  sessionStorage.removeItem("questionnaireStarted");
   sessionStorage.removeItem("selectedIntent");
 
   // Reseta o estado no userStore
@@ -129,7 +130,7 @@ function exitQuestionnaire() {
 
   resetSelection();
 
-  router.push("/"); 
+  router.push("/");
 }
 </script>
 
@@ -141,7 +142,7 @@ function exitQuestionnaire() {
   text-align: center;
   background-color: #f8f8f8;
   color: #333;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .header {
@@ -221,7 +222,7 @@ function exitQuestionnaire() {
   border-radius: 8px;
   padding: 10px 20px;
   width: 90%;
-  height: 48px; 
+  height: 48px;
 }
 
 .continue-button {
@@ -231,9 +232,9 @@ function exitQuestionnaire() {
   border: none;
   cursor: pointer;
   padding: 10px;
-  padding-top: 20px; 
+  padding-top: 20px;
   margin-top: 15px;
-  height: 48px; 
+  height: 48px;
 }
 
 .progress-bar {

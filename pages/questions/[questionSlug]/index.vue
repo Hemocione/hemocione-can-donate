@@ -1,12 +1,9 @@
 <template>
   <div class="question-container">
     <!-- Pergunta Atual -->
-    <transition name="fade">
-      <div
-        v-if="!isLastQuestion"
-        :key="`question-${currentQuestionIndex}`"
-        class="question-content"
-      >
+
+    <div class="question-content">
+      <div v-if="!isLastQuestion" :key="`question-${currentQuestionIndex}`">
         <NuxtImg
           :src="questions[currentQuestionIndex]?.image"
           alt="Foto celebrativa"
@@ -25,7 +22,7 @@
       <div v-else :key="'completion'" class="completion-message">
         <p>Você completou o questionário. Obrigado!</p>
       </div>
-    </transition>
+    </div>
 
     <!-- Botões fixos na parte inferior -->
     <div class="fixed-buttons">
@@ -59,6 +56,7 @@ const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
 const selectedAnswer = ref<string | null>(null); // Armazena a resposta selecionada para a pergunta atual
+// const dropdown = ref();
 
 // Obtemos as perguntas ordenadas da store
 const questions = computed(() => {
@@ -94,8 +92,14 @@ const isLastQuestion = computed(
   () => currentQuestionIndex.value >= questions.value.length
 );
 
+let answerlock = false; 
+
 // Função chamada ao responder uma pergunta
 async function answerQuestion(answer: string) {
+
+  if (answerlock) return;
+  answerlock = true;  
+
   const currentIndex = currentQuestionIndex.value;
 
   selectedAnswer.value = answer;
@@ -135,8 +139,8 @@ async function answerQuestion(answer: string) {
 
   console.log("Resposta atualizada:", updatedAnswers);
 
-  // Redirecionamos para a próxima pergunta, se existir
-  const nextIndex = currentIndex + 1;
+  setTimeout(() => {
+    const nextIndex = currentIndex + 1;
   if (nextIndex < questions.value.length) {
     const nextQuestionSlug = questions.value[nextIndex]?.slug;
 
@@ -151,6 +155,8 @@ async function answerQuestion(answer: string) {
   } else {
     finishQuestionnaire();
   }
+  answerlock = false; 
+  }, 300);
 }
 
 await nextTick(); // Aguarda o Vue atualizar o DOM
@@ -186,12 +192,12 @@ onMounted(() => {
 .question-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 .question {
   /* flex-grow: 1; */
-  padding: 20px;
+  /* padding: 20px; */
   /* overflow-y: auto; */
   color: var(--hemo-color-primary-less-dark);
   left: 50%;
@@ -200,12 +206,15 @@ onMounted(() => {
 .question-title {
   color: var(--hemo-color-primary-less-dark);
   text-align: left;
-  margin-left: 20px;
+  /* margin-left: 20px; */
+  margin: 0;
+  padding-bottom: 15px;
 }
 
 .fixed-buttons {
   display: flex;
-  justify-content: space-around;
+  gap: 8px;
+  /* justify-content: space-around; */
   /* justify-content: center; */
   padding: 15px;
   background-color: #fff;
@@ -226,7 +235,7 @@ onMounted(() => {
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-  width: 160px;
+  width: 100%;
   height: 48px;
   border: 2px solid #b44236; /* Borda vermelha */
   transition: all 0.3s ease; /* Transição suave */
@@ -250,7 +259,7 @@ onMounted(() => {
   font-size: 1.1rem;
   margin-top: 10px;
   text-align: left;
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 
 .question-subtext {
@@ -261,7 +270,7 @@ onMounted(() => {
 
 .question-description {
   text-align: left;
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 
 .learn-more {
