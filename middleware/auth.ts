@@ -4,7 +4,7 @@ import { currentUserTokenDecoder } from "~/utils/currentUserTokenDecoder";
 import { getHemocioneIdUrl } from "~/utils/getHemocioneIdUrl";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  if (process.server) return;
+  if (import.meta.server) return;
 
   const isLoggedIn = await evaluateCurrentLogin(from.query);
   if (!isLoggedIn) {

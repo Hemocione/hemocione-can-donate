@@ -44,8 +44,8 @@ function goToIntention() {
 }
 
 function goRegister() {
-  const redirectPath = "/register";
-  redirectToID(redirectPath);
+  // const redirectPath = "/register";
+  redirectToID("/intention");
 }
 </script>
 
