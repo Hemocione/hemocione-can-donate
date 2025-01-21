@@ -11,8 +11,8 @@
     <main class="content">
       <h1>Posso doar?</h1>
       <p>
-        Responda as perguntas mais frequentes sobre doação e descubra se você é
-        elegível para doar sangue
+        Responda as perguntas mais frequentes sobre doação de sangue e descubra se você é
+        elegível para doar 😀
       </p>
 
       <NuxtImg

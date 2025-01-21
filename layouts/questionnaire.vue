@@ -53,7 +53,9 @@
         ></div>
       </div>
       
-      <slot />
+      <div :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }">
+        <slot />
+      </div>
       <!-- Espaço para conteúdo específico -->
     </main>
   </div>
@@ -148,6 +150,15 @@ function exitQuestionnaire() {
   height: 100vh;
 }
 
+.route-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.question-route {
+  height: calc(100% - 3rem);
+}
+
 .header {
   align-items: center;
   gap: 1rem;
@@ -178,7 +189,7 @@ function exitQuestionnaire() {
   width: 100%;
   max-width: var(--hemo-page-max-width);
   background-color: var(--hemo-color-white);
-  height: calc(100vh - var(--navbar-height) - var(--secondary-header-height));
+  height: calc(100% - var(--navbar-height) - var(--secondary-header-height));
 }
 .content p {
   font-size: 1rem;
@@ -253,8 +264,8 @@ function exitQuestionnaire() {
   align-items: center; /* Alinha verticalmente */
   flex-wrap: nowrap; /* Evita que os itens quebrem de linha */
   gap: 10px; /* Define espaçamento fixo entre os elementos */
-  margin: 20px 0;
   padding: 0 1rem;
+  height: 2rem;
   overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
 }
 

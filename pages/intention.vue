@@ -1,6 +1,6 @@
 <template>
-  <!-- <QuestionnaireLayout> -->
-  <el-drawer
+  <div class="intention-page">
+    <el-drawer
     v-model="drawer"
     :with-header="false"
     :direction="direction"
@@ -48,7 +48,7 @@
       </el-button>
     </div>
   </CoolFooter>
-  <!-- </QuestionnaireLayout> -->
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -136,6 +136,13 @@ async function selectIntent(intent: "today" | "this-week" | "future") {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.intention-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
 
 .drawer-content {

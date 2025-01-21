@@ -25,22 +25,24 @@
     </div>
 
     <!-- Botões fixos na parte inferior -->
-    <div class="fixed-buttons">
-      <el-button
-        class="answer-button"
-        :class="{ selected: selectedAnswer === 'positive' }"
-        @click="answerQuestion('positive')"
-      >
-        Sim
-      </el-button>
-      <el-button
-        class="answer-button"
-        :class="{ selected: selectedAnswer === 'negative' }"
-        @click="answerQuestion('negative')"
-      >
-        Não
-      </el-button>
-    </div>
+    <CoolFooter height="80px" hideToggle desktopBorderRadius="0">
+      <div class="answer-button-wrapper">
+        <el-button
+          class="answer-button"
+          :class="{ selected: selectedAnswer === 'positive' }"
+          @click="answerQuestion('positive')"
+        >
+          Sim
+        </el-button>
+        <el-button
+          class="answer-button"
+          :class="{ selected: selectedAnswer === 'negative' }"
+          @click="answerQuestion('negative')"
+        >
+          Não
+        </el-button>
+      </div>
+    </CoolFooter>
   </div>
 </template>
 
@@ -139,36 +141,32 @@ async function answerQuestion(answer: string) {
 
   console.log("Resposta atualizada:", updatedAnswers);
 
-  setTimeout(() => {
+  setTimeout(async () => {
     const nextIndex = currentIndex + 1;
-  if (nextIndex < questions.value.length) {
-    const nextQuestionSlug = questions.value[nextIndex]?.slug;
+    if (nextIndex < questions.value.length) {
+      const nextQuestionSlug = questions.value[nextIndex]?.slug;
 
-    if (nextQuestionSlug) {
-      router.push(`/questions/${nextQuestionSlug}`);
+      if (nextQuestionSlug) {
+        await navigateTo(`/questions/${nextQuestionSlug}`)
+      } else {
+        console.error(
+          "Próxima pergunta não encontrada. Finalizando o questionário."
+        );
+        await finishQuestionnaire();
+      }
     } else {
-      console.error(
-        "Próxima pergunta não encontrada. Finalizando o questionário."
-      );
-      finishQuestionnaire();
+      await finishQuestionnaire();
     }
-  } else {
-    finishQuestionnaire();
-  }
-  answerlock = false; 
+    answerlock = false; 
   }, 300);
 }
 
 await nextTick(); // Aguarda o Vue atualizar o DOM
 
 // Finaliza o questionário após a última pergunta
-function finishQuestionnaire() {
-  const isFailed = userStore.isFormFailed();
-  if (isFailed) {
-    router.push("/questions/result?status=failed");
-  } else {
-    router.push("/questions/result?status=success");
-  }
+async function finishQuestionnaire() {
+  const nextPath = userStore.isFormFailed() ? "/questions/result?status=failed" : "/questions/result?status=success";
+  await navigateTo(nextPath);
 }
 
 // Log para depuração no carregamento da página
@@ -192,7 +190,17 @@ onMounted(() => {
 .question-container {
   display: flex;
   flex-direction: column;
-  /* height: 100vh; */
+  height: 100%;
+}
+
+.question-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 1rem;
+  height: calc(100% - 80px);
 }
 
 .question {
@@ -211,32 +219,23 @@ onMounted(() => {
   padding-bottom: 15px;
 }
 
-.fixed-buttons {
-  display: flex;
-  gap: 8px;
-  /* justify-content: space-around; */
-  /* justify-content: center; */
-  padding: 15px;
-  background-color: #fff;
-  border-top: 1px solid #e0e0e0;
-  position: fixed;
-  bottom: 0;
+.answer-button-wrapper {
+  height: 100%;
   width: 100%;
-  max-width: var(--hemo-page-max-width);
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
 }
+
 
 .answer-button {
   background-color: var(--hemo-color-white); /* Fundo padrão branco */
   color: #b44236; /* Texto vermelho */
   font-weight: bold;
-  padding: 10px 20px;
   border-radius: 8px;
+  box-sizing: border-box;
   cursor: pointer;
   width: 100%;
-  height: 48px;
+  height: 100%;
   border: 2px solid #b44236; /* Borda vermelha */
   transition: all 0.3s ease; /* Transição suave */
 }

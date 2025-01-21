@@ -91,7 +91,7 @@ export default defineNuxtConfig({
     pageTransition: {
       name: "slide-left",
       mode: "out-in",
-      // appear: true,
+      appear: true,
     },
     layoutTransition: {
       name: "slide-left",
