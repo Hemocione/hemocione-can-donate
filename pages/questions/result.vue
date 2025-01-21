@@ -112,7 +112,7 @@ function goBack() {
   position: fixed;
   bottom: 0;
   width: 100%;
-  max-width: 768px;
+  max-width: var(--hemo-page-max-width);
   margin: 0 auto;
   left: 50%;
   transform: translateX(-50%);

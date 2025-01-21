@@ -5,45 +5,49 @@
     :with-header="false"
     :direction="direction"
     :before-close="handleClose"
+    :size="'fit-content'"
   >
-    <p>
-      Bem-vindo ao questionário! Este questionário serve como uma orientação
-      inicial com perguntas frequentes sobre a doação, mas não substitui a
-      triagem realizada por profissionais de saúde no dia e no local da doação.
-    </p>
-    <el-button class="start-button" @click="startQuestionnaire">
-      Começar
-    </el-button>
+    <div class="drawer-content">
+      <p class="drawer-text">
+        Bem vindo ao questionário! <br/> <br/> Este questionário serve como uma orientação
+        inicial com perguntas frequentes sobre a doação, mas não substitui a
+        triagem realizada por profissionais de saúde no dia e no local da doação.
+      </p>
+      <el-button class="start-button" @click="startQuestionnaire">
+        Começar
+      </el-button>
+    </div>
   </el-drawer>
 
   <div class="first-question">
     <h2>Quando você pretende doar?</h2>
-    <div class="fixed-buttons">
-      <div class="intention-buttons">
-        <el-button
-          class="intention-button"
-          :class="{ selected: selectedIntent === 'today' }"
-          @click="selectIntent('today')"
-        >
-          Hoje
-        </el-button>
-        <el-button
-          class="intention-button"
-          :class="{ selected: selectedIntent === 'this-week' }"
-          @click="selectIntent('this-week')"
-        >
-          Esta Semana
-        </el-button>
-        <el-button
-          class="intention-button"
-          :class="{ selected: selectedIntent === 'future' }"
-          @click="selectIntent('future')"
-        >
-          Futuro
-        </el-button>
-      </div>
-    </div>
   </div>
+
+  <CoolFooter height="200px" hideToggle desktopBorderRadius="0">
+    <div class="intention-buttons">
+      <el-button
+        class="intention-button"
+        :class="{ selected: selectedIntent === 'today' }"
+        @click="selectIntent('today')"
+      >
+        Hoje
+      </el-button>
+      <el-button
+        class="intention-button"
+        :class="{ selected: selectedIntent === 'this-week' }"
+        @click="selectIntent('this-week')"
+      >
+        Esta Semana
+      </el-button>
+      <el-button
+        class="intention-button"
+        :class="{ selected: selectedIntent === 'future' }"
+        @click="selectIntent('future')"
+      >
+        Futuro
+      </el-button>
+    </div>
+  </CoolFooter>
   <!-- </QuestionnaireLayout> -->
 </template>
 
@@ -126,27 +130,51 @@ async function selectIntent(intent: "today" | "this-week" | "future") {
 </script>
 
 <style scoped>
+.drawer {
+  padding: 20px;
+  height: 20vh;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-around;
+  align-items: center;
+  gap: 16px;
+}
+
+.drawer-text {
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  width: 100%;
+}
+
 .start-button {
   background-color: #b44236;
   color: #fff;
-  padding: 15px 20px;
+  padding: 24px;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  max-width: 300px;
   width: 100%;
-  margin-top: 20px;
 }
 
 .first-question {
-  margin-top: 20px;
-  text-align: center;
-  height: 100%;
+  height: calc(100% - 200px);
   padding: 20px;
   color: var(--hemo-color-primary-less-dark);
-  left: 50%;
+}
+
+.first-question h2 {
+  margin: 0;
+  text-align: left;
 }
 
 .fixed-buttons {
@@ -172,7 +200,7 @@ async function selectIntent(intent: "today" | "this-week" | "future") {
   gap: 8px; /* Espaçamento vertical entre os botões */
   width: 100%; /* Largura responsiva dos botões */
   /* max-width: 400px;  */
-  padding: 0 16px; 
+  height: 100%;
 }
 
 .intention-button {
@@ -180,12 +208,13 @@ async function selectIntent(intent: "today" | "this-week" | "future") {
   color: #b44236; /* Texto vermelho */
   font-weight: bold;
   width: 100%; /* O botão ocupa 100% da largura do contêiner pai */
-  height: 48px; /* Altura fixa */
+  /* max-height: 48px; Altura fixa */
+  height: 100%;
   border-radius: 8px; /* Bordas arredondadas */
   cursor: pointer;
-  padding: 12px 0; /* Altura do botão */
   text-align: center; /* Centraliza o texto */
   font-size: 1rem;
+  box-sizing: border-box;
   border: 2px solid #b44236; /* Borda vermelha */
   transition: all 0.3s ease; /* Transição suave */
 }

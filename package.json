@@ -18,6 +18,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@unhead/vue": "^1.11.7",
     "element-plus": "^2.8.7",
+    "mongoose": "^8.9.5",
     "nuxt": "^3.13.2",
     "nuxt-bugsnag": "^8.0.0",
     "vue": "^3.3.8",

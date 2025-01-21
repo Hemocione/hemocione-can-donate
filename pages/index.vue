@@ -56,6 +56,7 @@ function goRegister() {
   align-items: center;
   text-align: center;
   background-color: var(--hemo-color-white);
+  height: 100vh;
 }
 .logo {
   width: 130px;
@@ -63,10 +64,11 @@ function goRegister() {
   margin-top: 5px;
 }
 .header {
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
   width: 100%;
-  height: fit-content;
+  height: var(--navbar-height);
   background-color: var(--hemo-color-primary-extra-light);
 }
 
@@ -79,32 +81,41 @@ function goRegister() {
   border-bottom-right-radius: 32px;
   padding-bottom: 100px;
   width: 100%;
+  height: calc((100vh - var(--navbar-height))*0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  gap: 16px;
 }
 
 .content h1 {
   font-size: 2rem;
   font-weight: bold;
-  margin: 20px 0;
+  margin: 0;
 }
 
 .content p {
   font-size: 1rem;
-  margin-bottom: 30px;
+  margin: 0;
 }
 
 .illustration {
-  width: 100%;
-  max-width: 300px;
-  /* margin: 20px 0; */
+  height: 70%;
+  max-width: 500px;
+  max-height: 500px;
 }
 
 .button-container {
   background-color: var(--hemo-color-white);
   padding: 20px 20px 60px;
   width: 100%;
+  height: calc((100vh - var(--navbar-height))*0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .register-button {

@@ -23,17 +23,20 @@
       :with-header="false"
       :direction="direction"
       :before-close="handleClose"
+      :size="'fit-content'"
     >
-      <p>
-        Deseja sair do questionário? Suas respostas não serão salvas, mas você
-        pode voltar e refazer em outro momento.
-      </p>
-      <el-button class="exit-button" @click="exitQuestionnaire">
-        Sair do questionário
-      </el-button>
-      <el-button class="continue-button" @click="closeDrawer">
-        Continuar questionário
-      </el-button>
+      <div class="drawer-content">
+        <p style="padding: 0 0 16px; margin: 0; text-align: left;">
+          Deseja sair do questionário? Suas respostas não serão salvas, mas você
+          pode voltar e refazer em outro momento.
+        </p>
+        <el-button class="exit-button" @click="exitQuestionnaire">
+          Sair do questionário
+        </el-button>
+        <el-button class="continue-button" @click="closeDrawer">
+          Continuar questionário
+        </el-button>
+      </div>
     </el-drawer>
 
     <main class="content">
@@ -149,7 +152,7 @@ function exitQuestionnaire() {
   align-items: center;
   gap: 1rem;
   width: 100%;
-  height: 55px;
+  height: var(--navbar-height);
   background-color: var(--hemo-color-black-100);
 }
 
@@ -159,7 +162,7 @@ function exitQuestionnaire() {
   gap: 1rem;
   padding: 1rem;
   width: 100%;
-  max-width: 768px;
+  max-width: var(--hemo-page-max-width);
   height: 53px;
   border-bottom: 2px solid var(--hemo-color-text-secondary-opaque);
   background-color: var(--hemo-color-white);
@@ -173,10 +176,9 @@ function exitQuestionnaire() {
 
 .content {
   width: 100%;
-  max-width: 768px;
+  max-width: var(--hemo-page-max-width);
   background-color: var(--hemo-color-white);
-  height: calc(100vh - 108px);
-  padding: 0 1rem;
+  height: calc(100vh - var(--navbar-height) - var(--secondary-header-height));
 }
 .content p {
   font-size: 1rem;
@@ -221,8 +223,15 @@ function exitQuestionnaire() {
   font-weight: bold;
   border-radius: 8px;
   padding: 10px 20px;
-  width: 90%;
+  width: 100%;
   height: 48px;
+}
+
+.drawer-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .continue-button {
@@ -235,6 +244,7 @@ function exitQuestionnaire() {
   padding-top: 20px;
   margin-top: 15px;
   height: 48px;
+  width: 100%;
 }
 
 .progress-bar {
@@ -244,7 +254,7 @@ function exitQuestionnaire() {
   flex-wrap: nowrap; /* Evita que os itens quebrem de linha */
   gap: 10px; /* Define espaçamento fixo entre os elementos */
   margin: 20px 0;
-  padding: 0 5px;
+  padding: 0 1rem;
   overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
 }
 
