@@ -23,29 +23,61 @@
     </main>
 
     <div class="button-container">
-      <button class="register-button" @click="goRegister">
+      <button v-if="isLoggedIn" class="register-button" @click="goRegister">
+        Continuar como {{ userStore.user?.givenName }}
+      </button>
+      <button v-else class="register-button" @click="goRegister">
         Cadastre-se e descubra se pode doar
       </button>
-      <button class="continue-button" @click="goToIntention">
+
+      <button v-if="isLoggedIn" class="continue-button" @click="logOut">
+        Não sou {{ userStore.user?.givenName }}
+      </button>
+      <button v-else class="continue-button" @click="goToIntention">
         Continuar sem cadastro →
       </button>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from "vue-router";
+import { useUserStore } from "~/stores/user";
 import { redirectToID } from "~/middleware/auth";
 
 const router = useRouter();
+const userStore = useUserStore();
+const isLoggedIn = computed(() => userStore.loggedIn);
 
 function goToIntention() {
+  // User chooses to continue without registering
+  sessionStorage.setItem("anonymousMode", "true");
   router.push("/intention");
 }
 
-function goRegister() {
-  // const redirectPath = "/register";
-  redirectToID("/intention");
+async function goRegister() {
+  if (isLoggedIn.value) {
+    // ✅ If the user is logged in, update the form mode
+    sessionStorage.setItem("anonymousMode", "false");
+
+    if (userStore.formResponse?._id) {
+      await userStore.updateFormMode("logged-in");
+    }
+
+    router.push("/intention");
+  } else {
+    // ✅ User is not logged in, trigger login redirect
+    sessionStorage.setItem("anonymousMode", "false");
+    redirectToID("/intention");
+  }
+}
+
+async function logOut() {
+  await userStore.logOut();
+  sessionStorage.setItem("anonymousMode", "true");
+  router.push("/");
+
 }
 </script>
 

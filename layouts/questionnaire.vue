@@ -41,17 +41,20 @@
 
     <main class="content">
       <div v-if="isQuestionsRoute" class="progress-bar">
-        <div
-          v-for="(question, index) in questions"
-          :key="index"
-          class="progress-dot"
-          :class="{
-            active: index === currentQuestionIndex,
-            completed: index < currentQuestionIndex,
-          }"
-          :style="{ width: `${100 / questions.length}%` }"
-        ></div>
-      </div>
+  <div
+    v-for="(question, index) in questions"
+    :key="index"
+    class="progress-dot"
+    :class="{
+      active: index === currentQuestionIndex,
+      completed: index < currentQuestionIndex,
+      finalSuccess: isFormCompleted && !isFailed,
+      finalFailed: isFormCompleted && isFailed
+    }"
+    :style="{ width: `${100 / questions.length}%` }"
+  ></div>
+</div>
+
       
       <div :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }">
         <slot />
@@ -78,6 +81,13 @@ const handleClose = (done: () => void) => {
   drawer.value = false;
   done();
 };
+
+const isFailed = computed(() => userStore.isFormFailed());
+
+const isFormCompleted = computed(() => {
+  return currentQuestionIndex.value === -1;
+});
+
 
 const isQuestionsRoute = computed(() => {
   return route.path.startsWith("/questions");
@@ -137,6 +147,14 @@ function exitQuestionnaire() {
 
   router.push("/");
 }
+
+watchEffect(() => {
+  console.log("✅ isFormCompleted:", isFormCompleted.value);
+  console.log("❌ isFailed:", isFailed.value);
+  console.log("🔢 currentQuestionIndex:", currentQuestionIndex.value);
+  console.log("📊 Total Questions:", questionsLength.value);
+});
+
 </script>
 
 <style scoped>
@@ -273,15 +291,26 @@ function exitQuestionnaire() {
   width: calc(100% / v-bind(questionsLength));
   height: 8px;
   border-radius: 20px;
-  background-color: #e0e0e0; /* Cor padrão (não ativa) */
+  background-color: #e0e0e0; /* Default */
   transition: background-color 0.3s;
 }
 
 .progress-dot.active {
-  background-color: #b44236; /* Cor da pergunta atual */
+  background-color: #b44236; /* Active question */
 }
 
 .progress-dot.completed {
-  background-color: #ffcccc; /* Cor das perguntas já respondidas */
+  background-color: #ffcccc; /* Default completed questions */
 }
+
+/* ✅ Green when fully completed and success */
+.progress-dot.finalSuccess {
+  background-color: #28a745 !important; /* Green */
+}
+
+/* ❌ Red when fully completed and failure */
+.progress-dot.finalFailed {
+  background-color: #ffc107 !important; /* Yellow */
+}
+
 </style>

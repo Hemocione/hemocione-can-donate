@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Hemocione Can Donate",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

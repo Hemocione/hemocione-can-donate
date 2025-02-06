@@ -13,7 +13,7 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Seja um Irmão de Sangue</el-button>
-        <el-button class="secondary-button" @click="goBack">Voltar</el-button>
+        <el-button class="secondary-button" @click="goBack">Voltar ao início</el-button>
       </div>
     </div>
 
@@ -55,7 +55,7 @@ const isFailed = computed(() => userStore.isFormFailed());
 
 // Função para voltar à tela anterior
 function goBack() {
-  router.push("/questions");
+  router.push("/");
 }
 </script>
 
@@ -63,6 +63,7 @@ function goBack() {
 .result-container {
   text-align: center;
   padding: 20px;
+  height: calc(100% - 80px);
 }
 
 .result-image {

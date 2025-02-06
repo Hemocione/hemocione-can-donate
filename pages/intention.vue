@@ -1,53 +1,52 @@
 <template>
   <div class="intention-page">
     <el-drawer
-    v-model="drawer"
-    :with-header="false"
-    :direction="direction"
-    :before-close="handleClose"
-    :size="'fit-content'"
-  >
-    <div class="drawer-content">
-      <p class="drawer-text">
-        Bem vindo ao questionário! <br/> <br/> Este questionário serve como uma orientação
-        inicial com perguntas frequentes sobre a doação, mas não substitui a
-        triagem realizada por profissionais de saúde no dia e no local da doação.
-      </p>
-      <el-button class="start-button" @click="startQuestionnaire">
-        Começar
-      </el-button>
-    </div>
-  </el-drawer>
+      v-model="drawer"
+      :with-header="false"
+      :direction="direction"
+      :before-close="handleClose"
+      :size="'200px'"
+    >
+      <div class="drawer-content">
+        <p class="drawer-text">
+          Bem vindo ao questionário! <br /><br />
+          Este questionário serve como uma orientação inicial com perguntas frequentes sobre a doação, mas não substitui a triagem realizada por profissionais de saúde no dia e no local da doação.
+        </p>
+        <el-button class="start-button" @click="startQuestionnaire">
+          Começar
+        </el-button>
+      </div>
+    </el-drawer>
 
-  <div class="first-question">
-    <h2>Quando você pretende doar?</h2>
-  </div>
-
-  <CoolFooter height="200px" hideToggle desktopBorderRadius="0">
-    <div class="intention-buttons">
-      <el-button
-        class="intention-button"
-        :class="{ selected: selectedIntent === 'today' }"
-        @click="selectIntent('today')"
-      >
-        Hoje
-      </el-button>
-      <el-button
-        class="intention-button"
-        :class="{ selected: selectedIntent === 'this-week' }"
-        @click="selectIntent('this-week')"
-      >
-        Esta Semana
-      </el-button>
-      <el-button
-        class="intention-button"
-        :class="{ selected: selectedIntent === 'future' }"
-        @click="selectIntent('future')"
-      >
-        Futuro
-      </el-button>
+    <div class="first-question">
+      <h2>Quando você pretende doar?</h2>
     </div>
-  </CoolFooter>
+
+    <CoolFooter height="200px" hideToggle desktopBorderRadius="0">
+      <div class="intention-buttons">
+        <el-button
+          class="intention-button"
+          :class="{ selected: selectedIntent === 'today' }"
+          @click="selectIntent('today')"
+        >
+          Hoje
+        </el-button>
+        <el-button
+          class="intention-button"
+          :class="{ selected: selectedIntent === 'this-week' }"
+          @click="selectIntent('this-week')"
+        >
+          Esta Semana
+        </el-button>
+        <el-button
+          class="intention-button"
+          :class="{ selected: selectedIntent === 'future' }"
+          @click="selectIntent('future')"
+        >
+          Futuro
+        </el-button>
+      </div>
+    </CoolFooter>
   </div>
 </template>
 
@@ -56,6 +55,7 @@ import { ref, onMounted } from "vue";
 import type { DrawerProps } from "element-plus";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import { evaluateCurrentLogin, redirectToID } from "~/middleware/auth";
 
 definePageMeta({ layout: "questionnaire" });
 
@@ -65,15 +65,30 @@ const showFirstQuestion = ref(false);
 const router = useRouter();
 const userStore = useUserStore();
 const selectedIntent = ref<"today" | "this-week" | "future" | null>(null);
+const isAnonymousMode = ref(false); 
 
 const handleClose = (done: () => void) => {
   drawer.value = false;
   done();
 };
 
-// Abre o drawer automaticamente ao carregar a página
-onMounted(() => {
+onMounted(async () => {
   console.log("onMounted executado");
+
+  const anonymousMode = sessionStorage.getItem("anonymousMode");
+  isAnonymousMode.value = anonymousMode === "true";
+
+  if (!isAnonymousMode.value) {
+    const isLoggedIn = await evaluateCurrentLogin();
+    if (!isLoggedIn) {
+      console.log("Usuário não autenticado. Redirecionando para login...");
+      redirectToID(window.location.pathname);
+      return;
+    }
+    console.log("Usuário autenticado:", userStore.user);
+  } else {
+    console.log("Usuário escolheu continuar sem cadastro.");
+  }
 
   const alreadyStarted = sessionStorage.getItem("questionnaireStarted");
   const savedIntent = sessionStorage.getItem("selectedIntent");
@@ -84,19 +99,17 @@ onMounted(() => {
 
   if (!alreadyStarted) {
     console.log("Drawer deve abrir pela primeira vez");
-    drawer.value = true; // Exibe o drawer se nunca foi iniciado
+    drawer.value = true;
   } else {
     console.log("Questionário já iniciado, não exibe o drawer");
-    drawer.value = false; // Não abre se já foi iniciado
+    drawer.value = false;
   }
 });
 
+// Handles the "Começar" button inside the drawer
 async function startQuestionnaire() {
   drawer.value = false;
   showFirstQuestion.value = true;
-
-  //TODO: nao deveria subir se eu recarregar a página?
-  //session?
   sessionStorage.setItem("questionnaireStarted", "true");
 
   try {
@@ -112,12 +125,24 @@ async function startQuestionnaire() {
   }
 }
 
+// Handles selecting a donation intent
 async function selectIntent(intent: "today" | "this-week" | "future") {
   console.log(`Selecionando a intenção: ${intent}`);
-  selectedIntent.value = intent; // Atualiza a intenção selecionada
-  sessionStorage.setItem("selectedIntent", intent); // Salva no sessionStorage
+
+  selectedIntent.value = intent;
+  sessionStorage.setItem("selectedIntent", intent);
 
   userStore.setDonationIntent(intent);
+
+  if (!isAnonymousMode.value) {
+    const isLoggedIn = await evaluateCurrentLogin();
+    if (!isLoggedIn) {
+      console.log("Usuário não autenticado. Redirecionando para login...");
+      redirectToID(window.location.pathname);
+      return;
+    }
+  }
+
   await userStore.updateDonationIntent(intent);
 
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;
@@ -184,58 +209,39 @@ async function selectIntent(intent: "today" | "this-week" | "future") {
   text-align: left;
 }
 
-.fixed-buttons {
-  display: flex;
-  flex-direction: column; /* Alinha os botões verticalmente */
-  align-items: center; /* Centraliza os botões horizontalmente */
-  gap: 15px; /* Espaçamento vertical entre os botões */
-  padding: 20px 0; /* Espaçamento interno */
-  background-color: #fff;
-  border-top: 1px solid #e0e0e0;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  max-width: 768px;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 .intention-buttons {
   display: flex;
-  flex-direction: column; /* Alinha os botões verticalmente */
-  gap: 8px; /* Espaçamento vertical entre os botões */
-  width: 100%; /* Largura responsiva dos botões */
-  /* max-width: 400px;  */
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
   height: 100%;
 }
 
 .intention-button {
-  background-color: var(--hemo-color-white); /* Fundo padrão branco */
-  color: #b44236; /* Texto vermelho */
+  background-color: var(--hemo-color-white);
+  color: #b44236;
   font-weight: bold;
-  width: 100%; /* O botão ocupa 100% da largura do contêiner pai */
-  /* max-height: 48px; Altura fixa */
+  width: 100%;
   height: 100%;
-  border-radius: 8px; /* Bordas arredondadas */
+  border-radius: 8px;
   cursor: pointer;
-  text-align: center; /* Centraliza o texto */
+  text-align: center;
   font-size: 1rem;
   box-sizing: border-box;
-  border: 2px solid #b44236; /* Borda vermelha */
-  transition: all 0.3s ease; /* Transição suave */
+  border: 2px solid #b44236;
+  transition: all 0.3s ease;
 }
 
 .intention-button:hover {
-  background-color: #ffd6d6; /* Fundo mais claro ao passar o mouse */
-  color: #b44236; /* Texto permanece vermelho */
-  border-color: #b44236; /* Borda permanece vermelha */
+  background-color: #ffd6d6;
+  color: #b44236;
+  border-color: #b44236;
 }
 
-.intention-button.selected {
-  background-color: #b44236; /* Fundo vermelho escuro ao ser selecionado */
-  color: #fff; /* Texto branco */
-  border-color: #b44236; /* Mesma cor do fundo */
-  font-weight: bold; /* Texto em negrito */
+.intention-button.selected { 
+  background-color: #b44236;
+  color: #fff;
+  border-color: #b44236;
+  font-weight: bold;
 }
 </style>

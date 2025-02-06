@@ -6,23 +6,21 @@ import { HemocioneUserAuthTokenData } from "./auth";
 export async function createFormResponse(
   user: HemocioneUserAuthTokenData | null
 ) {
-  // Se o usuário estiver logado, preenchemos os campos `user` automaticamente
   const mode = user ? "logged-in" : "anonymous";
 
   const userData = user
     ? { id: user.id, name: user.givenName, email: user.email }
     : {};
 
-  // Criar uma nova instância de FormResponse com os dados do formulário
   const formResponse = new FormResponse({
     mode,
     user: userData,
   });
 
-  // Salvar a resposta no banco de dados
   await formResponse.save();
 
-  // Retornar o objeto salvo como um JSON
+  console.log("✅ Form response saved:", formResponse.toObject());
+
   return formResponse.toObject();
 }
 

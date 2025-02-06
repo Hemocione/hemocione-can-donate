@@ -37,6 +37,7 @@ export const useUserStore = defineStore("user", {
         ? reasons.join(" ")
         : "Nenhum motivo registrado.";
     },
+    loggedIn: (state) => Boolean(state.user),
   },
   actions: {
     setUser(user: CurrentUserData | null) {
@@ -76,39 +77,74 @@ export const useUserStore = defineStore("user", {
 
     async createFormResponse() {
       try {
-        const userStore = useUserStore();
+        const mode = this.user ? "logged-in" : "anonymous";
+    
+        const body = {
+          mode,
+          client: {
+            ip: "123.456.789.123",
+            geolocation: {
+              latitude: -22.9068,
+              longitude: -43.1729,
+            },
+            browser: navigator.userAgent,
+          },
+          user: this.user
+            ? {
+                id: this.user.id,
+                name: this.user.surName,
+                email: this.user.email,
+              }
+            : null,
+          donationIntent: this.donationIntent,
+          status: "ongoing",
+          answers: {},
+        };
+    
+        console.log("🚀 Sending request to API:", body);
+    
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`, // 🔥 Ensure token is sent
           },
-          body: JSON.stringify({
-            mode: userStore.user ? "logged-in" : "anonymous",
-            client: {
-              ip: "123.456.789.123",
-              geolocation: {
-                latitude: -22.9068,
-                longitude: -43.1729,
-              },
-              browser: navigator.userAgent,
-            },
-            user: userStore.user
-              ? {
-                  id: userStore.user.id,
-                  name: userStore.user.surName,
-                  email: userStore.user.email,
-                }
-              : null,
-            donationIntent: userStore.donationIntent,
-            status: "ongoing",
-            answers: {}, // Inicializa o campo answers como objeto vazio
-          }),
+          body: JSON.stringify(body),
         });
-
+    
+        console.log("🛠 API response:", formResponse);
+    
         this.setFormResponse(formResponse);
+        console.log("✅ FormResponse stored with mode:", this.formResponse.mode);
         return formResponse;
       } catch (error) {
-        console.error("Error creating form response:", error);
+        console.error("🚨 Error creating form response:", error);
+      }
+    },
+
+    async logOut() {
+      try {
+        console.log("🚪 Logging out...");
+
+        // await $fetch("/api/v1/logout", {
+        //   method: "POST",
+        //   headers: {
+        //     Authorization: `Bearer ${this.token}`,
+        //   },
+        // }).catch((error) => console.warn("⚠️ Logout request failed:", error));
+
+        // Clear user data
+        this.setUser(null);
+        this.setToken(null);
+        this.setFormResponse(null);
+        this.setDonationIntent(null);
+
+        // Reset session storage to anonymous mode
+        sessionStorage.setItem("anonymousMode", "true");
+
+        console.log("✅ Successfully logged out.");
+      } catch (error) {
+        console.error("🚨 Error during logout:", error);
       }
     },
 

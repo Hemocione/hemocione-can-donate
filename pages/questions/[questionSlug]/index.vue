@@ -161,8 +161,6 @@ async function answerQuestion(answer: string) {
   }, 300);
 }
 
-await nextTick(); // Aguarda o Vue atualizar o DOM
-
 // Finaliza o questionário após a última pergunta
 async function finishQuestionnaire() {
   const nextPath = userStore.isFormFailed() ? "/questions/result?status=failed" : "/questions/result?status=success";

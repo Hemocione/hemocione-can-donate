@@ -1,16 +1,21 @@
-import { assertSecretAuth, useHemocioneUserAuth } from "~/server/services/auth";
+import { useHemocioneUserAuth } from "~/server/services/auth";
 import { createFormResponse } from "~/server/services/formResponse";
 
 export default defineEventHandler(async (event) => {
-  // Verificando se o usuário esta logado
+
   let user: ReturnType<typeof useHemocioneUserAuth> | undefined = undefined;
   try {
     user = useHemocioneUserAuth(event);
+    console.log("✅ User detected in request:", user);
   } catch (e) {
-    // Do nothing
+    console.warn("⚠️ No user detected, defaulting to anonymous.");
   }
 
-  const formResponse = await createFormResponse(user ? user : null);
+  const formResponse = await createFormResponse(user ?? null);
+  console.log("🛠 Created form response:", formResponse);
 
   return formResponse;
 });
+
+
+
