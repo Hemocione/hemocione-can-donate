@@ -307,29 +307,12 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@bugsnag/browser-performance@^2.8.0":
-  version "2.10.0"
-  resolved "https://registry.npmjs.org/@bugsnag/browser-performance/-/browser-performance-2.10.0.tgz"
-  integrity sha512-XfHlU0VKdpePCAs6gt47au4HMsYayIQVxrqK5GIfb6JJcwa5qMDNydFJWAiinGlIj5MZCg1g3mbStDiWjcw9Wg==
-  dependencies:
-    "@bugsnag/core-performance" "^2.10.0"
-    "@bugsnag/cuid" "^3.1.1"
-    "@bugsnag/delivery-fetch-performance" "^2.10.0"
-    "@bugsnag/request-tracker-performance" "^2.10.0"
-
 "@bugsnag/browser@^8.0.0":
   version "8.0.0"
   resolved "https://registry.npmjs.org/@bugsnag/browser/-/browser-8.0.0.tgz"
   integrity sha512-v+Ff9rHuzB7Fb/RBxlqA1Bhn+SulZWIvbI+I0fIsJQ7mdOgnVuAK16HwiSzXSmrfntEB2M4NAyfUAQRcWjAKTA==
   dependencies:
     "@bugsnag/core" "^8.0.0"
-
-"@bugsnag/core-performance@^2.10.0":
-  version "2.10.0"
-  resolved "https://registry.npmjs.org/@bugsnag/core-performance/-/core-performance-2.10.0.tgz"
-  integrity sha512-PLRfWExNh+RURbABfeLOiprO95jjiCPHXHjxWE+ewmebBMY9FAYlLH8gxA94+RAdh3VRNKp7uRJDhFWIas8AoA==
-  dependencies:
-    "@bugsnag/cuid" "^3.1.1"
 
 "@bugsnag/core@^8.0.0":
   version "8.0.0"
@@ -342,17 +325,10 @@
     iserror "0.0.2"
     stack-generator "^2.0.3"
 
-"@bugsnag/cuid@^3.0.0", "@bugsnag/cuid@^3.1.1":
+"@bugsnag/cuid@^3.0.0":
   version "3.1.1"
   resolved "https://registry.npmjs.org/@bugsnag/cuid/-/cuid-3.1.1.tgz"
   integrity sha512-d2z4b0rEo3chI07FNN1Xds8v25CNeekecU6FC/2Fs9MxY2EipkZTThVcV2YinMn8dvRUlViKOyC50evoUxg8tw==
-
-"@bugsnag/delivery-fetch-performance@^2.10.0":
-  version "2.10.0"
-  resolved "https://registry.npmjs.org/@bugsnag/delivery-fetch-performance/-/delivery-fetch-performance-2.10.0.tgz"
-  integrity sha512-qnZpIHeMuKZjZYY4rz6ecU+TlaGdsQDGOXHCkX5lYwpyFRXBwPlyi3BW6uwYFYe0HUtSbylEBcpuhgpJ61sNng==
-  dependencies:
-    "@bugsnag/core-performance" "^2.10.0"
 
 "@bugsnag/js@^8.0.0":
   version "8.0.0"
@@ -379,22 +355,10 @@
   resolved "https://registry.npmjs.org/@bugsnag/plugin-vue/-/plugin-vue-8.0.0.tgz"
   integrity sha512-C9H/cDrGdKen1c3Pyul9B8tf56s9YtDBqJ5l+WT44BAwpHuRwnb1b2e4sZSGCOejSJ1OfGu0eOtI4h6pMu6wIA==
 
-"@bugsnag/request-tracker-performance@^2.10.0":
-  version "2.10.0"
-  resolved "https://registry.npmjs.org/@bugsnag/request-tracker-performance/-/request-tracker-performance-2.10.0.tgz"
-  integrity sha512-8yAcs7e0kyHtzD9ekmhVhQq2Z2sWhDKYDfOFlSy7qQnWHKH/34hOwWPgjUck5Mt1g3/7Pp/dWdhPep1Bz1tJFw==
-  dependencies:
-    "@bugsnag/core-performance" "^2.10.0"
-
 "@bugsnag/safe-json-stringify@^6.0.0":
   version "6.0.0"
   resolved "https://registry.npmjs.org/@bugsnag/safe-json-stringify/-/safe-json-stringify-6.0.0.tgz"
   integrity sha512-htzFO1Zc57S8kgdRK9mLcPVTW1BY2ijfH7Dk2CeZmspTWKdKqSo1iwmqrq2WtRjFlo8aRZYgLX0wFrDXF/9DLA==
-
-"@bugsnag/vue-router-performance@^2.8.0":
-  version "2.8.0"
-  resolved "https://registry.npmjs.org/@bugsnag/vue-router-performance/-/vue-router-performance-2.8.0.tgz"
-  integrity sha512-GDMSLh90NoW0qTJcIV0ZR0bOnoIfutwdpBsaQQtQVKBzedBsdxV7tnypwBIBlvM8w9qITHzQnpG2N1jrkuOQWQ==
 
 "@capsizecss/metrics@^2.1.1":
   version "2.2.0"
@@ -4670,15 +4634,13 @@ nuxi@^3.13.2:
   resolved "https://registry.npmjs.org/nuxi/-/nuxi-3.14.0.tgz"
   integrity sha512-MhG4QR6D95jQxhnwKfdKXulZ8Yqy1nbpwbotbxY5IcabOzpEeTB8hYn2BFkmYdMUB0no81qpv2ldZmVCT9UsnQ==
 
-nuxt-bugsnag@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/nuxt-bugsnag/-/nuxt-bugsnag-8.0.0.tgz"
-  integrity sha512-zzZterGunJ3oTX199cPO9yHsuZbcW4EYdHduUn7+2aVaR4kyecOuVMg6XlIq2FOvlh2xpZWLzXPvii2NtKhCPw==
+nuxt-bugsnag@^8.3.1:
+  version "8.3.1"
+  resolved "https://registry.yarnpkg.com/nuxt-bugsnag/-/nuxt-bugsnag-8.3.1.tgz#d134f0ccc43c5f5f42f94cce24ba7b54d3fee590"
+  integrity sha512-ffraphEHp9/po86WUyo1pNSjRZdSwOsD1C5KQ6OqeXzAedRitaIWCuKOpYmDeHAniyFBP3gBPPgucjREKAcCvg==
   dependencies:
-    "@bugsnag/browser-performance" "^2.8.0"
     "@bugsnag/js" "^8.0.0"
     "@bugsnag/plugin-vue" "^8.0.0"
-    "@bugsnag/vue-router-performance" "^2.8.0"
     "@nuxt/kit" "^3.4.3"
     bugsnag-source-maps-fork "^2.4.0"
     defu "^6.1.2"
