@@ -17,7 +17,7 @@ const questions: Question[] = [
     question: "Você pesa 50kg ou mais?",
     slug: "weight",
     description:
-      "O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador.",
+      "O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador.",
     failingResponses: ["negative", "unknown"],
     failingReason:
       "O peso mínimo para doação é de 50 kg. Isso é essencial para garantir que a quantidade de sangue coletada seja segura para você.",
