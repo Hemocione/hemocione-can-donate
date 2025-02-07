@@ -1,11 +1,7 @@
 <template>
   <div class="intro-page">
     <header class="header">
-      <NuxtImg
-        src="images/logo-horizontal-branca.svg"
-        alt="Logo Hemocione"
-        class="logo"
-      />
+      <NuxtImg src="images/logo-horizontal-branca.svg" alt="Logo Hemocione" class="logo" />
     </header>
 
     <header class="second-header">
@@ -18,13 +14,8 @@
       </button>
     </header>
 
-    <el-drawer
-      v-model="drawer"
-      :with-header="false"
-      :direction="direction"
-      :before-close="handleClose"
-      :size="'fit-content'"
-    >
+    <el-drawer v-model="drawer" :with-header="false" :direction="direction" :before-close="handleClose"
+      :size="'fit-content'">
       <div class="drawer-content">
         <p style="padding: 0 0 16px; margin: 0; text-align: left;">
           Deseja sair do questionário? Suas respostas não serão salvas, mas você
@@ -40,22 +31,16 @@
     </el-drawer>
 
     <main class="content">
-      <div v-if="isQuestionsRoute" class="progress-bar">
-  <div
-    v-for="(question, index) in questions"
-    :key="index"
-    class="progress-dot"
-    :class="{
-      active: index === currentQuestionIndex,
-      completed: index < currentQuestionIndex,
-      finalSuccess: isFormCompleted && !isFailed,
-      finalFailed: isFormCompleted && isFailed
-    }"
-    :style="{ width: `${100 / questions.length}%` }"
-  ></div>
-</div>
-
-      
+      <Transition name="slide-fade-down" mode="out-in" appear>
+        <div v-if="isQuestionsRoute" class="progress-bar">
+          <div v-for="(question, index) in questions" :key="index" class="progress-dot" :class="{
+            active: index === currentQuestionIndex,
+            completed: index < currentQuestionIndex,
+            finalSuccess: isFormCompleted && !isFailed,
+            finalFailed: isFormCompleted && isFailed
+          }" :style="{ width: `${100 / questions.length}%` }"></div>
+        </div>
+      </Transition>
       <div :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }">
         <slot />
       </div>
@@ -75,7 +60,7 @@ const route = useRoute();
 const userStore = useUserStore();
 const drawer = ref(false);
 const direction = ref<DrawerProps["direction"]>("btt");
-const selectedIntent = ref<"today" | "this-week" | "future" | null>(null);
+const selectedIntent = ref<"today" | "soon" | null>(null);
 
 const handleClose = (done: () => void) => {
   drawer.value = false;
@@ -174,7 +159,7 @@ watchEffect(() => {
 }
 
 .question-route {
-  height: calc(100% - 3rem);
+  height: calc(100% - 2rem);
 }
 
 .header {
@@ -209,6 +194,7 @@ watchEffect(() => {
   background-color: var(--hemo-color-white);
   height: calc(100% - var(--navbar-height) - var(--secondary-header-height));
 }
+
 .content p {
   font-size: 1rem;
   margin-bottom: 20px;
@@ -233,12 +219,14 @@ watchEffect(() => {
 }
 
 .close-button {
-  all: unset; /* Remove estilos padrão */
+  all: unset;
+  /* Remove estilos padrão */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: auto; /* Alinha o botão no extremo direito */
+  margin-left: auto;
+  /* Alinha o botão no extremo direito */
 }
 
 .close-button svg {
@@ -277,40 +265,47 @@ watchEffect(() => {
 }
 
 .progress-bar {
-  display: flex; /* Define layout em linha */
-  justify-content: center; /* Centraliza a barra */
-  align-items: center; /* Alinha verticalmente */
-  flex-wrap: nowrap; /* Evita que os itens quebrem de linha */
-  gap: 10px; /* Define espaçamento fixo entre os elementos */
+  display: flex;
+  /* Define layout em linha */
+  justify-content: center;
+  /* Centraliza a barra */
+  align-items: center;
+  /* Alinha verticalmente */
+  flex-wrap: nowrap;
+  /* Evita que os itens quebrem de linha */
+  gap: 10px;
+  /* Define espaçamento fixo entre os elementos */
   padding: 0 1rem;
   height: 2rem;
-  overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
+  overflow-x: auto;
+  /* Adiciona rolagem horizontal se necessário */
 }
 
 .progress-dot {
-  width: calc(100% / v-bind(questionsLength));
+  width: calc(100% / var(--questions-length));
   height: 8px;
   border-radius: 20px;
-  background-color: #e0e0e0; /* Default */
-  transition: background-color 0.3s;
+  background-color: #e0e0e0;
+  transition: background-color 0.4s ease-in-out, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .progress-dot.active {
-  background-color: #b44236; /* Active question */
+  background-color: #b44236;
+  transform: scale(1.1);
+  box-shadow: 0 0 5px rgba(180, 66, 54, 0.6);
 }
 
 .progress-dot.completed {
-  background-color: #ffcccc; /* Default completed questions */
+  background-color: #ffcccc;
 }
 
-/* ✅ Green when fully completed and success */
 .progress-dot.finalSuccess {
-  background-color: #28a745 !important; /* Green */
+  background-color: #28a745 !important;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.8);
 }
 
-/* ❌ Red when fully completed and failure */
 .progress-dot.finalFailed {
-  background-color: #ffc107 !important; /* Yellow */
+  background-color: #ffc107 !important;
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.8);
 }
-
 </style>

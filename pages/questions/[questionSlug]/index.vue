@@ -2,13 +2,9 @@
   <div class="question-container">
     <!-- Pergunta Atual -->
 
-    <div class="question-content">
-      <div v-if="!isLastQuestion" :key="`question-${currentQuestionIndex}`">
-        <NuxtImg
-          :src="questions[currentQuestionIndex]?.image"
-          alt="Foto celebrativa"
-          class="bolo"
-        />
+    <div class="question-content" :key="`question-${currentQuestionIndex}`">
+      <div class="question">
+        <NuxtImg :src="questions[currentQuestionIndex]?.image" alt="Foto celebrativa" class="bolo" />
         <h2 class="question-title">
           {{ questions[currentQuestionIndex]?.question }}
         </h2>
@@ -17,28 +13,17 @@
           {{ questions[currentQuestionIndex]?.description }}
         </p>
       </div>
-
-      <!-- Mensagem de Conclusão -->
-      <div v-else :key="'completion'" class="completion-message">
-        <p>Você completou o questionário. Obrigado!</p>
-      </div>
     </div>
 
     <!-- Botões fixos na parte inferior -->
     <CoolFooter height="80px" hideToggle desktopBorderRadius="0">
       <div class="answer-button-wrapper">
-        <el-button
-          class="answer-button"
-          :class="{ selected: selectedAnswer === 'positive' }"
-          @click="answerQuestion('positive')"
-        >
+        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'positive' }"
+          @click="answerQuestion('positive')">
           Sim
         </el-button>
-        <el-button
-          class="answer-button"
-          :class="{ selected: selectedAnswer === 'negative' }"
-          @click="answerQuestion('negative')"
-        >
+        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'negative' }"
+          @click="answerQuestion('negative')">
           Não
         </el-button>
       </div>
@@ -94,13 +79,13 @@ const isLastQuestion = computed(
   () => currentQuestionIndex.value >= questions.value.length
 );
 
-let answerlock = false; 
+let answerlock = false;
 
 // Função chamada ao responder uma pergunta
 async function answerQuestion(answer: string) {
 
   if (answerlock) return;
-  answerlock = true;  
+  answerlock = true;
 
   const currentIndex = currentQuestionIndex.value;
 
@@ -157,7 +142,7 @@ async function answerQuestion(answer: string) {
     } else {
       await finishQuestionnaire();
     }
-    answerlock = false; 
+    answerlock = false;
   }, 300);
 }
 
@@ -195,18 +180,15 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  flex-grow: 1;
   padding: 1rem;
   height: calc(100% - 80px);
+  width: 100%;
+  overflow-y: auto;
 }
 
 .question {
-  /* flex-grow: 1; */
-  /* padding: 20px; */
-  /* overflow-y: auto; */
-  color: var(--hemo-color-primary-less-dark);
-  left: 50%;
+  height: 100%;
+  width: 100%;
 }
 
 .question-title {
@@ -226,28 +208,38 @@ onMounted(() => {
 
 
 .answer-button {
-  background-color: var(--hemo-color-white); /* Fundo padrão branco */
-  color: #b44236; /* Texto vermelho */
+  background-color: var(--hemo-color-white);
+  /* Fundo padrão branco */
+  color: #b44236;
+  /* Texto vermelho */
   font-weight: bold;
   border-radius: 8px;
   box-sizing: border-box;
   cursor: pointer;
   width: 100%;
   height: 100%;
-  border: 2px solid #b44236; /* Borda vermelha */
-  transition: all 0.3s ease; /* Transição suave */
+  border: 2px solid #b44236;
+  /* Borda vermelha */
+  transition: all 0.3s ease;
+  /* Transição suave */
 }
 
 .answer-button:hover {
-  background-color: #ffd6d6; /* Fundo mais claro ao passar o mouse */
-  color: #b44236; /* Texto permanece vermelho */
-  border-color: #b44236; /* Borda permanece vermelha */
+  background-color: #ffd6d6;
+  /* Fundo mais claro ao passar o mouse */
+  color: #b44236;
+  /* Texto permanece vermelho */
+  border-color: #b44236;
+  /* Borda permanece vermelha */
 }
 
 .answer-button.selected {
-  background-color: #b44236; /* Fundo vermelho escuro ao ser selecionado */
-  color: #fff; /* Texto branco */
-  border-color: #b44236; /* Mesma cor do fundo */
+  background-color: #b44236;
+  /* Fundo vermelho escuro ao ser selecionado */
+  color: #fff;
+  /* Texto branco */
+  border-color: #b44236;
+  /* Mesma cor do fundo */
 }
 
 .why {
@@ -267,7 +259,7 @@ onMounted(() => {
 
 .question-description {
   text-align: left;
-  /* margin-left: 20px; */
+  padding-bottom: 16px;
 }
 
 .learn-more {
@@ -283,14 +275,20 @@ onMounted(() => {
 }
 
 .progress-bar {
-  display: flex; /* Define layout em linha */
-  justify-content: center; /* Centraliza a barra */
-  align-items: center; /* Alinha verticalmente */
-  flex-wrap: nowrap; /* Evita que os itens quebrem de linha */
-  gap: 10px; /* Define espaçamento fixo entre os elementos */
+  display: flex;
+  /* Define layout em linha */
+  justify-content: center;
+  /* Centraliza a barra */
+  align-items: center;
+  /* Alinha verticalmente */
+  flex-wrap: nowrap;
+  /* Evita que os itens quebrem de linha */
+  gap: 10px;
+  /* Define espaçamento fixo entre os elementos */
   margin: 20px 0;
   padding: 0 5px;
-  overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
+  overflow-x: auto;
+  /* Adiciona rolagem horizontal se necessário */
 }
 
 /* .progress-dot {
@@ -304,20 +302,27 @@ onMounted(() => {
 /* } */
 
 .progress-dot {
-  flex: 1; /* Cada dot ocupa o mesmo espaço proporcional */
-  max-width: 40px; /* Define um limite máximo para a largura */
-  height: 8px; /* Altura menor para deixar achatado */
-  border-radius: 20px; /* Border-radius grande para o formato arredondado */
-  background-color: #e0e0e0; /* Cor padrão (não ativa) */
+  flex: 1;
+  /* Cada dot ocupa o mesmo espaço proporcional */
+  max-width: 40px;
+  /* Define um limite máximo para a largura */
+  height: 8px;
+  /* Altura menor para deixar achatado */
+  border-radius: 20px;
+  /* Border-radius grande para o formato arredondado */
+  background-color: #e0e0e0;
+  /* Cor padrão (não ativa) */
   transition: background-color 0.3s;
 }
 
 .progress-dot.active {
-  background-color: #b44236; /* Cor da pergunta atual */
+  background-color: #b44236;
+  /* Cor da pergunta atual */
 }
 
 .progress-dot.completed {
-  background-color: #ffcccc; /* Cor das perguntas já respondidas */
+  background-color: #ffcccc;
+  /* Cor das perguntas já respondidas */
 }
 
 .page-enter-active,
@@ -339,6 +344,7 @@ onMounted(() => {
 .fade-leave-active {
   transition: opacity 0.5s;
 }
+
 .fade-enter,
 .fade-leave-to {
   opacity: 0;

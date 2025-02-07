@@ -5,7 +5,7 @@ import { FormResponse } from "~/server/models/formResponse";
 import { readBody, createError } from "h3";
 
 const intentionSchema = z.object({
-  donationIntent: z.enum(["today", "this-week", "future"]),
+  donationIntent: z.enum(["today", "soon"]),
 });
 
 export default defineEventHandler(async (event) => {

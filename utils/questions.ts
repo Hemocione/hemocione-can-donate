@@ -14,42 +14,46 @@ interface Question {
 
 const questions: Question[] = [
   {
-    question: "Você tem 50kg ou mais?",
+    question: "Você pesa 50kg ou mais?",
     slug: "weight",
     description:
-      "O peso mínimo para doar sangue é 50kg para garantir sua segurança durante o procedimento.",
+      "O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador. O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador.",
     failingResponses: ["negative", "unknown"],
-    failingReason: "Peso insuficiente.",
+    failingReason:
+      "O peso mínimo para doação é de 50 kg. Isso é essencial para garantir que a quantidade de sangue coletada seja segura para você.",
     image: "images/weight.png",
   },
   {
-    question: "Você tem 16 anos ou mais?",
+    question: "Você tem entre 16 e 69 anos?",
     slug: "age",
     description:
-      "A idade mínima para doação de sangue é 16 anos, com consentimento dos responsáveis.",
+      "Para sua segurança, há idades mínima e máxima para doação de sangue. Menores de 18 anos devem apresentar consentimento formal do responsável legal.",
     anonymousOnly: true,
     failingResponses: ["negative", "unknown"],
-    failingReason: "Idade insuficiente.",
+    failingReason:
+      "A idade mínima para doação é de 16 anos e a máxima é de 69 anos. Isso assegura que você esteja em condições adequadas para o procedimento.",
     image: "images/age.png",
   },
   {
     question: "Você se alimentou bem hoje?",
     slug: "ateToday",
-    description:
-      "Estar bem alimentado é essencial para garantir sua segurança durante a doação.",
+    description: "Alimentação adequada é essencial para uma doação segura.",
     donationIntents: ["today"],
     failingResponses: ["negative", "unknown"],
-    failingReason: "É necessário estar bem alimentado para doar sangue.",
+    failingReason:
+      "É fundamental estar bem alimentado para evitar reações adversas durante ou após a doação.",
     image: "images/ateToday.png",
   },
   {
-    question: "Você teve uma boa noite de sono?",
+    question:
+      "Você dormiu bem nas últimas 24 horas, com pelo menos 6 horas de sono contínuo?",
     slug: "sleptOk",
     description:
-      "Dormir bem ajuda a manter seus níveis de energia e segurança para a doação.",
+      "Um descanso adequado é fundamental para garantir sua disposição e segurança durante a doação de sangue.",
     donationIntents: ["today"],
     failingResponses: ["negative", "unknown"],
-    failingReason: "Uma boa noite de sono é essencial para doar sangue.",
+    failingReason:
+      "O descanso insuficiente pode afetar sua segurança e bem-estar durante a doação.",
     image: "images/sleptOk.png",
   },
   {
@@ -64,24 +68,25 @@ const questions: Question[] = [
   },
   {
     question:
-      "Você participou de atividades sexuais de risco nos últimos 3 meses?",
+      "Você participou de alguma atividade sexual de risco nos últimos 3 meses?",
     slug: "sexRisk",
     description:
-      "Atividades sexuais de risco podem representar um perigo à segurança do receptor do sangue.",
-    donationIntents: ["today", "this-week"],
+      "Essa pergunta é crucial para garantir a segurança de todos. Atividades sexuais de risco podem aumentar o risco de transmissão de doenças infecciosas.",
+    donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
-    failingReason: "Atividades sexuais de risco impedem a doação de sangue.",
+    failingReason:
+      "Atividades sexuais de risco podem comprometer a segurança da doação e a saúde dos receptores.",
     image: "images/sexRisk.png",
   },
   {
     question: "Você fez tatuagem ou piercing nos últimos 6 meses?",
     slug: "tattooOrPiercing",
     description:
-      "Tatuagens ou piercings recentes podem apresentar riscos à saúde durante o período de cicatrização.",
-    donationIntents: ["today", "this-week"],
+      "Tatuagens e piercings podem aumentar o risco de infecções. Precisamos garantir que você esteja saudável para doar.",
+    donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Tatuagens ou piercings recentes impedem a doação de sangue.",
+      "Tatuagens ou piercings realizados nos últimos 6 meses podem representar um risco maior de infecção, o que impede a doação.",
     image: "images/tattooOrPiercing.png",
   },
   {
@@ -90,53 +95,35 @@ const questions: Question[] = [
     slug: "traveledAbroad",
     description:
       "Viagens recentes para fora do Brasil ou para a Amazônia Legal podem apresentar riscos de exposição a doenças endêmicas, como malária, febre amarela e outras, que podem comprometer a segurança da doação.",
-    donationIntents: ["today", "this-week"],
+    donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
       "Viagens recentes para áreas de risco impedem a doação de sangue temporariamente.",
     image: "images/traveledAbroad.png",
   },
   {
-    question: "Você possui piercing na boca ou genital?",
+    question:
+      "Você possui algum piercing na boca, nariz ou região genital, ou retirou um há menos de 12 meses?",
     slug: "mouthPiercing",
     description:
-      "Piercings nessas áreas podem apresentar riscos de infecção para o doador.",
-    donationIntents: ["today", "this-week"],
+      "Piercings em áreas sensíveis podem aumentar o risco de infecções. É importante garantir que você esteja saudável para a doação.",
+    donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
-    failingReason: "Piercings na boca ou genital impedem a doação de sangue.",
+    failingReason:
+      "Piercings em áreas sensíveis podem representar um maior risco de infecção, o que impede a doação.",
     image: "images/mouthPiercing.svg",
   },
   {
-    question: "Você fez algum tratamento médico nos últimos 6 meses?",
+    question:
+      "Você fez algum tratamento médico, dentário, endoscópico ou operação nos últimos 6 meses?",
     slug: "medicalTreatmentOrSurgery",
     description:
-      "Tratamentos médicos recentes podem afetar sua saúde e a qualidade do sangue doado.",
-    donationIntents: ["today", "this-week"],
-    failingResponses: ["positive", "unknown"],
-    failingReason: "Tratamentos médicos recentes impedem a doação de sangue.",
-    image: "images/medicalTreatmentOrSurgery.png",
-  },
-  {
-    question:
-      "Você tem alguma viagem agendada para áreas de risco (fora do Brasil ou Amazônia Legal)?",
-    slug: "futureAvailability",
-    description:
-      "Viagens para locais com maior risco à contração de doenças podem impedir a sua doação.",
-    donationIntents: ["future"],
+      "Tratamentos médicos ou cirurgias recentes podem afetar sua capacidade de doar. Precisamos garantir que você esteja completamente recuperado.",
+    donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Viagens para locais de risco impedem a doação, confira a possibilidade de doar antes.",
-    image: "images/traveledAbroad.png",
-  },
-  {
-    question: "Você tem algum tratamento médico planejado?",
-    slug: "plannedTreatments",
-    description:
-      "Tratamentos médicos planejados podem interferir na sua capacidade de doar sangue.",
-    donationIntents: ["future"],
-    failingResponses: ["positive", "unknown"],
-    failingReason: "Tratamentos médicos planejados podem interferir na doação.",
-    image: "images/plannedTreatments.png",
+      "Tratamentos ou cirurgias recentes podem comprometer sua saúde e a segurança da doação.",
+    image: "images/medicalTreatmentOrSurgery.png",
   },
 ];
 

@@ -16,7 +16,7 @@ const getSiteUrl = () => {
     return `https://${process.env.VERCEL_URL}`;
   }
 
-  return "https://possodoar.hemocione.com.br"
+  return "https://possodoar.hemocione.com.br";
 };
 
 const getCurrentEnv = () => {
@@ -39,7 +39,9 @@ export default defineNuxtConfig({
 
   // Variáveis de ambiente (runtime)
   runtimeConfig: {
-    mongodbUri: process.env.MONGO_URI || "mongodb://localhost:27017/canDonate?authSource=admin&directConnection=true",
+    mongodbUri:
+      process.env.MONGO_URI ||
+      "mongodb://localhost:27017/canDonate?authSource=admin&directConnection=true",
     dbName: process.env.DB_NAME || "canDonate",
     public: {
       bugsnagApiKey: process.env.BUGSNAG_API_KEY || "",
@@ -49,9 +51,10 @@ export default defineNuxtConfig({
         "https://hemocione-id-dev.cpt.hemocione.com.br",
       hemocioneIdUrl:
         process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
-      siteUrl 
+      siteUrl,
     },
-    hemocioneIdJwtSecretKey: process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "secret",
+    hemocioneIdJwtSecretKey:
+      process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "secret",
   },
 
   // Configurações de rotas

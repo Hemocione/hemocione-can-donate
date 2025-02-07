@@ -33,17 +33,10 @@
         </el-button>
         <el-button
           class="intention-button"
-          :class="{ selected: selectedIntent === 'this-week' }"
-          @click="selectIntent('this-week')"
+          :class="{ selected: selectedIntent === 'soon' }"
+          @click="selectIntent('soon')"
         >
-          Esta Semana
-        </el-button>
-        <el-button
-          class="intention-button"
-          :class="{ selected: selectedIntent === 'future' }"
-          @click="selectIntent('future')"
-        >
-          Futuro
+          Em breve
         </el-button>
       </div>
     </CoolFooter>
@@ -64,7 +57,7 @@ const direction = ref<DrawerProps["direction"]>("btt");
 const showFirstQuestion = ref(false);
 const router = useRouter();
 const userStore = useUserStore();
-const selectedIntent = ref<"today" | "this-week" | "future" | null>(null);
+const selectedIntent = ref<"today" | "soon" | null>(null);
 const isAnonymousMode = ref(false); 
 
 const handleClose = (done: () => void) => {
@@ -94,7 +87,7 @@ onMounted(async () => {
   const savedIntent = sessionStorage.getItem("selectedIntent");
 
   if (savedIntent) {
-    selectedIntent.value = savedIntent as "today" | "this-week" | "future";
+    selectedIntent.value = savedIntent as "today" | "soon";
   }
 
   if (!alreadyStarted) {
@@ -126,7 +119,7 @@ async function startQuestionnaire() {
 }
 
 // Handles selecting a donation intent
-async function selectIntent(intent: "today" | "this-week" | "future") {
+async function selectIntent(intent: "today" | "soon") {
   console.log(`Selecionando a intenção: ${intent}`);
 
   selectedIntent.value = intent;

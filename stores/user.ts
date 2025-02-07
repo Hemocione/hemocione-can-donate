@@ -7,7 +7,7 @@ export const useUserStore = defineStore("user", {
     user: null as CurrentUserData | null,
     token: null as string | null,
     formResponse: null as any, // To be replaced with a specific type if available
-    donationIntent: "null" as "today" | "this-week" | "future" | null,
+    donationIntent: null as "today" | "soon" | null,
   }),
   getters: {
     formQuestions(state) {
@@ -50,7 +50,7 @@ export const useUserStore = defineStore("user", {
       this.formResponse = formResponse;
       console.log("Form response set in the store:", this.formResponse);
     },
-    setDonationIntent(intent: "today" | "this-week" | "future" | null) {
+    setDonationIntent(intent: "today" | "soon" | null) {
       this.donationIntent = intent;
     },
     isFormFailed() {
@@ -148,7 +148,7 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async updateDonationIntent(intent: "today" | "this-week" | "future") {
+    async updateDonationIntent(intent: "today" | "soon") {
       await this.ensureFormResponse(); // Garante que formResponse está definido
       try {
         const updatedIntentResponse = await $fetch(
