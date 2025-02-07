@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
+const isBuilding = () => process.env.IS_BUILDING === 'TRUE'
+
 export default defineNitroPlugin(async (_nitro) => {
-  if (mongoose.connection.readyState !== 1) {
+  if (mongoose.connection.readyState !== 1 && !isBuilding()) {
     const config = useRuntimeConfig();
     try {
       await mongoose.connect(config.mongodbUri, {
@@ -10,7 +12,7 @@ export default defineNitroPlugin(async (_nitro) => {
       });
     } catch (error: any) {
       console.error("Failed to connect to MongoDB:", error);
-      // useBugsnag().notify(error); // Notify Bugsnag about the error when connecting to MongoDB
+      useBugsnag().notify(error); // Notify Bugsnag about the error when connecting to MongoDB
       throw error;
     }
   }
