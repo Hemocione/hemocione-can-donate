@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { redirectToID } from "~/middleware/auth";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
 import questions, { getQuestionsFromContext } from "~/utils/questions";
 
@@ -73,12 +74,11 @@ export const useUserStore = defineStore("user", {
         }
       }
     },
-    
 
     async createFormResponse() {
       try {
         const mode = this.user ? "logged-in" : "anonymous";
-    
+
         const body = {
           mode,
           client: {
@@ -100,22 +100,25 @@ export const useUserStore = defineStore("user", {
           status: "ongoing",
           answers: {},
         };
-    
+
         console.log("🚀 Sending request to API:", body);
-    
+
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${this.token}`, // 🔥 Ensure token is sent
+            Authorization: `Bearer ${this.token}`, // 🔥 Ensure token is sent
           },
           body: JSON.stringify(body),
         });
-    
+
         console.log("🛠 API response:", formResponse);
-    
+
         this.setFormResponse(formResponse);
-        console.log("✅ FormResponse stored with mode:", this.formResponse.mode);
+        console.log(
+          "✅ FormResponse stored with mode:",
+          this.formResponse.mode
+        );
         return formResponse;
       } catch (error) {
         console.error("🚨 Error creating form response:", error);
@@ -141,6 +144,8 @@ export const useUserStore = defineStore("user", {
 
         // Reset session storage to anonymous mode
         sessionStorage.setItem("anonymousMode", "true");
+        const config = useRuntimeConfig();
+        redirectToID(config.public.siteUrl);
 
         console.log("✅ Successfully logged out.");
       } catch (error) {

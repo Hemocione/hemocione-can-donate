@@ -1,16 +1,11 @@
 <template>
   <div class="intention-page">
-    <el-drawer
-      v-model="drawer"
-      :with-header="false"
-      :direction="direction"
-      :before-close="handleClose"
-      :size="'200px'"
-    >
+    <el-drawer v-model="drawer" :with-header="false" :direction="direction" :before-close="handleClose" :size="'200px'">
       <div class="drawer-content">
         <p class="drawer-text">
           Bem vindo ao questionário! <br /><br />
-          Este questionário serve como uma orientação inicial com perguntas frequentes sobre a doação, mas não substitui a triagem realizada por profissionais de saúde no dia e no local da doação.
+          Este questionário serve como uma orientação inicial com perguntas frequentes sobre a doação, mas não substitui
+          a triagem realizada por profissionais de saúde no dia e no local da doação.
         </p>
         <el-button class="start-button" @click="startQuestionnaire">
           Começar
@@ -22,21 +17,15 @@
       <h2>Quando você pretende doar?</h2>
     </div>
 
-    <CoolFooter height="200px" hideToggle desktopBorderRadius="0">
+    <CoolFooter height="120px" hideToggle desktopBorderRadius="0">
       <div class="intention-buttons">
-        <el-button
-          class="intention-button"
-          :class="{ selected: selectedIntent === 'today' }"
-          @click="selectIntent('today')"
-        >
-          Hoje
+        <el-button class="intention-button" :class="{ selected: selectedIntent === 'today' }"
+          @click="selectIntent('today')">
+          ⏰ Hoje
         </el-button>
-        <el-button
-          class="intention-button"
-          :class="{ selected: selectedIntent === 'soon' }"
-          @click="selectIntent('soon')"
-        >
-          Em breve
+        <el-button class="intention-button" :class="{ selected: selectedIntent === 'soon' }"
+          @click="selectIntent('soon')">
+          ⏳ Em breve
         </el-button>
       </div>
     </CoolFooter>
@@ -58,7 +47,7 @@ const showFirstQuestion = ref(false);
 const router = useRouter();
 const userStore = useUserStore();
 const selectedIntent = ref<"today" | "soon" | null>(null);
-const isAnonymousMode = ref(false); 
+const isAnonymousMode = ref(false);
 
 const handleClose = (done: () => void) => {
   drawer.value = false;
@@ -192,7 +181,7 @@ async function selectIntent(intent: "today" | "soon") {
 }
 
 .first-question {
-  height: calc(100% - 200px);
+  height: calc(100% - 120px);
   padding: 20px;
   color: var(--hemo-color-primary-less-dark);
 }
@@ -204,7 +193,6 @@ async function selectIntent(intent: "today" | "soon") {
 
 .intention-buttons {
   display: flex;
-  flex-direction: column;
   gap: 8px;
   width: 100%;
   height: 100%;
@@ -219,7 +207,7 @@ async function selectIntent(intent: "today" | "soon") {
   border-radius: 8px;
   cursor: pointer;
   text-align: center;
-  font-size: 1rem;
+  font-size: 1.3rem;
   box-sizing: border-box;
   border: 2px solid #b44236;
   transition: all 0.3s ease;
@@ -231,7 +219,7 @@ async function selectIntent(intent: "today" | "soon") {
   border-color: #b44236;
 }
 
-.intention-button.selected { 
+.intention-button.selected {
   background-color: #b44236;
   color: #fff;
   border-color: #b44236;

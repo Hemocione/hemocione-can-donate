@@ -17,15 +17,15 @@
     </div>
 
     <!-- Botões fixos na parte inferior -->
-    <CoolFooter height="80px" hideToggle desktopBorderRadius="0">
+    <CoolFooter height="120px" hideToggle desktopBorderRadius="0">
       <div class="answer-button-wrapper">
         <el-button class="answer-button" :class="{ selected: selectedAnswer === 'positive' }"
           @click="answerQuestion('positive')">
-          Sim
+          👍 Sim
         </el-button>
         <el-button class="answer-button" :class="{ selected: selectedAnswer === 'negative' }"
           @click="answerQuestion('negative')">
-          Não
+          👎 Não
         </el-button>
       </div>
     </CoolFooter>
@@ -182,7 +182,7 @@ onMounted(() => {
   flex-direction: column;
   justify-content: center;
   padding: 1rem;
-  height: calc(100% - 80px);
+  height: calc(100% - 120px);
   width: 100%;
   overflow-y: auto;
 }
@@ -214,6 +214,7 @@ onMounted(() => {
   color: #b44236;
   /* Texto vermelho */
   font-weight: bold;
+  font-size: 1.3rem;
   border-radius: 8px;
   box-sizing: border-box;
   cursor: pointer;
