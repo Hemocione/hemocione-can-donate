@@ -4,7 +4,8 @@
 
     <div class="question-content" :key="`question-${currentQuestionIndex}`">
       <div class="question">
-        <NuxtImg :src="questions[currentQuestionIndex]?.image" alt="Foto celebrativa" class="bolo" />
+        <NuxtImg :src="questions[currentQuestionIndex]?.image" alt="Foto celebrativa" class="bolo" width="208"
+          height="208" />
         <h2 class="question-title">
           {{ questions[currentQuestionIndex]?.question }}
         </h2>
@@ -270,8 +271,10 @@ onMounted(() => {
 
 .bolo {
   width: 208px;
+  height: 208px;
   margin-bottom: 5px;
   margin-top: 5px;
+  object-fit: contain;
 }
 
 .progress-bar {
