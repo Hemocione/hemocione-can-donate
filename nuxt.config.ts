@@ -1,8 +1,4 @@
 const getSiteUrl = () => {
-  if (process.env.VERCEL_ENV === "preview") {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-
   if (process.env.VERCEL_ENV === undefined) {
     const nuxtDevConfig = process.env.__NUXT_DEV__;
     let networkAddress;
@@ -15,8 +11,14 @@ const getSiteUrl = () => {
 
     return networkAddress || "http://localhost:3000";
   }
-  return "https://possodoar.hemocione.com.br";
+
+  if (process.env.VERCEL_ENV !== "production") {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return "https://possodoar.hemocione.com.br"
 };
+
 const getCurrentEnv = () => {
   if (process.env.VERCEL_ENV === "preview") {
     return "dev";
@@ -88,17 +90,17 @@ export default defineNuxtConfig({
     },
   },
 
-  // bugsnag: {
-  //   publishRelease: true,
-  //   disableLog: false, // might activate later
-  //   baseUrl: siteUrl,
-  //   config: {
-  //     apiKey: process.env.BUGSNAG_API_KEY ?? "",
-  //     enabledReleaseStages: ["prod", "dev"],
-  //     releaseStage: currentEnv,
-  //     appVersion: `${currentEnv}-${process.env.VERCEL_GIT_COMMIT_SHA}`,
-  //   },
-  // },
+  bugsnag: {
+    publishRelease: true,
+    disableLog: false, // might activate later
+    baseUrl: siteUrl,
+    config: {
+      apiKey: process.env.BUGSNAG_API_KEY ?? "",
+      enabledReleaseStages: ["prod", "dev"],
+      releaseStage: currentEnv,
+      appVersion: `${currentEnv}-${process.env.VERCEL_GIT_COMMIT_SHA}`,
+    },
+  },
 
   compatibilityDate: "2024-10-17",
 });
