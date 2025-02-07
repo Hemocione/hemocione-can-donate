@@ -9,13 +9,13 @@ export default defineNitroPlugin(async (nitro) => {
         authSource: "admin",
       });
 
-      nitro.hooks.hook('close', async () => {
+      nitro.hooks.hook('close', () => {
         console.log('Disconnecting from mongodb...')
-        await mongoose.connection?.close()
+        mongoose.connection?.close().then(() => console.log('Successfully disconnected from mongodb'))
       })
     } catch (error: any) {
       console.error("Failed to connect to MongoDB:", error);
-      useBugsnag().notify(error); // Notify Bugsnag about the error when connecting to MongoDB
+      useBugsnag().notify(error);
       throw error;
     }
   }
