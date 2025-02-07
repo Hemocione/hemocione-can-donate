@@ -61,7 +61,7 @@ export default defineNuxtConfig({
 
   // Módulos utilizados no projeto
   modules: [
-    "nuxt-bugsnag",
+    // "nuxt-bugsnag",
     "@nuxt/fonts",
     "@pinia/nuxt",
     "@nuxt/image",
@@ -88,17 +88,17 @@ export default defineNuxtConfig({
     },
   },
 
-  bugsnag: {
-    publishRelease: true,
-    disableLog: false, // might activate later
-    baseUrl: siteUrl,
-    config: {
-      apiKey: process.env.BUGSNAG_API_KEY ?? "",
-      enabledReleaseStages: ["prod", "dev"],
-      releaseStage: currentEnv,
-      appVersion: `${currentEnv}-${process.env.VERCEL_GIT_COMMIT_SHA}`,
-    },
-  },
+  // bugsnag: {
+  //   publishRelease: true,
+  //   disableLog: false, // might activate later
+  //   baseUrl: siteUrl,
+  //   config: {
+  //     apiKey: process.env.BUGSNAG_API_KEY ?? "",
+  //     enabledReleaseStages: ["prod", "dev"],
+  //     releaseStage: currentEnv,
+  //     appVersion: `${currentEnv}-${process.env.VERCEL_GIT_COMMIT_SHA}`,
+  //   },
+  // },
 
   compatibilityDate: "2024-10-17",
 });
