@@ -144,7 +144,7 @@ async function answerQuestion(answer: string) {
       await finishQuestionnaire();
     }
     answerlock = false;
-  }, 300);
+  }, 100);
 }
 
 // Finaliza o questionário após a última pergunta

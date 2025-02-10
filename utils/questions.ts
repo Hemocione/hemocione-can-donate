@@ -1,14 +1,14 @@
-import type { DonationIntent } from "~/server/models/formResponse";
+import type { AnswerValue, DonationIntent } from "~/server/models/formResponse";
 
 interface Question {
-  question: String;
-  slug: String;
-  description: String;
+  question: string;
+  slug: string;
+  description: string;
   anonymousOnly?: Boolean;
   donationIntents?: DonationIntent[];
-  failingResponses: String[]; // Para comparar e ver se alguma pergunta falha
+  failingResponses: string[]; // Para comparar e ver se alguma pergunta falha
   //Se alguma falhar, salva o forms como falha, se não, não
-  failingReason: String;
+  failingReason: string;
   image: string;
 }
 
@@ -136,6 +136,33 @@ export function getQuestionsFromContext(
       (!question.anonymousOnly || isAnonymous) &&
       (!question.donationIntents ||
         (donationIntent && question.donationIntents.includes(donationIntent)))
+  );
+}
+
+interface Answer {
+  value?: AnswerValue | null;
+}
+
+export function getFailingQuestionsForContext(
+  answers: Record<string, Answer>,
+  donationIntent: DonationIntent | null,
+  isAnonymous: boolean
+) {
+  const questions = getQuestionsFromContext(donationIntent, isAnonymous);
+  return (
+    (Object.keys(answers)
+      .map((answerSlug) => {
+        const question = questions.find((q) => q.slug === answerSlug);
+        const answer = answers[answerSlug];
+        if (
+          question &&
+          answer.value &&
+          question.failingResponses.includes(answer.value)
+        ) {
+          return question;
+        }
+      })
+      .filter(Boolean) as Question[]) || []
   );
 }
 

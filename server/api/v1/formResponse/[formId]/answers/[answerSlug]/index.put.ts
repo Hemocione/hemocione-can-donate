@@ -38,16 +38,14 @@ export default defineEventHandler(async (event) => {
 
   // Inicializa `answers` se estiver undefined e atualiza a resposta
   if (!formResponse.answers) {
-    formResponse.answers = {}; // Inicializa como um objeto vazio
+    formResponse.answers = new Map(); // Inicializa como um objeto vazio
   }
 
-  formResponse.answers[answerSlug as keyof typeof formResponse.answers] =
-    parsed.data;
+  formResponse.answers.set(answerSlug, parsed.data);
   await formResponse.save();
 
   return {
     success: true,
-    updatedAnswer:
-      formResponse.answers[answerSlug as keyof typeof formResponse.answers],
+    updatedAnswer: formResponse.answers.get(answerSlug),
   };
 });

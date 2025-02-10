@@ -1,19 +1,24 @@
-import { InferSchemaType, Schema, Types, model } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
+import {
+  getFailingQuestionsForContext,
+  getFailingReasonsForContext,
+  getQuestionsFromContext,
+} from "~/utils/questions";
 
 export const formModes = ["anonymous", "logged-in"] as const;
 
 export const donationIntents = ["today", "soon", null] as const;
 
-export type DonationIntent = typeof donationIntents[number];
+export type DonationIntent = (typeof donationIntents)[number];
 
 export const formStatuses = [
   "able-to-donate",
   "unable-to-donate",
-  "unknown",
   "ongoing",
 ] as const;
 
 export const answerValues = ["positive", "negative", "unknown"] as const;
+export type AnswerValue = (typeof answerValues)[number];
 
 const AnswerSchema = new Schema({
   value: {
@@ -55,19 +60,8 @@ const FormResponseSchema = new Schema(
       enum: donationIntents,
     },
     answers: {
-      weight: AnswerSchema,
-      age: AnswerSchema,
-      ateToday: AnswerSchema,
-      sleptOk: AnswerSchema,
-      drankYesterday: AnswerSchema,
-      medicine: AnswerSchema,
-      sexRisk: AnswerSchema,
-      tattooOrPiercing: AnswerSchema,
-      mouthPiercing: AnswerSchema,
-      medicalTreatmentOrSurgery: AnswerSchema,
-      seriousDisease: AnswerSchema,
-      traveled: AnswerSchema,
-      vaccine: AnswerSchema,
+      type: Map,
+      of: AnswerSchema,
     },
     startedAt: {
       type: Date,
@@ -82,11 +76,61 @@ const FormResponseSchema = new Schema(
       enum: formStatuses,
       default: "ongoing",
     },
+    failedQuestions: [
+      {
+        type: String,
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
+FormResponseSchema.pre("save", function () {
+  // Obtém as perguntas que devem ser respondidas no contexto atual
+  const questionsToBeAnsweredSlugs = getQuestionsFromContext(
+    this.donationIntent ?? null,
+    this.mode === "anonymous"
+  ).map((q) => q.slug);
+
+  // Obtém as slugs das perguntas que já foram respondidas
+  const answeredQuestionsSlugs = this.answers
+    ? Array.from(this.answers.keys())
+    : [];
+
+  // Verifica se todas as perguntas necessárias foram respondidas
+  const allQuestionsAnswered = questionsToBeAnsweredSlugs.every((slug) =>
+    answeredQuestionsSlugs.includes(slug)
+  );
+
+  if (allQuestionsAnswered) {
+    // Marca o formulário como finalizado
+    this.finishedAt = new Date();
+
+    // Remove as respostas que não são relevantes para o contexto atual
+    const relevantAnswers = new Map();
+    questionsToBeAnsweredSlugs.forEach((slug) => {
+      if (this.answers?.has(slug)) {
+        relevantAnswers.set(slug, this.answers.get(slug));
+      }
+    });
+
+    // Atualiza o mapa de respostas com apenas as respostas relevantes
+    this.answers = relevantAnswers;
+
+    const answersObj = Object.fromEntries(this.answers);
+    const failingQuestions = getFailingQuestionsForContext(
+      answersObj,
+      this.donationIntent ?? null,
+      this.mode === "anonymous"
+    );
+    this.status = failingQuestions.length
+      ? "unable-to-donate"
+      : "able-to-donate";
+    this.failedQuestions = failingQuestions.map((q) => q.slug);
+  }
+});
 
 export type FormResponseSchema = InferSchemaType<typeof FormResponseSchema>;
 

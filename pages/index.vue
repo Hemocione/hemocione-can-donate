@@ -1,11 +1,7 @@
 <template>
   <div class="eligibility-page">
     <header class="header">
-      <NuxtImg
-        src="images/logo-horizontal-branca.svg"
-        alt="Logo Hemocione"
-        class="logo"
-      />
+      <NuxtImg src="images/logo-horizontal-branca.svg" alt="Logo Hemocione" class="logo" />
     </header>
 
     <main class="content">
@@ -15,11 +11,7 @@
         elegível para doar 😀
       </p>
 
-      <NuxtImg
-        src="images/donation-illustration.png"
-        alt="Ilustração de Doação"
-        class="illustration"
-      />
+      <NuxtImg src="images/donation-illustration.png" alt="Ilustração de Doação" class="illustration" />
     </main>
 
     <div class="button-container">
@@ -56,6 +48,11 @@ function goToIntention() {
   router.push("/intention");
 }
 
+onMounted(() => {
+  userStore.clearFormResponse();
+  sessionStorage.removeItem("selectedIntent")
+})
+
 async function goRegister() {
   if (isLoggedIn.value) {
     // ✅ If the user is logged in, update the form mode
@@ -90,11 +87,13 @@ async function logOut() {
   background-color: var(--hemo-color-white);
   height: 100vh;
 }
+
 .logo {
   width: 130px;
   margin-bottom: 5px;
   margin-top: 5px;
 }
+
 .header {
   display: flex;
   justify-content: center;

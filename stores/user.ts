@@ -15,23 +15,20 @@ export const useUserStore = defineStore("user", {
       const isAnonymous = !state.user;
       return getQuestionsFromContext(state.donationIntent, isAnonymous);
     },
-    failingReasons: (state) => {
+    failingReasons(state) {
       // Verifica se há respostas no formulário
       if (!state.formResponse?.answers) {
         return "Nenhum motivo registrado.";
       }
 
       // Itera sobre as respostas e acumula razões de falha
-      const reasons = Object.keys(state.formResponse.answers)
-        .map((answerSlug) => {
-          const question = questions.find((q) => q.slug === answerSlug);
-          const answer = state.formResponse.answers[answerSlug];
-          if (question && question.failingResponses.includes(answer.value)) {
-            return question.failingReason;
-          }
-          return null;
-        })
-        .filter((reason) => reason !== null); // Remove valores nulos ou indefinidos
+
+      const questions = getFailingQuestionsForContext(
+        state.formResponse.answers,
+        this.donationIntent,
+        !state.user
+      );
+      const reasons = questions.map((q) => q?.failingReason).filter(Boolean);
 
       // Junta as razões com vírgulas
       return reasons.length > 0
@@ -60,6 +57,10 @@ export const useUserStore = defineStore("user", {
     // failingReason() {
     //   return this.formResponse?.failingReason || "Nenhum motivo registrado.";
     // },
+    clearFormResponse() {
+      sessionStorage.removeItem("selectedIntent");
+      this.formResponse = null;
+    },
 
     async ensureFormResponse() {
       if (!this.formResponse || !this.formResponse._id) {

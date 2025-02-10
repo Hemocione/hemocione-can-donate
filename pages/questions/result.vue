@@ -18,11 +18,7 @@
     </div>
 
     <div v-else class="result-success">
-      <NuxtImg
-        src="images/hemosucesso.png"
-        alt="Sucesso"
-        class="result-image"
-      />
+      <NuxtImg src="images/hemosucesso.png" alt="Sucesso" class="result-image" />
       <h2 class="result-title">Ótimo, você pode doar!</h2>
       <p class="result-reason">
         Suas respostas indicam que você pode ser elegível para doar sangue. No
@@ -31,9 +27,7 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Agendar doação em evento</el-button>
-        <el-button class="secondary-button"
-          >Encontrar bancos de sangue</el-button
-        >
+        <el-button class="secondary-button">Encontrar bancos de sangue</el-button>
       </div>
     </div>
   </div>
@@ -44,7 +38,7 @@ import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 
-definePageMeta({ layout: "questionnaire" });
+definePageMeta({ layout: "questionnaire", resultPage: true });
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -61,9 +55,8 @@ function goBack() {
 
 <style scoped>
 .result-container {
-  text-align: center;
   padding: 20px;
-  height: calc(100% - 80px);
+  height: 100%;
 }
 
 .result-image {
@@ -90,24 +83,35 @@ function goBack() {
 }
 
 .action-button {
-  background-color: #b44236; /* Vermelho do botão principal */
+  background-color: #b44236;
+  /* Vermelho do botão principal */
   color: #fff;
   font-weight: bold;
-  width: 90%; /* Define a largura dos botões */
-  max-width: 400px; /* Largura máxima para evitar distorção em telas grandes */
+  width: 90%;
+  /* Define a largura dos botões */
+  max-width: 400px;
+  /* Largura máxima para evitar distorção em telas grandes */
   height: 48px;
-  border-radius: 8px; /* Bordas arredondadas */
-  padding: 12px 0; /* Altura do botão */
-  text-align: center; /* Centraliza o texto */
-  font-size: 1rem; /* Tamanho do texto */
+  border-radius: 8px;
+  /* Bordas arredondadas */
+  padding: 12px 0;
+  /* Altura do botão */
+  text-align: center;
+  /* Centraliza o texto */
+  font-size: 1rem;
+  /* Tamanho do texto */
 }
 
 .fixed-buttons {
   display: flex;
-  flex-direction: column; /* Alinha os botões verticalmente */
-  align-items: center; /* Centraliza os botões horizontalmente */
-  gap: 15px; /* Espaçamento vertical entre os botões */
-  padding: 20px 0; /* Espaçamento interno */
+  flex-direction: column;
+  /* Alinha os botões verticalmente */
+  align-items: center;
+  /* Centraliza os botões horizontalmente */
+  gap: 15px;
+  /* Espaçamento vertical entre os botões */
+  padding: 20px 0;
+  /* Espaçamento interno */
   background-color: #fff;
   border-top: 1px solid #e0e0e0;
   position: fixed;
@@ -120,9 +124,12 @@ function goBack() {
 }
 
 .secondary-button {
-  background-color: #fff; /* Fundo branco */
-  color: #b44236; /* Texto vermelho */
-  border: 2px solid #b44236; /* Borda vermelha */
+  background-color: #fff;
+  /* Fundo branco */
+  color: #b44236;
+  /* Texto vermelho */
+  border: 2px solid #b44236;
+  /* Borda vermelha */
   font-weight: bold;
   width: 90%;
   height: 48px;

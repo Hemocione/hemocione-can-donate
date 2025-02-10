@@ -24,11 +24,11 @@ export async function createFormResponse(
   return formResponse.toObject();
 }
 
-type FormResponseType = InferSchemaType<typeof FormResponseSchema>;
+type FormResponse = InferSchemaType<typeof FormResponseSchema>;
 
 export async function updateFormResponse(
   formId: string,
-  updates: Partial<FormResponseType>
+  updates: Partial<FormResponse>
 ) {
   const formResponse = await FormResponse.findById(formId);
   if (!formResponse) {

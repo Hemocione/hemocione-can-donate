@@ -4,14 +4,14 @@
       <NuxtImg src="images/logo-horizontal-branca.svg" alt="Logo Hemocione" class="logo" />
     </header>
 
-    <header class="second-header">
-      <button class="go-back-button" @click="goBack">
+    <header class="second-header" v-auto-animate>
+      <button class="go-back-button" key="go-back" @click="goBack" v-if="!isResultPage">
         <ElIconArrowLeftBold />
       </button>
-      <span>Posso doar?</span>
-      <button class="close-button" @click="close">
-        <ElIconClose />
-      </button>
+      <span key="header-text">Posso doar?</ span>
+        <button key="close" class="close-button" @click="close" v-if="!isResultPage">
+          <ElIconClose />
+        </button>
     </header>
 
     <el-drawer v-model="drawer" :with-header="false" :direction="direction" :before-close="handleClose"
@@ -81,6 +81,10 @@ const isQuestionsRoute = computed(() => {
 const currentQuestionSlug = computed(() => {
   return route.params.questionSlug;
 });
+
+const isResultPage = computed(() => {
+  return route.meta.resultPage
+})
 
 const questions = computed(() => {
   console.log(
