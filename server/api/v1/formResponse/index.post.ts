@@ -2,7 +2,6 @@ import { useHemocioneUserAuth } from "~/server/services/auth";
 import { createFormResponse } from "~/server/services/formResponse";
 
 export default defineEventHandler(async (event) => {
-
   let user: ReturnType<typeof useHemocioneUserAuth> | undefined = undefined;
   try {
     user = useHemocioneUserAuth(event);
@@ -16,6 +15,3 @@ export default defineEventHandler(async (event) => {
 
   return formResponse;
 });
-
-
-

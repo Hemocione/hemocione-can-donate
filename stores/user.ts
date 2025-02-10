@@ -78,42 +78,13 @@ export const useUserStore = defineStore("user", {
 
     async createFormResponse() {
       try {
-        const mode = this.user ? "logged-in" : "anonymous";
-
-        const body = {
-          mode,
-          client: {
-            ip: "123.456.789.123",
-            geolocation: {
-              latitude: -22.9068,
-              longitude: -43.1729,
-            },
-            browser: navigator.userAgent,
-          },
-          user: this.user
-            ? {
-                id: this.user.id,
-                name: this.user.surName,
-                email: this.user.email,
-              }
-            : null,
-          donationIntent: this.donationIntent,
-          status: "ongoing",
-          answers: {},
-        };
-
-        console.log("🚀 Sending request to API:", body);
-
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${this.token}`, // 🔥 Ensure token is sent
+            ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
           },
-          body: JSON.stringify(body),
         });
-
-        console.log("🛠 API response:", formResponse);
 
         this.setFormResponse(formResponse);
         console.log(

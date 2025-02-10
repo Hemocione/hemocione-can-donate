@@ -1,7 +1,6 @@
 import { InferSchemaType, Schema, model } from "mongoose";
 import {
   getFailingQuestionsForContext,
-  getFailingReasonsForContext,
   getQuestionsFromContext,
 } from "~/utils/questions";
 
