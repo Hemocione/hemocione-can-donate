@@ -139,7 +139,7 @@ async function selectIntent(intent: "today" | "soon") {
 <style scoped>
 .drawer {
   padding: 20px;
-  height: 20vh;
+  height: 20dvh;
   display: flex;
   flex-direction: column;
   gap: 8px;

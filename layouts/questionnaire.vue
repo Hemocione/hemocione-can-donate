@@ -154,7 +154,7 @@ watchEffect(() => {
   text-align: center;
   background-color: #f8f8f8;
   color: #333;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .route-wrapper {

@@ -85,7 +85,7 @@ async function logOut() {
   align-items: center;
   text-align: center;
   background-color: var(--hemo-color-white);
-  height: 100vh;
+  height: 100dvh;
 }
 
 .logo {
@@ -112,7 +112,7 @@ async function logOut() {
   border-bottom-right-radius: 32px;
   padding-bottom: 100px;
   width: 100%;
-  height: calc((100vh - var(--navbar-height))*0.7);
+  height: calc((100dvh - var(--navbar-height))*0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -142,7 +142,7 @@ async function logOut() {
   background-color: var(--hemo-color-white);
   padding: 20px 20px 60px;
   width: 100%;
-  height: calc((100vh - var(--navbar-height))*0.3);
+  height: calc((100dvh - var(--navbar-height))*0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
