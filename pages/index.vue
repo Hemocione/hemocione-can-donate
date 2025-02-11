@@ -15,17 +15,17 @@
     </main>
 
     <div class="button-container">
-      <button v-if="isLoggedIn" class="register-button" @click="goRegister">
-        Continuar como {{ userStore.user?.givenName }}
+      <button v-if="loggedIn" class="register-button" @click="goRegister" :disabled="loadingLogin">
+        Continuar como {{ user?.givenName }}
       </button>
-      <button v-else class="register-button" @click="goRegister">
+      <button v-else class="register-button" @click="goRegister" :disabled="loadingLogin">
         Cadastre-se e descubra se pode doar
       </button>
 
-      <button v-if="isLoggedIn" class="continue-button" @click="logOut">
-        Não sou {{ userStore.user?.givenName }}
+      <button v-if="loggedIn" class="continue-button" @click="logOut" :disabled="loadingLogin">
+        Não sou {{ user?.givenName }}
       </button>
-      <button v-else class="continue-button" @click="goToIntention">
+      <button v-else class="continue-button" @click="goToIntention" :disabled="loadingLogin">
         Continuar sem cadastro →
       </button>
 
@@ -40,10 +40,9 @@ import { redirectToID } from "~/middleware/auth";
 
 const router = useRouter();
 const userStore = useUserStore();
-const isLoggedIn = computed(() => userStore.loggedIn);
+const { user, loadingLogin, loggedIn } = storeToRefs(userStore)
 
 function goToIntention() {
-  // User chooses to continue without registering
   sessionStorage.setItem("anonymousMode", "true");
   router.push("/intention");
 }
@@ -54,17 +53,10 @@ onMounted(() => {
 })
 
 async function goRegister() {
-  if (isLoggedIn.value) {
-    // ✅ If the user is logged in, update the form mode
+  if (loggedIn.value) {
     sessionStorage.setItem("anonymousMode", "false");
-
-    if (userStore.formResponse?._id) {
-      await userStore.updateFormMode("logged-in");
-    }
-
     router.push("/intention");
   } else {
-    // ✅ User is not logged in, trigger login redirect
     sessionStorage.setItem("anonymousMode", "false");
     redirectToID("/intention");
   }
@@ -74,7 +66,6 @@ async function logOut() {
   await userStore.logOut();
   sessionStorage.setItem("anonymousMode", "true");
   router.push("/");
-
 }
 </script>
 
@@ -103,7 +94,6 @@ async function logOut() {
   background-color: var(--hemo-color-primary-extra-light);
 }
 
-/* Seção de conteúdo com fundo colorido */
 .content {
   background-color: var(--hemo-color-primary-extra-light);
   color: var(--hemo-color-white);
@@ -149,25 +139,33 @@ async function logOut() {
   justify-content: center;
 }
 
-.register-button {
-  background-color: var(--hemo-color-primary-less-light);
-  color: var(--hemo-color-white);
+.register-button,
+.continue-button {
   padding: 15px 20px;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  margin-top: 20px;
   max-width: 400px;
   width: 90%;
+  transition: opacity 0.3s ease, cursor 0.3s ease;
+}
+
+.register-button {
+  background-color: var(--hemo-color-primary-less-light);
+  color: var(--hemo-color-white);
+  margin-top: 20px;
 }
 
 .continue-button {
   background: none;
   color: var(--hemo-color-primary);
-  font-size: 1rem;
   margin-top: 15px;
-  border: none;
-  cursor: pointer;
+}
+
+.register-button:disabled,
+.continue-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

@@ -8,5 +8,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     const url = new URL(window.location.href);
     url.searchParams.delete("token");
     window.history.replaceState({}, document.title, url.toString());
+    const userStore = useUserStore();
+    userStore.setLoadingLogin(false);
   });
 });

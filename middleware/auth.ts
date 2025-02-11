@@ -15,6 +15,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const url = new URL(window.location.href);
   url.searchParams.delete("token");
   window.history.replaceState({}, document.title, url.toString());
+  const userStore = useUserStore();
+  userStore.setLoadingLogin(false);
 });
 
 export async function evaluateCurrentLogin(query?: LocationQuery) {
@@ -62,12 +64,8 @@ export async function evaluateCurrentLogin(query?: LocationQuery) {
 
   console.log("User logged in:", currentUser);
 
-  // 🚀 Create new FormResponse immediately with "logged-in" mode
-  await userStore.createFormResponse(); 
-
   return true;
 }
-
 
 export function getCurrentToken(query?: LocationQuery): string | null {
   if (query?.token) {

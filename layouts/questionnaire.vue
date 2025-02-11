@@ -78,6 +78,10 @@ const isQuestionsRoute = computed(() => {
   return route.path.startsWith("/questions");
 });
 
+const isIntentionRoute = computed(() => {
+  return route.path.startsWith('/intention')
+})
+
 const currentQuestionSlug = computed(() => {
   return route.params.questionSlug;
 });
@@ -104,9 +108,22 @@ const questionsLength = computed(() => {
   return questions.value.length;
 });
 
+
 function goBack() {
-  router.back();
+  if (isIntentionRoute.value || isResultPage.value) {
+    router.push('/')
+  } else {
+    router.back();
+  }
 }
+
+// onMounted(() => {
+//   window.addEventListener('popstate', goBack, false)
+// })
+
+// onUnmounted(() => {
+//   window.removeEventListener('popstate', goBack, false)
+// })
 
 function close() {
   // Lógica para fechar

@@ -93,18 +93,6 @@ async function startQuestionnaire() {
   drawer.value = false;
   showFirstQuestion.value = true;
   sessionStorage.setItem("questionnaireStarted", "true");
-
-  try {
-    const response = await userStore.createFormResponse();
-    if (response && response._id) {
-      userStore.setFormResponse(response);
-      console.log("FormResponse created:", response);
-    } else {
-      console.error("FormResponse creation failed:", response);
-    }
-  } catch (error) {
-    console.error("Error during formResponse creation:", error);
-  }
 }
 
 // Handles selecting a donation intent

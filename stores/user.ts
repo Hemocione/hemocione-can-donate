@@ -9,6 +9,7 @@ export const useUserStore = defineStore("user", {
     token: null as string | null,
     formResponse: null as any, // To be replaced with a specific type if available
     donationIntent: null as "today" | "soon" | null,
+    loadingLogin: true as Boolean,
   }),
   getters: {
     formQuestions(state) {
@@ -43,6 +44,9 @@ export const useUserStore = defineStore("user", {
     },
     setToken(token: string | null) {
       this.token = token;
+    },
+    setLoadingLogin(val: Boolean) {
+      this.loadingLogin = val;
     },
     setFormResponse(formResponse: any) {
       this.formResponse = formResponse;
