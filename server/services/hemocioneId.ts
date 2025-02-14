@@ -23,5 +23,5 @@ export async function getMe(token: string): Promise<Me> {
     throw new Error("Failed to fetch user data");
   }
 
-  return response.json();
+  return await response.json();
 }
