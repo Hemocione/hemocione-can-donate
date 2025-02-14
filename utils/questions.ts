@@ -12,6 +12,18 @@ interface Question {
   image: string;
 }
 
+const ageQuestion: Question = {
+  question: "Você tem entre 16 e 69 anos?",
+  slug: "age",
+  description:
+    "Para sua segurança, há idades mínima e máxima para doação de sangue. Menores de 18 anos devem apresentar consentimento formal do responsável legal.",
+  anonymousOnly: true,
+  failingResponses: ["negative", "unknown"],
+  failingReason:
+    "A idade mínima para doação é de 16 anos e a máxima é de 69 anos. Isso assegura que você esteja em condições adequadas para o procedimento.",
+  image: "images/age.png",
+};
+
 const questions: Question[] = [
   {
     question: "Você pesa 50kg ou mais?",
@@ -23,17 +35,7 @@ const questions: Question[] = [
       "O peso mínimo para doação é de 50 kg. Isso é essencial para garantir que a quantidade de sangue coletada seja segura para você.",
     image: "images/weight.png",
   },
-  {
-    question: "Você tem entre 16 e 69 anos?",
-    slug: "age",
-    description:
-      "Para sua segurança, há idades mínima e máxima para doação de sangue. Menores de 18 anos devem apresentar consentimento formal do responsável legal.",
-    anonymousOnly: true,
-    failingResponses: ["negative", "unknown"],
-    failingReason:
-      "A idade mínima para doação é de 16 anos e a máxima é de 69 anos. Isso assegura que você esteja em condições adequadas para o procedimento.",
-    image: "images/age.png",
-  },
+  ageQuestion,
   {
     question: "Você se alimentou bem hoje?",
     slug: "ateToday",
@@ -148,7 +150,11 @@ export function getFailingQuestionsForContext(
   donationIntent: DonationIntent | null,
   isAnonymous: boolean
 ) {
-  const questions = getQuestionsFromContext(donationIntent, isAnonymous);
+  let questions = getQuestionsFromContext(donationIntent, isAnonymous);
+  const alreadyHasAgeQuestion = questions.find((q) => q.slug === "age");
+  if (!alreadyHasAgeQuestion) {
+    questions = [ageQuestion].concat(questions);
+  }
   return (
     (Object.keys(answers)
       .map((answerSlug) => {
