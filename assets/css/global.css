@@ -2,7 +2,7 @@
   --hemo-color-primary: #bb0a08;
   --hemo-color-primary-less-dark: #8e0f0e;
   --hemo-color-primary-dark: #8a0000;
-  --hemo-color-primary-less-light: #E93C3C; 
+  --hemo-color-primary-less-light: #e93c3c;
   --hemo-color-primary-light: #ff6262;
   --hemo-color-primary-extra-light: #cd6d71;
   --hemo-color-secondary: #f2f2f2;
@@ -39,6 +39,17 @@
   --hemo-page-max-width: 1080px;
   --navbar-height: 55px;
   --secondary-header-height: 53px;
+}
+
+:root {
+  --hemo-color-primary-medium: #b44236;
+  --hemo-color-primary-button-hover: #ffd6d6;
+  --hemo-color-black-5: #f8f8f8;
+  --hemo-color-black-15: #e0e0e0;
+  --hemo-color-black-60: #777;
+  --hemo-color-black-70: #555;
+  --hemo-color-black-90: #333;
+  --hemo-color-primary-ultra-light: #ffcccc;
 }
 
 .el-button + .el-button {
