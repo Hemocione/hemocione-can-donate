@@ -56,11 +56,13 @@ function goBack() {
 }
 
 onMounted(() => {
+  // use delay to avoid confetti on page load and transition
   setTimeout(() => {
     if (isFailed.value || !result.value) return
 
+    const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
     party.confetti(result.value, {
-      count: party.variation.range(150, 400),
+      count: party.variation.range(isLowPerfDevice ? 50 : 150, isLowPerfDevice ? 150 : 400),
       size: party.variation.range(0.8, 2),
       speed: party.variation.range(200, 700),
     });
