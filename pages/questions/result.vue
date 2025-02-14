@@ -13,12 +13,18 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Seja um Irmão de Sangue</el-button>
-        <el-button class="secondary-button" @click="goBack">Voltar ao início</el-button>
+        <el-button class="secondary-button" @click="goBack"
+          >Voltar ao início</el-button
+        >
       </div>
     </div>
 
     <div v-else class="result-success">
-      <NuxtImg src="images/hemosucesso.png" alt="Sucesso" class="result-image" />
+      <NuxtImg
+        src="images/hemosucesso.png"
+        alt="Sucesso"
+        class="result-image"
+      />
       <h2 class="result-title">Ótimo, você pode doar!</h2>
       <p class="result-reason">
         Suas respostas indicam que você pode ser elegível para doar sangue. No
@@ -27,7 +33,9 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Agendar doação em evento</el-button>
-        <el-button class="secondary-button">Encontrar bancos de sangue</el-button>
+        <el-button class="secondary-button"
+          >Encontrar bancos de sangue</el-button
+        >
       </div>
     </div>
   </div>
@@ -65,27 +73,27 @@ function goBack() {
 }
 
 .result-title {
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   font-size: 1.5rem;
   margin: 10px 0;
 }
 
 .result-reason {
-  color: #555;
+  color: var(--hemo-color-black-70);
   font-size: 1rem;
   margin: 10px 0;
 }
 
 .result-subtext {
-  color: #777;
+  color: var(--hemo-color-black-60);
   font-size: 0.9rem;
   margin-bottom: 20px;
 }
 
 .action-button {
-  background-color: #b44236;
+  background-color: var(--hemo-color-primary-medium);
   /* Vermelho do botão principal */
-  color: #fff;
+  color: white;
   font-weight: bold;
   width: 90%;
   /* Define a largura dos botões */
@@ -112,8 +120,8 @@ function goBack() {
   /* Espaçamento vertical entre os botões */
   padding: 20px 0;
   /* Espaçamento interno */
-  background-color: #fff;
-  border-top: 1px solid #e0e0e0;
+  background-color: white;
+  border-top: 1px solid var(--hemo-color-black-15);
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -124,11 +132,11 @@ function goBack() {
 }
 
 .secondary-button {
-  background-color: #fff;
+  background-color: white;
   /* Fundo branco */
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   /* Texto vermelho */
-  border: 2px solid #b44236;
+  border: 2px solid var(--hemo-color-primary-medium);
   /* Borda vermelha */
   font-weight: bold;
   width: 90%;

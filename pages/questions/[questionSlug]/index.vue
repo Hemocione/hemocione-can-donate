@@ -4,8 +4,13 @@
 
     <div class="question-content" :key="`question-${currentQuestionIndex}`">
       <div class="question">
-        <NuxtImg :src="questions[currentQuestionIndex]?.image" alt="Foto celebrativa" class="bolo" width="208"
-          height="208" />
+        <NuxtImg
+          :src="questions[currentQuestionIndex]?.image"
+          alt="Foto celebrativa"
+          class="bolo"
+          width="208"
+          height="208"
+        />
         <h2 class="question-title">
           {{ questions[currentQuestionIndex]?.question }}
         </h2>
@@ -19,12 +24,18 @@
     <!-- Botões fixos na parte inferior -->
     <CoolFooter height="120px" hideToggle desktopBorderRadius="0">
       <div class="answer-button-wrapper">
-        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'positive' }"
-          @click="answerQuestion('positive')">
+        <el-button
+          class="answer-button"
+          :class="{ selected: selectedAnswer === 'positive' }"
+          @click="answerQuestion('positive')"
+        >
           👍 Sim
         </el-button>
-        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'negative' }"
-          @click="answerQuestion('negative')">
+        <el-button
+          class="answer-button"
+          :class="{ selected: selectedAnswer === 'negative' }"
+          @click="answerQuestion('negative')"
+        >
           👎 Não
         </el-button>
       </div>
@@ -84,7 +95,6 @@ let answerlock = false;
 
 // Função chamada ao responder uma pergunta
 async function answerQuestion(answer: string) {
-
   if (answerlock) return;
   answerlock = true;
 
@@ -133,7 +143,7 @@ async function answerQuestion(answer: string) {
       const nextQuestionSlug = questions.value[nextIndex]?.slug;
 
       if (nextQuestionSlug) {
-        await navigateTo(`/questions/${nextQuestionSlug}`)
+        await navigateTo(`/questions/${nextQuestionSlug}`);
       } else {
         console.error(
           "Próxima pergunta não encontrada. Finalizando o questionário."
@@ -149,7 +159,9 @@ async function answerQuestion(answer: string) {
 
 // Finaliza o questionário após a última pergunta
 async function finishQuestionnaire() {
-  const nextPath = userStore.isFormFailed() ? "/questions/result?status=failed" : "/questions/result?status=success";
+  const nextPath = userStore.isFormFailed()
+    ? "/questions/result?status=failed"
+    : "/questions/result?status=success";
   await navigateTo(nextPath);
 }
 
@@ -207,11 +219,10 @@ onMounted(() => {
   gap: 1rem;
 }
 
-
 .answer-button {
   background-color: var(--hemo-color-white);
   /* Fundo padrão branco */
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   /* Texto vermelho */
   font-weight: bold;
   font-size: 1.3rem;
@@ -220,27 +231,27 @@ onMounted(() => {
   cursor: pointer;
   width: 100%;
   height: 100%;
-  border: 2px solid #b44236;
+  border: 2px solid var(--hemo-color-primary-medium);
   /* Borda vermelha */
   transition: all 0.3s ease;
   /* Transição suave */
 }
 
 .answer-button:hover {
-  background-color: #ffd6d6;
+  background-color: var(--hemo-color-primary-button-hover);
   /* Fundo mais claro ao passar o mouse */
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   /* Texto permanece vermelho */
-  border-color: #b44236;
+  border-color: var(--hemo-color-primary-medium);
   /* Borda permanece vermelha */
 }
 
 .answer-button.selected {
-  background-color: #b44236;
+  background-color: var(--hemo-color-primary-medium);
   /* Fundo vermelho escuro ao ser selecionado */
-  color: #fff;
+  color: var(--hemo-color-white);
   /* Texto branco */
-  border-color: #b44236;
+  border-color: var(--hemo-color-primary-medium);
   /* Mesma cor do fundo */
 }
 
@@ -254,7 +265,7 @@ onMounted(() => {
 }
 
 .question-subtext {
-  color: #555;
+  color: var(--hemo-color-black-70);
   font-size: 0.9rem;
   margin-top: 10px;
 }
@@ -265,7 +276,7 @@ onMounted(() => {
 }
 
 .learn-more {
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -301,7 +312,7 @@ onMounted(() => {
   ); 
   height: 8px; 
   border-radius: 20px; 
-  background-color: #e0e0e0;  */
+  background-color: var(--hemo-color-black-15);  */
 /* transition: background-color 0.3s; */
 /* } */
 
@@ -314,18 +325,18 @@ onMounted(() => {
   /* Altura menor para deixar achatado */
   border-radius: 20px;
   /* Border-radius grande para o formato arredondado */
-  background-color: #e0e0e0;
+  background-color: var(--hemo-color-black-15);
   /* Cor padrão (não ativa) */
   transition: background-color 0.3s;
 }
 
 .progress-dot.active {
-  background-color: #b44236;
+  background-color: var(--hemo-color-primary-medium);
   /* Cor da pergunta atual */
 }
 
 .progress-dot.completed {
-  background-color: #ffcccc;
+  background-color: var(--hemo-color-primary-ultra-light);
   /* Cor das perguntas já respondidas */
 }
 
