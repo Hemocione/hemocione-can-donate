@@ -1,6 +1,6 @@
 <template>
   <div class="result-container">
-    <div v-if="isFailed" class="result-failed">
+    <div v-if="isFormFailed" class="result-failed">
       <NuxtImg src="images/hemofalha.png" alt="Falha" class="result-image" />
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
@@ -13,18 +13,12 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Seja um Irmão de Sangue</el-button>
-        <el-button class="secondary-button" @click="goBack"
-          >Voltar ao início</el-button
-        >
+        <el-button class="secondary-button" @click="goBack">Voltar ao início</el-button>
       </div>
     </div>
 
     <div v-else class="result-success">
-      <NuxtImg
-        src="images/hemosucesso.png"
-        alt="Sucesso"
-        class="result-image"
-      />
+      <NuxtImg src="images/hemosucesso.png" alt="Sucesso" class="result-image" />
       <h2 class="result-title">Ótimo, você pode doar!</h2>
       <p class="result-reason">
         Suas respostas indicam que você pode ser elegível para doar sangue. No
@@ -33,16 +27,13 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Agendar doação em evento</el-button>
-        <el-button class="secondary-button"
-          >Encontrar bancos de sangue</el-button
-        >
+        <el-button class="secondary-button">Encontrar bancos de sangue</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 
@@ -52,7 +43,7 @@ const userStore = useUserStore();
 const router = useRouter();
 
 // Computed properties para verificar o estado do formulário
-const isFailed = computed(() => userStore.isFormFailed());
+const { isFormFailed } = storeToRefs(userStore);
 // const failingReason = computed(() => userStore.failingReason);
 
 // Função para voltar à tela anterior

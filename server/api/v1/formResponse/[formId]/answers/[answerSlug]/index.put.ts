@@ -49,5 +49,7 @@ export default defineEventHandler(async (event) => {
   return {
     success: true,
     updatedAnswer: formResponse.answers.get(answerSlug),
+    status: formResponse.status,
+    failedQuestions: formResponse.failedQuestions,
   };
 });

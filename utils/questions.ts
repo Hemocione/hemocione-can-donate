@@ -1,6 +1,6 @@
 import type { AnswerValue, DonationIntent } from "~/server/models/formResponse";
 
-interface Question {
+export interface Question {
   question: string;
   slug: string;
   description: string;
@@ -143,6 +143,10 @@ export function getQuestionsFromContext(
 
 interface Answer {
   value?: AnswerValue | null;
+}
+
+export function getFilteredQuestions(answersSlugs: string[]) {
+  return questions.filter((question) => answersSlugs.includes(question.slug));
 }
 
 export function getFailingQuestionsForContext(
