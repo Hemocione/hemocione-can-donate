@@ -40,7 +40,7 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button" @click="goAgendarDoacao">Agendar doação em evento</el-button>
-        <el-button class="secondary-button"
+        <el-button class="secondary-button" @click="goOndeDoar"
           >Encontrar bancos de sangue</el-button
         >
       </div>
@@ -77,7 +77,10 @@ function goIrmaoDeSangue() {
   window.location.href = "https://apoie.hemocione.com.br/";
 }
 
-// Função para voltar à tela anterior
+function goOndeDoar() {
+  window.location.href = "https://ondedoar.hemocione.com.br/";
+}
+
 function goBack() {
   router.push("/");
 }
