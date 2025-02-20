@@ -29,10 +29,10 @@ const questions: Question[] = [
     question: "Você pesa 50kg ou mais?",
     slug: "weight",
     description:
-      "O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para a segurança do doador.",
+      "O peso é um fator crítico para garantir que a doação não afete sua saúde. Um peso mínimo é necessário para garantir a segurança do doador.",
     failingResponses: ["negative", "unknown"],
     failingReason:
-      "O peso mínimo para doação é de 50 kg. Isso é essencial para garantir que a quantidade de sangue coletada seja segura para você.",
+      "Um peso mínimo de 50 kg é essencial para garantir que a quantidade de sangue coletada seja segura para você.",
     image: "images/weight.png",
   },
   ageQuestion,
@@ -88,7 +88,7 @@ const questions: Question[] = [
     donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Tatuagens ou piercings realizados nos últimos 6 meses podem representar um risco maior de infecção, o que impede a doação.",
+      "Tatuagens ou piercings recentes podem representar um risco de infecção, impedindo a doação temporariamente.",
     image: "images/tattooOrPiercing.png",
   },
   {
@@ -112,7 +112,7 @@ const questions: Question[] = [
     donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Piercings em áreas sensíveis podem representar um maior risco de infecção, o que impede a doação.",
+      "Piercings recentes em áreas sensíveis podem representar um risco de infecção, impedindo a doação temporariamente.",
     image: "images/mouthPiercing.svg",
   },
   {

@@ -324,7 +324,7 @@ watchEffect(() => {
 }
 
 .progress-dot.finalFailed {
-  background-color: var(--hemo-color-warn) !important;
-  box-shadow: 0 0 8px rgba(var(--hemo-color-warn), 0.8);
+  background-color: var(--hemo-color-light-yellow) !important;
+  box-shadow: 0 0 8px rgba(var(--hemo-color-light-yellow), 0.8);
 }
 </style>
