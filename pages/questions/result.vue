@@ -1,7 +1,7 @@
 <template>
   <div class="result-container">
     <div v-if="isFailed" class="result-failed">
-      <NuxtImg src="images/hemofalha.png" alt="Falha" class="result-image" />
+      <NuxtImg src="/images/hemofalha.svg" alt="Falha" class="result-image" />
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
       </h2>
@@ -21,7 +21,7 @@
 
     <div v-else class="result-success">
       <NuxtImg
-        src="images/hemosucesso.png"
+        src="/images/hemosucesso.svg"
         alt="Sucesso"
         class="result-image"
       />
