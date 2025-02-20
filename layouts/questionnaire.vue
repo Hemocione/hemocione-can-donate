@@ -6,6 +6,11 @@
         alt="Logo Hemocione"
         class="logo"
       />
+
+      <div class="hemo-badge">
+        POSSO DOAR
+      </div>
+
     </header>
 
     <header class="second-header" v-auto-animate>
@@ -208,11 +213,24 @@ watchEffect(() => {
 }
 
 .header {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 1rem;
   width: 100%;
   height: var(--navbar-height);
   background-color: var(--hemo-color-black-100);
+}
+
+.hemo-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  font-size: 8px;
+  letter-spacing: 0.05rem;
+  text-align: center;
+  background-color: var(--hemo-color-primary-medium);
+  color: var(--hemo-color-white);
+  margin-top: 6.5px;
 }
 
 .second-header {
