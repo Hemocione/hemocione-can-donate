@@ -1,5 +1,5 @@
 <template>
-  <div class="result-container">
+  <div class="result-container" ref="result">
     <div v-if="isFailed" class="result-failed">
       <NuxtImg src="images/hemofalha.png" alt="Falha" class="result-image" />
       <h2 class="result-title">
@@ -13,18 +13,12 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Seja um Irmão de Sangue</el-button>
-        <el-button class="secondary-button" @click="goBack"
-          >Voltar ao início</el-button
-        >
+        <el-button class="secondary-button" @click="goBack">Voltar ao início</el-button>
       </div>
     </div>
 
     <div v-else class="result-success">
-      <NuxtImg
-        src="images/hemosucesso.png"
-        alt="Sucesso"
-        class="result-image"
-      />
+      <NuxtImg src="images/hemosucesso.png" alt="Sucesso" class="result-image" />
       <h2 class="result-title">Ótimo, você pode doar!</h2>
       <p class="result-reason">
         Suas respostas indicam que você pode ser elegível para doar sangue. No
@@ -33,9 +27,7 @@
       </p>
       <div class="fixed-buttons">
         <el-button class="action-button">Agendar doação em evento</el-button>
-        <el-button class="secondary-button"
-          >Encontrar bancos de sangue</el-button
-        >
+        <el-button class="secondary-button">Encontrar bancos de sangue</el-button>
       </div>
     </div>
   </div>
@@ -45,11 +37,14 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import party from "party-js";
+party.settings.gravity = 600
 
 definePageMeta({ layout: "questionnaire", resultPage: true });
-
 const userStore = useUserStore();
 const router = useRouter();
+
+const result = ref<HTMLDivElement | null>(null);
 
 // Computed properties para verificar o estado do formulário
 const isFailed = computed(() => userStore.isFormFailed());
@@ -59,6 +54,20 @@ const isFailed = computed(() => userStore.isFormFailed());
 function goBack() {
   router.push("/");
 }
+
+onMounted(() => {
+  // use delay to avoid confetti on page load and transition
+  setTimeout(() => {
+    if (isFailed.value || !result.value) return
+
+    const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
+    party.confetti(result.value, {
+      count: party.variation.range(isLowPerfDevice ? 50 : 150, isLowPerfDevice ? 150 : 400),
+      size: party.variation.range(0.8, 2),
+      speed: party.variation.range(200, 700),
+    });
+  }, 300)
+})
 </script>
 
 <style scoped>
