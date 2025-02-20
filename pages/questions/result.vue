@@ -5,14 +5,21 @@
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
       </h2>
-      <p class="result-reason">
-        {{ userStore.failingReasons }}
-      </p>
+
+     <div class="result-reason-container">
+  <!-- <p class="result-reason"><strong>Motivos:</strong></p> -->
+  <ul class="result-reason-list">
+    <li v-for="reason in failingReasons" :key="reason">
+      {{ reason }}
+    </li>
+  </ul>
+</div>
+
       <p class="result-subtext">
         Você pode colaborar com o Hemocione e ajudar a salvar ainda mais vidas.
       </p>
       <div class="fixed-buttons">
-        <el-button class="action-button">Seja um Irmão de Sangue</el-button>
+        <el-button class="action-button" @click="goIrmaoDeSangue">Seja um Irmão de Sangue</el-button>
         <el-button class="secondary-button" @click="goBack"
           >Voltar ao início</el-button
         >
@@ -32,7 +39,7 @@
         dia e no local da doação.
       </p>
       <div class="fixed-buttons">
-        <el-button class="action-button">Agendar doação em evento</el-button>
+        <el-button class="action-button" @click="goAgendarDoacao">Agendar doação em evento</el-button>
         <el-button class="secondary-button"
           >Encontrar bancos de sangue</el-button
         >
@@ -54,6 +61,19 @@ const router = useRouter();
 // Computed properties para verificar o estado do formulário
 const isFailed = computed(() => userStore.isFormFailed());
 // const failingReason = computed(() => userStore.failingReason);
+
+const failingReasons = computed(() => {
+  if (!userStore.failingReasons) return [];
+  return userStore.failingReasons.split(". ").filter(Boolean);
+});
+
+function goAgendarDoacao() {
+  window.location.href = "https://eventos.hemocione.com.br/";
+}
+
+function goIrmaoDeSangue() {
+  window.location.href = "https://apoie.hemocione.com.br/";
+}
 
 // Função para voltar à tela anterior
 function goBack() {
@@ -129,6 +149,38 @@ function goBack() {
   margin: 0 auto;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.result-reason-container {
+  background-color: var(--hemo-color-light-yellow); /* Light beige background */
+  padding: 12px 16px;
+  border-radius: 8px; /* Rounded corners */
+  display: inline-block; /* Ensures it fits the content width */
+  max-width: fit-content; /* Prevents it from stretching */
+}
+
+.result-reason-list {
+  padding-left: 20px; /* Keeps bullet indentation */
+  list-style-position: inside; /* Ensures bullets stay inside the box */
+  color: var(--hemo-color-black-70);
+  font-size: 1rem;
+  margin: 0; /* Prevents extra spacing */
+}
+
+.result-reason-list li {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px; 
+  white-space: normal; 
+  word-wrap: break-word; 
+}
+
+.result-reason-list li::before {
+  content: "•"; 
+  margin-right: 5px;
+  font-weight: bold;
+  color: var(--hemo-color-primary-medium);
 }
 
 .secondary-button {
