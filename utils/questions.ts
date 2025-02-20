@@ -1,6 +1,6 @@
 import type { AnswerValue, DonationIntent } from "~/server/models/formResponse";
 
-interface Question {
+export interface Question {
   question: string;
   slug: string;
   description: string;
@@ -11,6 +11,18 @@ interface Question {
   failingReason: string;
   image: string;
 }
+
+const ageQuestion: Question = {
+  question: "Você tem entre 16 e 69 anos?",
+  slug: "age",
+  description:
+    "Para sua segurança, há idades mínima e máxima para doação de sangue. Menores de 18 anos devem apresentar consentimento formal do responsável legal.",
+  anonymousOnly: true,
+  failingResponses: ["negative", "unknown"],
+  failingReason:
+    "A idade mínima para doação é de 16 anos e a máxima é de 69 anos. Isso assegura que você esteja em condições adequadas para o procedimento.",
+  image: "images/age.png",
+};
 
 const questions: Question[] = [
   {
@@ -23,17 +35,7 @@ const questions: Question[] = [
       "Um peso mínimo de 50 kg é essencial para garantir que a quantidade de sangue coletada seja segura para você.",
     image: "images/weight.png",
   },
-  {
-    question: "Você tem entre 16 e 69 anos?",
-    slug: "age",
-    description:
-      "Para sua segurança, há idades mínima e máxima para doação de sangue. Menores de 18 anos devem apresentar consentimento formal do responsável legal.",
-    anonymousOnly: true,
-    failingResponses: ["negative", "unknown"],
-    failingReason:
-      "A idade mínima para a doação de 16 anos assegura que você esteja em condições adequadas para o procedimento.",
-    image: "images/age.png",
-  },
+  ageQuestion,
   {
     question: "Você se alimentou bem hoje?",
     slug: "ateToday",
@@ -143,12 +145,20 @@ interface Answer {
   value?: AnswerValue | null;
 }
 
+export function getFilteredQuestions(answersSlugs: string[]) {
+  return questions.filter((question) => answersSlugs.includes(question.slug));
+}
+
 export function getFailingQuestionsForContext(
   answers: Record<string, Answer>,
   donationIntent: DonationIntent | null,
   isAnonymous: boolean
 ) {
-  const questions = getQuestionsFromContext(donationIntent, isAnonymous);
+  let questions = getQuestionsFromContext(donationIntent, isAnonymous);
+  const alreadyHasAgeQuestion = questions.find((q) => q.slug === "age");
+  if (!alreadyHasAgeQuestion) {
+    questions = [ageQuestion].concat(questions);
+  }
   return (
     (Object.keys(answers)
       .map((answerSlug) => {

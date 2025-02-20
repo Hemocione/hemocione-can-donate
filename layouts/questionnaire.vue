@@ -1,40 +1,21 @@
 <template>
   <div class="intro-page">
     <header class="header">
-      <NuxtImg
-        src="images/logo-horizontal-branca.svg"
-        alt="Logo Hemocione"
-        class="logo"
-      />
+      <NuxtImg src="images/logo-horizontal-branca.svg" alt="Logo Hemocione" class="logo" />
     </header>
 
     <header class="second-header" v-auto-animate>
-      <button
-        class="go-back-button"
-        key="go-back"
-        @click="goBack"
-        v-if="!isResultPage"
-      >
+      <button class="go-back-button" key="go-back" @click="goBack" v-if="!isResultPage">
         <ElIconArrowLeftBold />
       </button>
       <span key="header-text">Posso doar?</span>
-      <button
-        key="close"
-        class="close-button"
-        @click="close"
-        v-if="!isResultPage"
-      >
+      <button key="close" class="close-button" @click="close" v-if="!isResultPage">
         <ElIconClose />
       </button>
     </header>
 
-    <el-drawer
-      v-model="drawer"
-      :with-header="false"
-      :direction="direction"
-      :before-close="handleClose"
-      :size="'fit-content'"
-    >
+    <el-drawer v-model="drawer" :with-header="false" :direction="direction" :before-close="handleClose"
+      :size="'fit-content'">
       <div class="drawer-content">
         <p style="padding: 0 0 16px; margin: 0; text-align: left">
           Deseja sair do questionário? Suas respostas não serão salvas, mas você
@@ -52,23 +33,15 @@
     <main class="content">
       <Transition name="slide-fade-down" mode="out-in" appear>
         <div v-if="isQuestionsRoute" class="progress-bar">
-          <div
-            v-for="(question, index) in questions"
-            :key="index"
-            class="progress-dot"
-            :class="{
-              active: index === currentQuestionIndex,
-              completed: index < currentQuestionIndex,
-              finalSuccess: isFormCompleted && !isFailed,
-              finalFailed: isFormCompleted && isFailed,
-            }"
-            :style="{ width: `${100 / questions.length}%` }"
-          ></div>
+          <div v-for="(question, index) in questions" :key="index" class="progress-dot" :class="{
+            active: index === currentQuestionIndex,
+            completed: index < currentQuestionIndex,
+            finalSuccess: isFormCompleted && !isFormFailed,
+            finalFailed: isFormCompleted && isFormFailed,
+          }" :style="{ width: `${100 / questions.length}%` }"></div>
         </div>
       </Transition>
-      <div
-        :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }"
-      >
+      <div :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }">
         <slot />
       </div>
       <!-- Espaço para conteúdo específico -->
@@ -94,7 +67,7 @@ const handleClose = (done: () => void) => {
   done();
 };
 
-const isFailed = computed(() => userStore.isFormFailed());
+const { isFormFailed } = storeToRefs(userStore);
 
 const isFormCompleted = computed(() => {
   return currentQuestionIndex.value === -1;
@@ -181,7 +154,7 @@ function exitQuestionnaire() {
 
 watchEffect(() => {
   console.log("✅ isFormCompleted:", isFormCompleted.value);
-  console.log("❌ isFailed:", isFailed.value);
+  console.log("❌ isFormFailed:", isFormFailed.value);
   console.log("🔢 currentQuestionIndex:", currentQuestionIndex.value);
   console.log("📊 Total Questions:", questionsLength.value);
 });

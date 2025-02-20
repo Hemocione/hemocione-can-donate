@@ -1,6 +1,6 @@
 <template>
-  <div class="result-container">
-    <div v-if="isFailed" class="result-failed">
+  <div class="result-container" ref="result">
+    <div v-if="isFormFailed" class="result-failed">
       <NuxtImg src="/images/hemofalha.svg" alt="Falha" class="result-image" />
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
@@ -49,17 +49,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import party from "party-js";
+party.settings.gravity = 600
 
 definePageMeta({ layout: "questionnaire", resultPage: true });
-
 const userStore = useUserStore();
 const router = useRouter();
 
+const result = ref<HTMLDivElement | null>(null);
+
 // Computed properties para verificar o estado do formulário
-const isFailed = computed(() => userStore.isFormFailed());
+const { isFormFailed } = storeToRefs(userStore);
 // const failingReason = computed(() => userStore.failingReason);
 
 const failingReasons = computed(() => {
@@ -79,6 +81,20 @@ function goIrmaoDeSangue() {
 function goBack() {
   router.push("/");
 }
+
+onMounted(() => {
+  // use delay to avoid confetti on page load and transition
+  setTimeout(() => {
+    if (isFormFailed.value || !result.value) return
+
+    const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
+    party.confetti(result.value, {
+      count: party.variation.range(isLowPerfDevice ? 50 : 150, isLowPerfDevice ? 150 : 400),
+      size: party.variation.range(0.8, 2),
+      speed: party.variation.range(200, 700),
+    });
+  }, 300)
+})
 </script>
 
 <style scoped>

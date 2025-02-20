@@ -1,10 +1,14 @@
 import { InferSchemaType } from "mongoose";
 import { FormResponse, FormResponseSchema } from "../models/formResponse";
 import { HemocioneUserAuthTokenData } from "./auth";
+import { getMe } from "./hemocioneId";
+import { calculateAge } from "~/utils/calculateAge";
+import type { Answer } from "~/server/api/v1/formResponse/[formId]/answers/[answerSlug]/index.put";
 
 // Função para criar uma resposta de formulário e salvar no banco de dados
 export async function createFormResponse(
-  user: HemocioneUserAuthTokenData | null
+  user: HemocioneUserAuthTokenData | null,
+  token?: string
 ) {
   const mode = user ? "logged-in" : "anonymous";
 
@@ -12,16 +16,26 @@ export async function createFormResponse(
     ? { id: user.id, name: user.givenName, email: user.email }
     : {};
 
-  const formResponse = new FormResponse({
-    mode,
-    user: userData,
-  });
+  try {
+    const extraFormInitialData = token
+      ? { answers: await getInitialAnswerMap(token) }
+      : {};
 
-  await formResponse.save();
+    const formResponse = new FormResponse({
+      mode,
+      user: userData,
+      ...extraFormInitialData,
+    });
 
-  console.log("✅ Form response saved:", formResponse.toObject());
+    await formResponse.save();
 
-  return formResponse.toObject();
+    console.log("✅ Form response saved:", formResponse.toObject());
+
+    return formResponse.toObject();
+  } catch (error) {
+    console.error("❌ Error saving form response:", error);
+    throw error;
+  }
 }
 
 type FormResponse = InferSchemaType<typeof FormResponseSchema>;
@@ -42,4 +56,22 @@ export async function updateFormResponse(
   await formResponse.save();
 
   return formResponse;
+}
+
+export async function getInitialAnswerMap(
+  token: string
+): Promise<Map<string, Answer>> {
+  const { birthDate } = await getMe(token);
+  const age = calculateAge(new Date(birthDate));
+
+  const response: Answer = {
+    value: "positive",
+    answeredAt: new Date(),
+  };
+
+  if (age < 16 || age > 69) {
+    response.value = "negative";
+  }
+
+  return new Map([["age", response]]);
 }
