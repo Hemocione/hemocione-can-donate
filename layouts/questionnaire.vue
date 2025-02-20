@@ -1,15 +1,28 @@
 <template>
   <div class="intro-page">
     <header class="header">
-      <NuxtImg
-        src="images/logo-horizontal-branca.svg"
-        alt="Logo Hemocione"
-        class="logo"
-      />
-
-      <div class="hemo-badge">
-        POSSO DOAR
+      <div class="logo-and-badge">
+        <NuxtImg
+          src="images/logo-horizontal-branca.svg"
+          alt="Logo Hemocione"
+          class="logo"
+        />
+  
+        <div class="hemo-badge">
+          POSSO DOAR
+        </div>
       </div>
+
+      <button v-if="loggedIn" class="auth-btn" @click="logOut">
+        Sair
+        <!-- Não sei como botar esse ícone  -->
+        <!-- <i class="el-icon el-icon--right"></i> -->
+      </button>
+      <button v-else class="auth-btn" @click="goRegister">
+        Entrar
+        <!-- Não sei como botar esse ícone  -->
+        <!-- <i class="el-icon el-icon--right"></i> -->
+      </button>
 
     </header>
 
@@ -85,11 +98,13 @@
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import { redirectToID } from "~/middleware/auth";
 import type { DrawerProps } from "element-plus";
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const { user, loadingLogin, loggedIn } = storeToRefs(userStore)
 const drawer = ref(false);
 const direction = ref<DrawerProps["direction"]>("btt");
 const selectedIntent = ref<"today" | "soon" | null>(null);
@@ -98,6 +113,22 @@ const handleClose = (done: () => void) => {
   drawer.value = false;
   done();
 };
+
+async function goRegister() {
+  if (loggedIn.value) {
+    sessionStorage.setItem("anonymousMode", "false");
+    router.push("/intention");
+  } else {
+    sessionStorage.setItem("anonymousMode", "false");
+    redirectToID(`/questionnaire/${currentQuestionSlug.value}`);
+  }
+}
+
+async function logOut() {
+  await userStore.logOut();
+  sessionStorage.setItem("anonymousMode", "true");
+  router.push("/");
+}
 
 const isFailed = computed(() => userStore.isFormFailed());
 
@@ -216,9 +247,16 @@ watchEffect(() => {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: var(--navbar-height);
   background-color: var(--hemo-color-black-100);
+}
+
+.logo-and-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .hemo-badge {
@@ -228,9 +266,20 @@ watchEffect(() => {
   font-size: 8px;
   letter-spacing: 0.05rem;
   text-align: center;
-  background-color: var(--hemo-color-primary-medium);
+  background-color: var(--hemo-color-primary);
   color: var(--hemo-color-white);
   margin-top: 6.5px;
+}
+
+.auth-btn {
+  all: unset;
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: var(--hemo-color-primary);
+  color: var(--hemo-color-white);
+  border-radius: 8px;
+  margin-right: 1rem;
+  font-size: 12px;
 }
 
 .second-header {
@@ -372,4 +421,10 @@ watchEffect(() => {
   background-color: var(--hemo-color-warn) !important;
   box-shadow: 0 0 8px rgba(var(--hemo-color-warn), 0.8);
 }
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 </style>
