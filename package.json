@@ -19,6 +19,7 @@
     "mongoose": "^8.9.5",
     "nuxt": "~3.12.3",
     "nuxt-bugsnag": "8.3.1",
+    "party-js": "^2.2.0",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"
   },
