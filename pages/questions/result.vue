@@ -1,6 +1,6 @@
 <template>
   <div class="result-container" ref="result">
-    <div v-if="isFailed" class="result-failed">
+    <div v-if="isFormFailed" class="result-failed">
       <NuxtImg src="images/hemofalha.png" alt="Falha" class="result-image" />
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
@@ -34,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 import party from "party-js";
@@ -47,7 +46,7 @@ const router = useRouter();
 const result = ref<HTMLDivElement | null>(null);
 
 // Computed properties para verificar o estado do formulário
-const isFailed = computed(() => userStore.isFormFailed());
+const { isFormFailed } = storeToRefs(userStore);
 // const failingReason = computed(() => userStore.failingReason);
 
 // Função para voltar à tela anterior
@@ -58,7 +57,7 @@ function goBack() {
 onMounted(() => {
   // use delay to avoid confetti on page load and transition
   setTimeout(() => {
-    if (isFailed.value || !result.value) return
+    if (isFormFailed.value || !result.value) return
 
     const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
     party.confetti(result.value, {

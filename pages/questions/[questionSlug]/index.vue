@@ -4,13 +4,8 @@
 
     <div class="question-content" :key="`question-${currentQuestionIndex}`">
       <div class="question">
-        <NuxtImg
-          :src="questions[currentQuestionIndex]?.image"
-          alt="Foto celebrativa"
-          class="bolo"
-          width="208"
-          height="208"
-        />
+        <NuxtImg :src="questions[currentQuestionIndex]?.image" alt="Foto celebrativa" class="bolo" width="208"
+          height="208" />
         <h2 class="question-title">
           {{ questions[currentQuestionIndex]?.question }}
         </h2>
@@ -24,18 +19,12 @@
     <!-- Botões fixos na parte inferior -->
     <CoolFooter height="120px" hideToggle desktopBorderRadius="0">
       <div class="answer-button-wrapper">
-        <el-button
-          class="answer-button"
-          :class="{ selected: selectedAnswer === 'positive' }"
-          @click="answerQuestion('positive')"
-        >
+        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'positive' }"
+          @click="answerQuestion('positive')">
           👍 Sim
         </el-button>
-        <el-button
-          class="answer-button"
-          :class="{ selected: selectedAnswer === 'negative' }"
-          @click="answerQuestion('negative')"
-        >
+        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'negative' }"
+          @click="answerQuestion('negative')">
           👎 Não
         </el-button>
       </div>
@@ -157,9 +146,14 @@ async function answerQuestion(answer: string) {
   }, 100);
 }
 
+const { isFormFailed } = storeToRefs(userStore);
+
 // Finaliza o questionário após a última pergunta
 async function finishQuestionnaire() {
-  const nextPath = userStore.isFormFailed()
+  console.log("Finalizando o questionário...");
+  console.log("Form Response:", userStore.formResponse);
+  console.log("Form Failed:", isFormFailed.value);
+  const nextPath = isFormFailed.value
     ? "/questions/result?status=failed"
     : "/questions/result?status=success";
   await navigateTo(nextPath);
