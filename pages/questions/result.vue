@@ -1,6 +1,6 @@
 <template>
-  <div class="result-container">
-    <div v-if="isFailed" class="result-failed">
+  <div class="result-container" ref="result">
+    <div v-if="isFormFailed" class="result-failed">
       <NuxtImg src="images/hemofalha.png" alt="Falha" class="result-image" />
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
@@ -34,23 +34,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import party from "party-js";
+party.settings.gravity = 600
 
 definePageMeta({ layout: "questionnaire", resultPage: true });
-
 const userStore = useUserStore();
 const router = useRouter();
 
+const result = ref<HTMLDivElement | null>(null);
+
 // Computed properties para verificar o estado do formulário
-const isFailed = computed(() => userStore.isFormFailed());
+const { isFormFailed } = storeToRefs(userStore);
 // const failingReason = computed(() => userStore.failingReason);
 
 // Função para voltar à tela anterior
 function goBack() {
   router.push("/");
 }
+
+onMounted(() => {
+  // use delay to avoid confetti on page load and transition
+  setTimeout(() => {
+    if (isFormFailed.value || !result.value) return
+
+    const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
+    party.confetti(result.value, {
+      count: party.variation.range(isLowPerfDevice ? 50 : 150, isLowPerfDevice ? 150 : 400),
+      size: party.variation.range(0.8, 2),
+      speed: party.variation.range(200, 700),
+    });
+  }, 300)
+})
 </script>
 
 <style scoped>
@@ -65,27 +81,27 @@ function goBack() {
 }
 
 .result-title {
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   font-size: 1.5rem;
   margin: 10px 0;
 }
 
 .result-reason {
-  color: #555;
+  color: var(--hemo-color-black-70);
   font-size: 1rem;
   margin: 10px 0;
 }
 
 .result-subtext {
-  color: #777;
+  color: var(--hemo-color-black-60);
   font-size: 0.9rem;
   margin-bottom: 20px;
 }
 
 .action-button {
-  background-color: #b44236;
+  background-color: var(--hemo-color-primary-medium);
   /* Vermelho do botão principal */
-  color: #fff;
+  color: white;
   font-weight: bold;
   width: 90%;
   /* Define a largura dos botões */
@@ -112,8 +128,8 @@ function goBack() {
   /* Espaçamento vertical entre os botões */
   padding: 20px 0;
   /* Espaçamento interno */
-  background-color: #fff;
-  border-top: 1px solid #e0e0e0;
+  background-color: white;
+  border-top: 1px solid var(--hemo-color-black-15);
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -124,11 +140,11 @@ function goBack() {
 }
 
 .secondary-button {
-  background-color: #fff;
+  background-color: white;
   /* Fundo branco */
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   /* Texto vermelho */
-  border: 2px solid #b44236;
+  border: 2px solid var(--hemo-color-primary-medium);
   /* Borda vermelha */
   font-weight: bold;
   width: 90%;

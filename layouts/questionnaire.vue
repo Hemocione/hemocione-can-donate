@@ -8,16 +8,16 @@
       <button class="go-back-button" key="go-back" @click="goBack" v-if="!isResultPage">
         <ElIconArrowLeftBold />
       </button>
-      <span key="header-text">Posso doar?</ span>
-        <button key="close" class="close-button" @click="close" v-if="!isResultPage">
-          <ElIconClose />
-        </button>
+      <span key="header-text">Posso doar?</span>
+      <button key="close" class="close-button" @click="close" v-if="!isResultPage">
+        <ElIconClose />
+      </button>
     </header>
 
     <el-drawer v-model="drawer" :with-header="false" :direction="direction" :before-close="handleClose"
       :size="'fit-content'">
       <div class="drawer-content">
-        <p style="padding: 0 0 16px; margin: 0; text-align: left;">
+        <p style="padding: 0 0 16px; margin: 0; text-align: left">
           Deseja sair do questionário? Suas respostas não serão salvas, mas você
           pode voltar e refazer em outro momento.
         </p>
@@ -36,8 +36,8 @@
           <div v-for="(question, index) in questions" :key="index" class="progress-dot" :class="{
             active: index === currentQuestionIndex,
             completed: index < currentQuestionIndex,
-            finalSuccess: isFormCompleted && !isFailed,
-            finalFailed: isFormCompleted && isFailed
+            finalSuccess: isFormCompleted && !isFormFailed,
+            finalFailed: isFormCompleted && isFormFailed,
           }" :style="{ width: `${100 / questions.length}%` }"></div>
         </div>
       </Transition>
@@ -67,28 +67,27 @@ const handleClose = (done: () => void) => {
   done();
 };
 
-const isFailed = computed(() => userStore.isFormFailed());
+const { isFormFailed } = storeToRefs(userStore);
 
 const isFormCompleted = computed(() => {
   return currentQuestionIndex.value === -1;
 });
-
 
 const isQuestionsRoute = computed(() => {
   return route.path.startsWith("/questions");
 });
 
 const isIntentionRoute = computed(() => {
-  return route.path.startsWith('/intention')
-})
+  return route.path.startsWith("/intention");
+});
 
 const currentQuestionSlug = computed(() => {
   return route.params.questionSlug;
 });
 
 const isResultPage = computed(() => {
-  return route.meta.resultPage
-})
+  return route.meta.resultPage;
+});
 
 const questions = computed(() => {
   console.log(
@@ -108,10 +107,9 @@ const questionsLength = computed(() => {
   return questions.value.length;
 });
 
-
 function goBack() {
   if (isIntentionRoute.value || isResultPage.value) {
-    router.push('/')
+    router.push("/");
   } else {
     router.back();
   }
@@ -156,11 +154,10 @@ function exitQuestionnaire() {
 
 watchEffect(() => {
   console.log("✅ isFormCompleted:", isFormCompleted.value);
-  console.log("❌ isFailed:", isFailed.value);
+  console.log("❌ isFormFailed:", isFormFailed.value);
   console.log("🔢 currentQuestionIndex:", currentQuestionIndex.value);
   console.log("📊 Total Questions:", questionsLength.value);
 });
-
 </script>
 
 <style scoped>
@@ -169,8 +166,8 @@ watchEffect(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background-color: #f8f8f8;
-  color: #333;
+  background-color: var(--hemo-color-black-5);
+  color: var(--hemo-color-black-90);
   height: 100dvh;
 }
 
@@ -256,8 +253,8 @@ watchEffect(() => {
 }
 
 .exit-button {
-  background-color: #b44236;
-  color: white;
+  background-color: var(--hemo-color-primary-medium);
+  color: var(--hemo-color-white);
   font-weight: bold;
   border-radius: 8px;
   padding: 10px 20px;
@@ -274,7 +271,7 @@ watchEffect(() => {
 
 .continue-button {
   background: none;
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   font-weight: bold;
   border: none;
   cursor: pointer;
@@ -306,27 +303,28 @@ watchEffect(() => {
   width: calc(100% / var(--questions-length));
   height: 8px;
   border-radius: 20px;
-  background-color: #e0e0e0;
-  transition: background-color 0.4s ease-in-out, transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--hemo-color-black-15);
+  transition: background-color 0.4s ease-in-out, transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .progress-dot.active {
-  background-color: #b44236;
+  background-color: var(--hemo-color-primary-medium);
   transform: scale(1.1);
-  box-shadow: 0 0 5px rgba(180, 66, 54, 0.6);
+  box-shadow: 0 0 5px rgba(var(--hemo-color-primary-medium), 0.6);
 }
 
 .progress-dot.completed {
-  background-color: #ffcccc;
+  background-color: var(--hemo-color-primary-ultra-light);
 }
 
 .progress-dot.finalSuccess {
-  background-color: #28a745 !important;
-  box-shadow: 0 0 8px rgba(40, 167, 69, 0.8);
+  background-color: var(--hemo-color-success) !important;
+  box-shadow: 0 0 8px rgba(var(--hemo-color-success), 0.8);
 }
 
 .progress-dot.finalFailed {
-  background-color: #ffc107 !important;
-  box-shadow: 0 0 8px rgba(255, 193, 7, 0.8);
+  background-color: var(--hemo-color-warn) !important;
+  box-shadow: 0 0 8px rgba(var(--hemo-color-warn), 0.8);
 }
 </style>

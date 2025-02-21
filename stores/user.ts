@@ -1,7 +1,10 @@
 import { defineStore } from "pinia";
 import { redirectToID } from "~/middleware/auth";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
-import questions, { getQuestionsFromContext } from "~/utils/questions";
+import questions, {
+  getQuestionsFromContext,
+  type Question,
+} from "~/utils/questions";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -16,20 +19,18 @@ export const useUserStore = defineStore("user", {
       const isAnonymous = !state.user;
       return getQuestionsFromContext(state.donationIntent, isAnonymous);
     },
-    failingReasons(state) {
-      // Verifica se há respostas no formulário
-      if (!state.formResponse?.answers) {
-        return "Nenhum motivo registrado.";
+    failedQuestions(state): Question[] {
+      if (!state.formResponse?.failedQuestions) {
+        return [];
       }
 
-      // Itera sobre as respostas e acumula razões de falha
-
-      const questions = getFailingQuestionsForContext(
-        state.formResponse.answers,
-        this.donationIntent,
-        !state.user
-      );
-      const reasons = questions.map((q) => q?.failingReason).filter(Boolean);
+      return getFilteredQuestions(state.formResponse.failedQuestions);
+    },
+    failingReasons(): string {
+      // Verifica se há respostas no formulário
+      const reasons = this.failedQuestions
+        .map((q) => q?.failingReason)
+        .filter(Boolean);
 
       // Junta as razões com vírgulas
       return reasons.length > 0
@@ -37,6 +38,9 @@ export const useUserStore = defineStore("user", {
         : "Nenhum motivo registrado.";
     },
     loggedIn: (state) => Boolean(state.user),
+    isFormFailed(state) {
+      return state.formResponse?.status === "unable-to-donate";
+    },
   },
   actions: {
     setUser(user: CurrentUserData | null) {
@@ -54,9 +58,6 @@ export const useUserStore = defineStore("user", {
     },
     setDonationIntent(intent: "today" | "soon" | null) {
       this.donationIntent = intent;
-    },
-    isFormFailed() {
-      return this.formResponse?.status === "failed";
     },
     // failingReason() {
     //   return this.formResponse?.failingReason || "Nenhum motivo registrado.";
@@ -167,22 +168,15 @@ export const useUserStore = defineStore("user", {
 
         console.log("Answer updated successfully:", updatedAnswerResponse);
 
-        const question = questions.find((q) => q.slug === answerSlug);
-        if (question && question.failingResponses.includes(answerData.value)) {
-          this.setFormResponse({
-            ...this.formResponse,
-            status: "failed",
-            failingReason: question.failingReason,
-          });
-        } else {
-          this.setFormResponse({
-            ...this.formResponse,
-            answers: {
-              ...this.formResponse.answers,
-              [answerSlug]: updatedAnswerResponse.updatedAnswer,
-            },
-          });
-        }
+        this.setFormResponse({
+          ...this.formResponse,
+          answers: {
+            ...this.formResponse.answers,
+            [answerSlug]: updatedAnswerResponse.updatedAnswer,
+          },
+          status: updatedAnswerResponse.status,
+          failedQuestions: updatedAnswerResponse.failedQuestions,
+        });
       } catch (error) {
         console.error("Error updating answer:", error);
       }

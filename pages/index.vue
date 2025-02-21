@@ -22,7 +22,7 @@
         Cadastre-se e descubra se pode doar
       </button>
 
-      <button v-if="loggedIn" class="continue-button" @click="logOut" :disabled="loadingLogin">
+      <button v-if="loggedIn" class="continue-button" @click="handleWrongUser" :disabled="loadingLogin">
         Não sou {{ user?.givenName }}
       </button>
       <button v-else class="continue-button" @click="goToIntention" :disabled="loadingLogin">
@@ -62,10 +62,8 @@ async function goRegister() {
   }
 }
 
-async function logOut() {
-  await userStore.logOut();
-  sessionStorage.setItem("anonymousMode", "true");
-  router.push("/");
+async function handleWrongUser() {
+  redirectToID("/intention");
 }
 </script>
 

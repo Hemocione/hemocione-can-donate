@@ -1,11 +1,18 @@
 <template>
   <div class="intention-page">
-    <el-drawer v-model="drawer" :with-header="false" :direction="direction" :before-close="handleClose" :size="'200px'">
+    <el-drawer
+      v-model="drawer"
+      :with-header="false"
+      :direction="direction"
+      :before-close="handleClose"
+      :size="'200px'"
+    >
       <div class="drawer-content">
         <p class="drawer-text">
           Bem vindo ao questionário! <br /><br />
-          Este questionário serve como uma orientação inicial com perguntas frequentes sobre a doação, mas não substitui
-          a triagem realizada por profissionais de saúde no dia e no local da doação.
+          Este questionário serve como uma orientação inicial com perguntas
+          frequentes sobre a doação, mas não substitui a triagem realizada por
+          profissionais de saúde no dia e no local da doação.
         </p>
         <el-button class="start-button" @click="startQuestionnaire">
           Começar
@@ -19,12 +26,18 @@
 
     <CoolFooter height="120px" hideToggle desktopBorderRadius="0">
       <div class="intention-buttons">
-        <el-button class="intention-button" :class="{ selected: selectedIntent === 'today' }"
-          @click="selectIntent('today')">
+        <el-button
+          class="intention-button"
+          :class="{ selected: selectedIntent === 'today' }"
+          @click="selectIntent('today')"
+        >
           ⏰ Hoje
         </el-button>
-        <el-button class="intention-button" :class="{ selected: selectedIntent === 'soon' }"
-          @click="selectIntent('soon')">
+        <el-button
+          class="intention-button"
+          :class="{ selected: selectedIntent === 'soon' }"
+          @click="selectIntent('soon')"
+        >
           ⏳ Em breve
         </el-button>
       </div>
@@ -157,7 +170,7 @@ async function selectIntent(intent: "today" | "soon") {
 }
 
 .start-button {
-  background-color: #b44236;
+  background-color: var(--hemo-color-primary-medium);
   color: #fff;
   padding: 24px;
   border: none;
@@ -188,7 +201,7 @@ async function selectIntent(intent: "today" | "soon") {
 
 .intention-button {
   background-color: var(--hemo-color-white);
-  color: #b44236;
+  color: var(--hemo-color-primary-medium);
   font-weight: bold;
   width: 100%;
   height: 100%;
@@ -197,20 +210,20 @@ async function selectIntent(intent: "today" | "soon") {
   text-align: center;
   font-size: 1.3rem;
   box-sizing: border-box;
-  border: 2px solid #b44236;
+  border: 2px solid var(--hemo-color-primary-medium);
   transition: all 0.3s ease;
 }
 
 .intention-button:hover {
-  background-color: #ffd6d6;
-  color: #b44236;
-  border-color: #b44236;
+  background-color: var(--hemo-color-primary-medium-hover);
+  color: var(--hemo-color-primary-medium);
+  border-color: var(--hemo-color-primary-medium);
 }
 
 .intention-button.selected {
-  background-color: #b44236;
-  color: #fff;
-  border-color: #b44236;
+  background-color: var(--hemo-color-primary-medium);
+  color: var(--hemo-color-white);
+  border-color: var(--hemo-color-primary-medium);
   font-weight: bold;
 }
 </style>
