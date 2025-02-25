@@ -61,7 +61,6 @@ const result = ref<HTMLDivElement | null>(null);
 
 // Computed properties para verificar o estado do formulário
 const { isFormFailed } = storeToRefs(userStore);
-// const failingReason = computed(() => userStore.failingReason);
 
 const failingReasons = computed(() => {
   if (!userStore.failingReasons) return [];
