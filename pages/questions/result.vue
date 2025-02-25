@@ -7,7 +7,6 @@
       </h2>
 
      <div class="result-reason-container">
-  <!-- <p class="result-reason"><strong>Motivos:</strong></p> -->
   <ul class="result-reason-list">
     <li v-for="reason in failingReasons" :key="reason">
       {{ reason }}
