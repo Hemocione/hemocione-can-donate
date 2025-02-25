@@ -50,18 +50,22 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import { useRuntimeConfig } from "#app";
 import party from "party-js";
 party.settings.gravity = 600
 
 definePageMeta({ layout: "questionnaire", resultPage: true });
 const userStore = useUserStore();
 const router = useRouter();
+const config = useRuntimeConfig();
 
 const result = ref<HTMLDivElement | null>(null);
 
-// Computed properties para verificar o estado do formulário
 const { isFormFailed } = storeToRefs(userStore);
-// const failingReason = computed(() => userStore.failingReason);
+
+const eventosHemocione: string = (config.public.eventosHemocione as string) ?? "";
+const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
+const ondeDoarHemocione: string = (config.public.ondeDoarHemocione as string) ?? "";
 
 const failingReasons = computed(() => {
   if (!userStore.failingReasons) return [];
@@ -69,15 +73,15 @@ const failingReasons = computed(() => {
 });
 
 function goAgendarDoacao() {
-  window.location.href = "https://eventos.hemocione.com.br/";
+  navigateTo(eventosHemocione, { external: true });
 }
 
 function goIrmaoDeSangue() {
-  window.location.href = "https://apoie.hemocione.com.br/";
+  navigateTo(apoieHemocione, { external: true });
 }
 
 function goOndeDoar() {
-  window.location.href = "https://ondedoar.hemocione.com.br/";
+  navigateTo(ondeDoarHemocione, { external: true });
 }
 
 function goBack() {
