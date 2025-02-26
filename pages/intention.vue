@@ -20,8 +20,20 @@
       </div>
     </el-drawer>
 
+    <div class="calendar-container">
+    <NuxtImg src="/images/calendar.svg" alt="Calendário" class="calendar" />
+    </div>
+
+    <div>
     <div class="first-question">
       <h2>Quando você pretende doar?</h2>
+    </div>
+
+    <p class="why">Por que essa pergunta?</p>
+
+    <p class="question-description">
+      Essa informação é importante para que possamos fazer as perguntas certas sobre sua saúde e bem-estar, especialmente se você estiver doando hoje.
+      </p>
     </div>
 
     <CoolFooter height="120px" hideToggle desktopBorderRadius="0">
@@ -225,5 +237,36 @@ async function selectIntent(intent: "today" | "soon") {
   color: var(--hemo-color-white);
   border-color: var(--hemo-color-primary-medium);
   font-weight: bold;
+}
+
+.calendar {
+  width: 208px;
+  height: 208px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  object-fit: contain;
+  
+}
+
+.why {
+  color: var(--hemo-color-black-80);
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  text-align: left;
+  margin-left: 20px;
+}
+
+.question-description {
+  text-align: left;
+  padding-bottom: 16px;
+  margin-left: 20px;
+}
+
+.calendar-container {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  width: 100%;
 }
 </style>
