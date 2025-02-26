@@ -1,24 +1,36 @@
 <template>
   <div class="result-container" ref="result">
     <div v-if="isFormFailed" class="result-failed">
-      <NuxtImg src="images/hemofalha.png" alt="Falha" class="result-image" />
+      <NuxtImg src="/images/hemofalha.svg" alt="Falha" class="result-image" />
       <h2 class="result-title">
         Infelizmente, você não pode doar neste momento.
       </h2>
-      <p class="result-reason">
-        {{ userStore.failingReasons }}
-      </p>
+
+     <div class="result-reason-container">
+  <ul class="result-reason-list">
+    <li v-for="reason in failingReasons" :key="reason">
+      {{ reason }}
+    </li>
+  </ul>
+</div>
+
       <p class="result-subtext">
         Você pode colaborar com o Hemocione e ajudar a salvar ainda mais vidas.
       </p>
       <div class="fixed-buttons">
-        <el-button class="action-button">Seja um Irmão de Sangue</el-button>
-        <el-button class="secondary-button" @click="goBack">Voltar ao início</el-button>
+        <el-button class="action-button" @click="goIrmaoDeSangue">Seja um Irmão de Sangue</el-button>
+        <el-button class="secondary-button" @click="goBack"
+          >Voltar ao início</el-button
+        >
       </div>
     </div>
 
     <div v-else class="result-success">
-      <NuxtImg src="images/hemosucesso.png" alt="Sucesso" class="result-image" />
+      <NuxtImg
+        src="/images/hemosucesso.svg"
+        alt="Sucesso"
+        class="result-image"
+      />
       <h2 class="result-title">Ótimo, você pode doar!</h2>
       <p class="result-reason">
         Suas respostas indicam que você pode ser elegível para doar sangue. No
@@ -26,8 +38,10 @@
         dia e no local da doação.
       </p>
       <div class="fixed-buttons">
-        <el-button class="action-button">Agendar doação em evento</el-button>
-        <el-button class="secondary-button">Encontrar bancos de sangue</el-button>
+        <el-button class="action-button" @click="goAgendarDoacao">Agendar doação em evento</el-button>
+        <el-button class="secondary-button" @click="goOndeDoar"
+          >Encontrar bancos de sangue</el-button
+        >
       </div>
     </div>
   </div>
@@ -36,20 +50,40 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import { useRuntimeConfig } from "#app";
 import party from "party-js";
 party.settings.gravity = 600
 
 definePageMeta({ layout: "questionnaire", resultPage: true });
 const userStore = useUserStore();
 const router = useRouter();
+const config = useRuntimeConfig();
 
 const result = ref<HTMLDivElement | null>(null);
 
-// Computed properties para verificar o estado do formulário
 const { isFormFailed } = storeToRefs(userStore);
-// const failingReason = computed(() => userStore.failingReason);
 
-// Função para voltar à tela anterior
+const eventosHemocione: string = (config.public.eventosHemocione as string) ?? "";
+const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
+const ondeDoarHemocione: string = (config.public.ondeDoarHemocione as string) ?? "";
+
+const failingReasons = computed(() => {
+  if (!userStore.failingReasons) return [];
+  return userStore.failingReasons.split(". ").filter(Boolean);
+});
+
+function goAgendarDoacao() {
+  navigateTo(eventosHemocione, { external: true });
+}
+
+function goIrmaoDeSangue() {
+  navigateTo(apoieHemocione, { external: true });
+}
+
+function goOndeDoar() {
+  navigateTo(ondeDoarHemocione, { external: true });
+}
+
 function goBack() {
   router.push("/");
 }
@@ -137,6 +171,38 @@ onMounted(() => {
   margin: 0 auto;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.result-reason-container {
+  background-color: var(--hemo-color-light-yellow); /* Light beige background */
+  padding: 12px 16px;
+  border-radius: 8px; /* Rounded corners */
+  display: inline-block; /* Ensures it fits the content width */
+  max-width: fit-content; /* Prevents it from stretching */
+}
+
+.result-reason-list {
+  padding-left: 20px; /* Keeps bullet indentation */
+  list-style-position: inside; /* Ensures bullets stay inside the box */
+  color: var(--hemo-color-black-70);
+  font-size: 1rem;
+  margin: 0; /* Prevents extra spacing */
+}
+
+.result-reason-list li {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px; 
+  white-space: normal; 
+  word-wrap: break-word; 
+}
+
+.result-reason-list li::before {
+  content: "•"; 
+  margin-right: 5px;
+  font-weight: bold;
+  color: var(--hemo-color-primary-medium);
 }
 
 .secondary-button {
