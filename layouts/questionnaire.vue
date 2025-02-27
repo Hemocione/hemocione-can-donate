@@ -120,7 +120,7 @@ async function goRegister() {
     router.push("/intention");
   } else {
     sessionStorage.setItem("anonymousMode", "false");
-    redirectToID(`/questionnaire/${currentQuestionSlug.value}`);
+    redirectToID(`/`);
   }
 }
 
