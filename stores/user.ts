@@ -121,7 +121,7 @@ export const useUserStore = defineStore("user", {
         // Reset session storage to anonymous mode
         sessionStorage.setItem("anonymousMode", "true");
         const config = useRuntimeConfig();
-        // redirectToID(config.public.siteUrl);
+        redirectToID(config.public.siteUrl);
 
         console.log("✅ Successfully logged out.");
       } catch (error) {

@@ -13,16 +13,26 @@
         </div>
       </div>
 
-      <button v-if="loggedIn" class="auth-btn" @click="logOut">
-        Sair
-        <!-- Não sei como botar esse ícone  -->
-        <!-- <i class="el-icon el-icon--right"></i> -->
-      </button>
-      <button v-else class="auth-btn" @click="goRegister">
-        Entrar
-        <!-- Não sei como botar esse ícone  -->
-        <!-- <i class="el-icon el-icon--right"></i> -->
-      </button>
+      <ElButton v-if="loggedIn" type="primary" size="small" @click="logOut">
+        {{ buttonText }}
+        <el-icon class="el-icon--right">
+          <NuxtImg 
+            :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
+            alt="ícone de autenticação"
+            height="10"
+          />
+        </el-icon>
+      </ElButton>
+      <ElButton v-else type="primary" size="small" @click="goRegister">
+        {{ buttonText }}
+        <el-icon class="el-icon--right">
+          <NuxtImg 
+            :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
+            alt="ícone de autenticação"
+            height="10"
+          />
+        </el-icon>
+      </ElButton>
 
     </header>
 
@@ -108,6 +118,10 @@ const { user, loadingLogin, loggedIn } = storeToRefs(userStore)
 const drawer = ref(false);
 const direction = ref<DrawerProps["direction"]>("btt");
 const selectedIntent = ref<"today" | "soon" | null>(null);
+
+const buttonText = computed(() => {
+  return user.value ? `Sair (${user.value?.givenName?.trim()})` : "Entrar";
+});
 
 const handleClose = (done: () => void) => {
   drawer.value = false;
@@ -251,6 +265,8 @@ watchEffect(() => {
   width: 100%;
   height: var(--navbar-height);
   background-color: var(--hemo-color-black-100);
+  padding-right: 1rem;
+  padding-left: 1rem;
 }
 
 .logo-and-badge {
@@ -269,17 +285,6 @@ watchEffect(() => {
   background-color: var(--hemo-color-primary);
   color: var(--hemo-color-white);
   margin-top: 6.5px;
-}
-
-.auth-btn {
-  all: unset;
-  cursor: pointer;
-  padding: 5px 10px;
-  background-color: var(--hemo-color-primary);
-  color: var(--hemo-color-white);
-  border-radius: 8px;
-  margin-right: 1rem;
-  font-size: 12px;
 }
 
 .second-header {
