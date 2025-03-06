@@ -7,7 +7,7 @@
     <main class="content">
       <h1>Posso doar?</h1>
       <p>
-        Responda as perguntas mais frequentes sobre doação de sangue e descubra se você é
+        Responda as perguntas mais frequentes sobre doação de sangue e descubra se você está
         elegível para doar sangue
       </p>
 
