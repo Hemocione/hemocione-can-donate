@@ -9,13 +9,10 @@
     >
       <div class="drawer-content">
         <p class="drawer-text">
-          Bem vindo ao questionário! <br /><br />
-          Este questionário serve como uma orientação inicial com perguntas
-          frequentes sobre a doação, mas não substitui a triagem realizada por
-          profissionais de saúde no dia e no local da doação.
+          Este questionário serve como uma orientação inicial com perguntas frequentes sobre a doação, mas não substitui a triagem realizada por profissionais de saúde no dia e no local da doação.
         </p>
         <el-button class="start-button" @click="startQuestionnaire">
-          Começar
+          Começar a responder
         </el-button>
       </div>
     </el-drawer>

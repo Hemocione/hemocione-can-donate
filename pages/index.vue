@@ -8,7 +8,7 @@
       <h1>Posso doar?</h1>
       <p>
         Responda as perguntas mais frequentes sobre doação de sangue e descubra se você é
-        elegível para doar 😀
+        elegível para doar sangue
       </p>
 
       <NuxtImg src="images/donation-illustration.png" alt="Ilustração de Doação" class="illustration" />
@@ -16,17 +16,17 @@
 
     <div class="button-container">
       <button v-if="loggedIn" class="register-button" @click="goRegister" :disabled="loadingLogin">
-        Continuar como {{ user?.givenName }}
+        Continuar como <b>{{ user?.givenName }}</b>
       </button>
       <button v-else class="register-button" @click="goRegister" :disabled="loadingLogin">
-        Cadastre-se e descubra se pode doar
+        Acesse sua conta e descubra se pode doar
       </button>
 
       <button v-if="loggedIn" class="continue-button" @click="handleWrongUser" :disabled="loadingLogin">
-        Não sou {{ user?.givenName }}
+        Não é você? Clique aqui para sair da conta
       </button>
       <button v-else class="continue-button" @click="goToIntention" :disabled="loadingLogin">
-        Continuar sem cadastro →
+        Continuar sem conta →
       </button>
 
     </div>
