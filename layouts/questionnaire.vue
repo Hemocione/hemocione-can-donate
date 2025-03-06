@@ -168,7 +168,7 @@ watchEffect(() => {
   text-align: center;
   background-color: var(--hemo-color-black-5);
   color: var(--hemo-color-black-90);
-  height: 100dvh;
+  height: 120dvh;
 }
 
 .route-wrapper {

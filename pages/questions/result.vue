@@ -89,7 +89,16 @@ function goBack() {
 }
 
 onMounted(() => {
-  // use delay to avoid confetti on page load and transition
+
+   if (sessionStorage.getItem("isReloaded") === "true") {
+    sessionStorage.removeItem("isReloaded"); 
+    router.push("/"); 
+  }
+  
+  window.addEventListener("beforeunload", () => {
+    sessionStorage.setItem("isReloaded", "true");
+  });
+
   setTimeout(() => {
     if (isFormFailed.value || !result.value) return
 
@@ -106,7 +115,11 @@ onMounted(() => {
 <style scoped>
 .result-container {
   padding: 20px;
-  height: 100%;
+  /* height: 100%; */
+  height: 100vh;
+  overflow-y: auto; /* Enables vertical scrolling */
+  display: flex;
+  flex-direction: column;
 }
 
 .result-image {
