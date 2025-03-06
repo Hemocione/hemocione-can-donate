@@ -52,6 +52,9 @@ export default defineNuxtConfig({
       hemocioneIdUrl:
         process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
       siteUrl,
+      eventosHemocione: process.env.EVENTOS_HEMOCIONE || "https://eventos.hemocione.com.br/",
+      apoieHemocione: process.env.APOIE_HEMOCIONE || "https://apoie.hemocione.com.br/",
+      ondeDoarHemocione: process.env.ONDE_DOAR_HEMOCIONE || "https://ondedoar.hemocione.com.br/",
     },
     hemocioneIdJwtSecretKey:
       process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "secret",

@@ -88,10 +88,16 @@ const FormResponseSchema = new Schema(
 
 FormResponseSchema.pre("save", function () {
   // Obtém as perguntas que devem ser respondidas no contexto atual
-  const questionsToBeAnsweredSlugs = getQuestionsFromContext(
-    this.donationIntent ?? null,
-    this.mode === "anonymous"
-  ).map((q) => q.slug);
+  const questionsToBeAnsweredSlugs = Array.from(
+    new Set(
+      getQuestionsFromContext(
+        this.donationIntent ?? null,
+        this.mode === "anonymous"
+      )
+        .map((q) => q.slug)
+        .concat(["age"]) // age is always required in the formResponse
+    )
+  );
 
   // Obtém as slugs das perguntas que já foram respondidas
   const answeredQuestionsSlugs = this.answers

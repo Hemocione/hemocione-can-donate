@@ -10,6 +10,8 @@ const answerSchema = z.object({
   answeredAt: z.string().transform((date) => new Date(date)),
 });
 
+export type Answer = z.infer<typeof answerSchema>;
+
 export default defineEventHandler(async (event) => {
   const { formId, answerSlug } = event.context.params as {
     formId: string;
@@ -47,5 +49,7 @@ export default defineEventHandler(async (event) => {
   return {
     success: true,
     updatedAnswer: formResponse.answers.get(answerSlug),
+    status: formResponse.status,
+    failedQuestions: formResponse.failedQuestions,
   };
 });
