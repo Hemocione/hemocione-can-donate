@@ -1,7 +1,39 @@
 <template>
   <div class="intro-page">
     <header class="header">
-      <NuxtImg src="images/logo-horizontal-branca.svg" alt="Logo Hemocione" class="logo" />
+      <div class="logo-and-badge">
+        <NuxtImg
+          src="images/logo-horizontal-branca.svg"
+          alt="Logo Hemocione"
+          class="logo"
+        />
+  
+        <div class="hemo-badge">
+          POSSO DOAR
+        </div>
+      </div>
+
+      <ElButton v-if="loggedIn" type="primary" size="small" @click="logOut">
+        {{ buttonText }}
+        <el-icon class="el-icon--right">
+          <NuxtImg 
+            :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
+            alt="ícone de autenticação"
+            height="10"
+          />
+        </el-icon>
+      </ElButton>
+      <ElButton v-else type="primary" size="small" @click="goRegister">
+        {{ buttonText }}
+        <el-icon class="el-icon--right">
+          <NuxtImg 
+            :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
+            alt="ícone de autenticação"
+            height="10"
+          />
+        </el-icon>
+      </ElButton>
+
     </header>
 
     <header class="second-header" v-auto-animate>
@@ -53,19 +85,41 @@
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "~/stores/user";
+import { redirectToID } from "~/middleware/auth";
 import type { DrawerProps } from "element-plus";
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const { user, loadingLogin, loggedIn } = storeToRefs(userStore)
 const drawer = ref(false);
 const direction = ref<DrawerProps["direction"]>("btt");
 const selectedIntent = ref<"today" | "soon" | null>(null);
+
+const buttonText = computed(() => {
+  return user.value ? `Sair (${user.value?.givenName?.trim()})` : "Entrar";
+});
 
 const handleClose = (done: () => void) => {
   drawer.value = false;
   done();
 };
+
+async function goRegister() {
+  if (loggedIn.value) {
+    sessionStorage.setItem("anonymousMode", "false");
+    router.push("/intention");
+  } else {
+    sessionStorage.setItem("anonymousMode", "false");
+    redirectToID(`/`);
+  }
+}
+
+async function logOut() {
+  await userStore.logOut();
+  sessionStorage.setItem("anonymousMode", "true");
+  router.push("/");
+}
 
 const { isFormFailed } = storeToRefs(userStore);
 
@@ -181,11 +235,33 @@ watchEffect(() => {
 }
 
 .header {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
   width: 100%;
   height: var(--navbar-height);
   background-color: var(--hemo-color-black-100);
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.logo-and-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.hemo-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  font-size: 8px;
+  letter-spacing: 0.05rem;
+  text-align: center;
+  background-color: var(--hemo-color-primary);
+  color: var(--hemo-color-white);
+  margin-top: 6.5px;
 }
 
 .second-header {
@@ -327,4 +403,10 @@ watchEffect(() => {
   background-color: var(--hemo-color-light-yellow) !important;
   box-shadow: 0 0 8px rgba(var(--hemo-color-light-yellow), 0.8);
 }
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 </style>
