@@ -39,11 +39,11 @@ const questions: Question[] = [
   {
     question: "Você se alimentou bem hoje?",
     slug: "ateToday",
-    description: "Alimentação adequada é essencial para uma doação segura.",
+    description: "Uma alimentação adequada é essencial para uma doação segura. Isso significa consumir refeições balanceadas que incluam carboidratos, proteínas e vitaminas. Exemplos incluem frutas, vegetais e carnes magras. Além disso, é importante manter-se bem hidratado, bebendo água. Evite alimentos gordurosos ou bebidas alcoólicas nas horas que antecedem a doação.",
     donationIntents: ["today"],
     failingResponses: ["negative", "unknown"],
     failingReason:
-      "É fundamental estar bem alimentado para evitar reações adversas durante ou após a doação.",
+      "Uma alimentação inadequada e a desidratação podem levar a reações adversas durante ou após a doação, comprometendo sua saúde e a qualidade do sangue doado.",
     image: "images/ateToday.png",
   },
   {
@@ -73,11 +73,11 @@ const questions: Question[] = [
       "Você participou de alguma atividade sexual de risco nos últimos 3 meses?",
     slug: "sexRisk",
     description:
-      "Essa pergunta é crucial para garantir a segurança de todos. Atividades sexuais de risco podem aumentar o risco de transmissão de doenças infecciosas.",
+      "Essa pergunta é importante para garantir a segurança de todos. Atividades sexuais de risco podem aumentar a possibilidade de transmissão de infecções. Exemplos: relações sexuais sem proteção, múltiplos parceiros, contato com usuários de drogas ou pessoas com infecções sexualmente transmissíveis (ISTs).",
     donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Atividades sexuais de risco podem comprometer a segurança da doação e a saúde dos receptores.",
+      "Atividades sexuais de risco podem comprometer a segurança da doação e a saúde dos receptores, tornando necessária a avaliação cuidadosa dessas situações.",
     image: "images/sexRisk.png",
   },
   {
@@ -93,14 +93,14 @@ const questions: Question[] = [
   },
   {
     question:
-      "Morou ou viajou para fora do Brasil (em áreas de risco) ou para Amazônia Legal nos últimos 12 meses?",
+      "Você morou ou viajou para fora do Brasil (em áreas de risco) ou para Amazônia Legal nos últimos 12 meses?",
     slug: "traveledAbroad",
     description:
-      "Viagens recentes para fora do Brasil ou para a Amazônia Legal podem apresentar riscos de exposição a doenças endêmicas, como malária, febre amarela e outras, que podem comprometer a segurança da doação.",
+      "Viagens recentes para fora do Brasil ou para a Amazônia Legal podem apresentar riscos de exposição a doenças endêmicas, como malária, febre amarela e outras, que podem comprometer a segurança da doação. Exemplos de áreas de risco incluem: África (Nigéria, Gana, Camarões, República Democrática do Congo), América do Sul (Amazonas, Acre, Peru, Colômbia, Venezuela) e Sudeste Asiático (Tailândia, Vietnã, Indonésia, Malásia). Para mais informações, consulte o hemocentro local.",
     donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Viagens recentes para áreas de risco impedem a doação de sangue temporariamente.",
+      "Viagens para áreas de risco podem aumentar a possibilidade de infecções, tornando necessária a avaliação cuidadosa dessas situações.",
     image: "images/traveledAbroad.png",
   },
   {
