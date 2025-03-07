@@ -3,7 +3,7 @@
     <div v-if="isFormFailed" class="result-failed">
       <NuxtImg src="/images/hemofalha.svg" alt="Falha" class="result-image" />
       <h2 class="result-title">
-        Infelizmente, você não pode doar neste momento.
+        Parece que você não pode doar neste momento.
       </h2>
 
      <div class="result-reason-container">
