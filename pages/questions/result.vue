@@ -54,7 +54,8 @@ import { useRuntimeConfig } from "#app";
 import party from "party-js";
 party.settings.gravity = 600
 
-definePageMeta({ layout: "questionnaire", resultPage: true });
+definePageMeta({ layout: "questionnaire", resultPage: true, blockDirectAccess: true});
+
 const userStore = useUserStore();
 const router = useRouter();
 const config = useRuntimeConfig();
@@ -90,15 +91,6 @@ function goBack() {
 
 onMounted(() => {
 
-   if (sessionStorage.getItem("isReloaded") === "true") {
-    sessionStorage.removeItem("isReloaded"); 
-    router.push("/"); 
-  }
-  
-  window.addEventListener("beforeunload", () => {
-    sessionStorage.setItem("isReloaded", "true");
-  });
-
   setTimeout(() => {
     if (isFormFailed.value || !result.value) return
 
@@ -115,11 +107,7 @@ onMounted(() => {
 <style scoped>
 .result-container {
   padding: 20px;
-  /* height: 100%; */
-  height: 100vh;
-  overflow-y: auto; /* Enables vertical scrolling */
-  display: flex;
-  flex-direction: column;
+  height: 100%;
 }
 
 .result-image {
