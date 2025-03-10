@@ -107,8 +107,19 @@ onMounted(() => {
 <style scoped>
 .result-container {
   padding: 20px;
-  height: 100%;
+  height: calc(100% - 120px);
+  padding: 1rem;
+  display: flex; 
+  flex-direction: column; 
+  /* justify-content: center;  */
+  /* height: 100dvh; */
+  overflow-y: auto;
+
 }
+
+/* .result-failed {
+  
+} */
 
 .result-image {
   width: 150px;
