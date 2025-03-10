@@ -38,7 +38,7 @@ import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "~/stores/user";
 
 // Define o layout do questionário
-definePageMeta({ layout: "questionnaire" });
+definePageMeta({ layout: "questionnaire", blockDirectAccess: true});
 
 const router = useRouter();
 const route = useRoute();
