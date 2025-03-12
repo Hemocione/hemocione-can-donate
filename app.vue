@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+
 useServerSeoMeta({
   description: "Responda ao questionário e descubra se pode doar",
   ogDescription: "Responda ao questionário e descubra se pode doar.",
@@ -18,4 +19,6 @@ useServerSeoMeta({
 useHead({
   title: "Posso doar sangue?",
 })
+
+
 </script>
