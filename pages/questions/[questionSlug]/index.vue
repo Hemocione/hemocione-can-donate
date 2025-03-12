@@ -4,8 +4,13 @@
 
     <div class="question-content" :key="`question-${currentQuestionIndex}`">
       <div class="question">
-        <NuxtImg :src="questions[currentQuestionIndex]?.image" alt="Foto celebrativa" class="bolo" width="208"
-          height="208" />
+        <NuxtImg
+          :src="questions[currentQuestionIndex]?.image"
+          alt="Foto celebrativa"
+          class="bolo"
+          width="208"
+          height="208"
+        />
         <h2 class="question-title">
           {{ questions[currentQuestionIndex]?.question }}
         </h2>
@@ -19,12 +24,18 @@
     <!-- Botões fixos na parte inferior -->
     <CoolFooter height="120px" hideToggle desktopBorderRadius="0">
       <div class="answer-button-wrapper">
-        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'positive' }"
-          @click="answerQuestion('positive')">
+        <el-button
+          class="answer-button"
+          :class="{ selected: selectedAnswer === 'positive' }"
+          @click="answerQuestion('positive')"
+        >
           👍 Sim
         </el-button>
-        <el-button class="answer-button" :class="{ selected: selectedAnswer === 'negative' }"
-          @click="answerQuestion('negative')">
+        <el-button
+          class="answer-button"
+          :class="{ selected: selectedAnswer === 'negative' }"
+          @click="answerQuestion('negative')"
+        >
           👎 Não
         </el-button>
       </div>
@@ -38,7 +49,7 @@ import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "~/stores/user";
 
 // Define o layout do questionário
-definePageMeta({ layout: "questionnaire", blockDirectAccess: true});
+definePageMeta({ layout: "questionnaire", blockDirectAccess: true });
 
 const router = useRouter();
 const route = useRoute();
@@ -126,24 +137,22 @@ async function answerQuestion(answer: string) {
 
   console.log("Resposta atualizada:", updatedAnswers);
 
-  setTimeout(async () => {
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < questions.value.length) {
-      const nextQuestionSlug = questions.value[nextIndex]?.slug;
+  const nextIndex = currentIndex + 1;
+  if (nextIndex < questions.value.length) {
+    const nextQuestionSlug = questions.value[nextIndex]?.slug;
 
-      if (nextQuestionSlug) {
-        await navigateTo(`/questions/${nextQuestionSlug}`);
-      } else {
-        console.error(
-          "Próxima pergunta não encontrada. Finalizando o questionário."
-        );
-        await finishQuestionnaire();
-      }
+    if (nextQuestionSlug) {
+      await navigateTo(`/questions/${nextQuestionSlug}`);
     } else {
+      console.error(
+        "Próxima pergunta não encontrada. Finalizando o questionário."
+      );
       await finishQuestionnaire();
     }
-    answerlock = false;
-  }, 100);
+  } else {
+    await finishQuestionnaire();
+  }
+  answerlock = false;
 }
 
 const { isFormFailed } = storeToRefs(userStore);

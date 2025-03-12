@@ -1,10 +1,7 @@
 import { defineStore } from "pinia";
 import { redirectToID } from "~/middleware/auth";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
-import questions, {
-  getQuestionsFromContext,
-  type Question,
-} from "~/utils/questions";
+import { getQuestionsFromContext, type Question } from "~/utils/questions";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
