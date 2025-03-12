@@ -6,9 +6,6 @@
 
 <script setup lang="ts">
 
-const route = useRoute(); 
-const router = useRouter(); 
-
 useServerSeoMeta({
   description: "Responda ao questionário e descubra se pode doar",
   ogDescription: "Responda ao questionário e descubra se pode doar.",
