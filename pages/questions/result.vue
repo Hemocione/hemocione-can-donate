@@ -111,15 +111,8 @@ onMounted(() => {
   padding: 1rem;
   display: flex; 
   flex-direction: column; 
-  /* justify-content: center;  */
-  /* height: 100dvh; */
   overflow-y: auto;
-
 }
-
-/* .result-failed {
-  
-} */
 
 .result-image {
   width: 150px;

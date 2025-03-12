@@ -5,9 +5,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     const route = useRoute();
     const router = useRouter(); 
 
-    console.log("Acessando bloqueio")
-    console.log(route)
-
     if (route.meta.blockDirectAccess) {
         router.push("/"); 
       }
