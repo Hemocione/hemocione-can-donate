@@ -70,7 +70,9 @@
             completed: index < currentQuestionIndex,
             finalSuccess: isFormCompleted && !isFormFailed,
             finalFailed: isFormCompleted && isFormFailed,
-          }" :style="{ width: `${100 / questions.length}%` }"></div>
+          }" :style="{ width: `${100 / questions.length}%` }"
+            @click="goToQuestion(index)"
+          ></div>
         </div>
       </Transition>
       <div :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }">
@@ -212,6 +214,23 @@ watchEffect(() => {
   console.log("🔢 currentQuestionIndex:", currentQuestionIndex.value);
   console.log("📊 Total Questions:", questionsLength.value);
 });
+
+async function goToQuestion(index: number) {
+  
+  if (index >= currentQuestionIndex.value) {
+    return;
+  }
+
+  if (index >= 0 && index < questions.value.length) {
+    const questionSlug = questions.value[index]?.slug;
+    if (questionSlug) {
+      await navigateTo(`/questions/${questionSlug}`);
+    } else {
+      console.error("No slug found for that question index.");
+    }
+  }
+}
+
 </script>
 
 <style scoped>
