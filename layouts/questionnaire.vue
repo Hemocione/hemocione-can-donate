@@ -67,10 +67,12 @@
         <div v-if="isQuestionsRoute" class="progress-bar">
           <div v-for="(question, index) in questions" :key="index" class="progress-dot" :class="{
             active: index === currentQuestionIndex,
-            completed: index < currentQuestionIndex,
+            completed: isQuestionAnswered(index),
             finalSuccess: isFormCompleted && !isFormFailed,
             finalFailed: isFormCompleted && isFormFailed,
-          }" :style="{ width: `${100 / questions.length}%` }"></div>
+          }" :style="{ width: `${100 / questions.length}%` }"
+            @click="goToQuestion(index)"
+          ></div>
         </div>
       </Transition>
       <div :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }">
@@ -212,6 +214,43 @@ watchEffect(() => {
   console.log("🔢 currentQuestionIndex:", currentQuestionIndex.value);
   console.log("📊 Total Questions:", questionsLength.value);
 });
+
+function isQuestionAnswered(index: number): boolean {
+  if (index < 0 || index >= questions.value.length) {
+    return false;
+  }
+
+  const questionSlug = questions.value[index]?.slug;
+  if (!questionSlug) return false;
+
+  return !!userStore.formResponse?.answers?.[questionSlug];
+}
+
+async function goToQuestion(index: number) {
+  if (index < 0 || index >= questions.value.length) return;
+
+  const answeredIndices = questions.value
+    .map((_, i) => (isQuestionAnswered(i) ? i : -1))
+    .filter((i) => i !== -1);
+
+  const highestAnsweredIndex = answeredIndices.length
+    ? Math.max(...answeredIndices)
+    : -1;
+
+  const isGoingBackwardToAnswered =
+    index <= highestAnsweredIndex && isQuestionAnswered(index);
+
+  const isNextQuestion = index === highestAnsweredIndex + 1;
+
+  if (!isGoingBackwardToAnswered && !isNextQuestion) {
+    console.warn("⚠️ Not allowed to jump to that question yet.");
+    return;
+  }
+
+  const questionSlug = questions.value[index].slug;
+  await router.push(`/questions/${questionSlug}`);
+}
+
 </script>
 
 <style scoped>
@@ -385,7 +424,7 @@ watchEffect(() => {
 }
 
 .progress-dot.active {
-  background-color: var(--hemo-color-primary-medium);
+  background-color: var(--hemo-color-primary-medium) !important;
   transform: scale(1.1);
   box-shadow: 0 0 5px rgba(var(--hemo-color-primary-medium), 0.6);
 }
