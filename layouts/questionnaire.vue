@@ -1,53 +1,73 @@
 <template>
-  <div class="intro-page">
-    <header class="header">
+  <div
+    class="intro-page"
+    :style="{
+      '--flex-navbar-height':
+        iframeValidated && iframed ? '0px' : 'var(--navbar-height)',
+    }"
+  >
+    <header :class="{ header: true, hide: !iframeValidated }" v-if="!iframed">
       <div class="logo-and-badge">
         <NuxtImg
           src="images/logo-horizontal-branca.svg"
           alt="Logo Hemocione"
           class="logo"
         />
-  
-        <div class="hemo-badge">
-          POSSO DOAR
-        </div>
+
+        <div class="hemo-badge">POSSO DOAR</div>
       </div>
 
-      <ElButton v-if="loggedIn" type="primary" size="small" @click="logOut">
-        {{ buttonText }}
-        <el-icon class="el-icon--right">
-          <NuxtImg 
-            :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
-            alt="ícone de autenticação"
-            height="10"
-          />
-        </el-icon>
-      </ElButton>
-      <ElButton v-else type="primary" size="small" @click="goRegister">
-        {{ buttonText }}
-        <el-icon class="el-icon--right">
-          <NuxtImg 
-            :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
-            alt="ícone de autenticação"
-            height="10"
-          />
-        </el-icon>
-      </ElButton>
-
+      <ClientOnly>
+        <ElButton v-if="loggedIn" type="primary" size="small" @click="logOut">
+          {{ buttonText }}
+          <el-icon class="el-icon--right">
+            <NuxtImg
+              :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
+              alt="ícone de autenticação"
+              height="10"
+            />
+          </el-icon>
+        </ElButton>
+        <ElButton v-else type="primary" size="small" @click="goRegister">
+          {{ buttonText }}
+          <el-icon class="el-icon--right">
+            <NuxtImg
+              :src="loggedIn ? '/images/logout.svg' : '/images/login.svg'"
+              alt="ícone de autenticação"
+              height="10"
+            />
+          </el-icon>
+        </ElButton>
+      </ClientOnly>
     </header>
 
     <header class="second-header" v-auto-animate>
-      <button class="go-back-button" key="go-back" @click="goBack" v-if="!isResultPage">
+      <button
+        class="go-back-button"
+        key="go-back"
+        @click="goBack"
+        v-if="!isResultPage"
+      >
         <ElIconArrowLeftBold />
       </button>
       <span key="header-text">Posso doar?</span>
-      <button key="close" class="close-button" @click="close" v-if="!isResultPage">
+      <button
+        key="close"
+        class="close-button"
+        @click="close"
+        v-if="!isResultPage"
+      >
         <ElIconClose />
       </button>
     </header>
 
-    <el-drawer v-model="drawer" :with-header="false" :direction="direction" :before-close="handleClose"
-      :size="'fit-content'">
+    <el-drawer
+      v-model="drawer"
+      :with-header="false"
+      :direction="direction"
+      :before-close="handleClose"
+      :size="'fit-content'"
+    >
       <div class="drawer-content">
         <p style="padding: 0 0 16px; margin: 0; text-align: left">
           Deseja sair do questionário? Suas respostas não serão salvas, mas você
@@ -65,17 +85,24 @@
     <main class="content">
       <Transition name="slide-fade-down" mode="out-in" appear>
         <div v-if="isQuestionsRoute" class="progress-bar">
-          <div v-for="(question, index) in questions" :key="index" class="progress-dot" :class="{
-            active: index === currentQuestionIndex,
-            completed: isQuestionAnswered(index),
-            finalSuccess: isFormCompleted && !isFormFailed,
-            finalFailed: isFormCompleted && isFormFailed,
-          }" :style="{ width: `${100 / questions.length}%` }"
+          <div
+            v-for="(question, index) in questions"
+            :key="index"
+            class="progress-dot"
+            :class="{
+              active: index === currentQuestionIndex,
+              completed: isQuestionAnswered(index),
+              finalSuccess: isFormCompleted && !isFormFailed,
+              finalFailed: isFormCompleted && isFormFailed,
+            }"
+            :style="{ width: `${100 / questions.length}%` }"
             @click="goToQuestion(index)"
           ></div>
         </div>
       </Transition>
-      <div :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }">
+      <div
+        :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }"
+      >
         <slot />
       </div>
       <!-- Espaço para conteúdo específico -->
@@ -93,7 +120,8 @@ import type { DrawerProps } from "element-plus";
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
-const { user, loadingLogin, loggedIn } = storeToRefs(userStore)
+const { user, loadingLogin, loggedIn, iframed, iframeValidated } =
+  storeToRefs(userStore);
 const drawer = ref(false);
 const direction = ref<DrawerProps["direction"]>("btt");
 const selectedIntent = ref<"today" | "soon" | null>(null);
@@ -250,7 +278,6 @@ async function goToQuestion(index: number) {
   const questionSlug = questions.value[index].slug;
   await router.push(`/questions/${questionSlug}`);
 }
-
 </script>
 
 <style scoped>
@@ -279,7 +306,7 @@ async function goToQuestion(index: number) {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: var(--navbar-height);
+  height: var(--flex-navbar-height);
   background-color: var(--hemo-color-black-100);
   padding-right: 1rem;
   padding-left: 1rem;
@@ -325,7 +352,9 @@ async function goToQuestion(index: number) {
   width: 100%;
   max-width: var(--hemo-page-max-width);
   background-color: var(--hemo-color-white);
-  height: calc(100% - var(--navbar-height) - var(--secondary-header-height));
+  height: calc(
+    100% - var(--flex-navbar-height) - var(--secondary-header-height)
+  );
 }
 
 .content p {
@@ -447,5 +476,4 @@ async function goToQuestion(index: number) {
   opacity: 0.6;
   cursor: not-allowed;
 }
-
 </style>
