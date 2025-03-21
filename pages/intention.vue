@@ -9,7 +9,9 @@
     >
       <div class="drawer-content">
         <p class="drawer-text">
-          Este questionário serve como uma orientação inicial com perguntas frequentes sobre a doação, mas não substitui a triagem realizada por profissionais de saúde no dia e no local da doação.
+          Este questionário serve como uma orientação inicial com perguntas
+          frequentes sobre a doação, mas não substitui a triagem realizada por
+          profissionais de saúde no dia e no local da doação.
         </p>
         <el-button class="start-button" @click="startQuestionnaire">
           Começar a responder
@@ -18,18 +20,19 @@
     </el-drawer>
 
     <div class="calendar-container">
-    <NuxtImg src="/images/calendar.svg" alt="Calendário" class="calendar" />
+      <NuxtImg src="/images/calendar.svg" alt="Calendário" class="calendar" />
     </div>
 
     <div>
-    <div class="first-question">
-      <h2>Quando você pretende doar?</h2>
-    </div>
+      <div class="first-question">
+        <h2>Quando você pretende doar?</h2>
+      </div>
 
-    <p class="why">Por que essa pergunta?</p>
+      <p class="why">Por que essa pergunta?</p>
 
-    <p class="question-description">
-      Essa informação é importante para que possamos fazer as perguntas certas sobre sua saúde e bem-estar, especialmente se você estiver doando hoje.
+      <p class="question-description">
+        Essa informação é importante para que possamos fazer as perguntas certas
+        sobre sua saúde e bem-estar, especialmente se você estiver doando hoje.
       </p>
     </div>
 
@@ -77,8 +80,6 @@ const handleClose = (done: () => void) => {
 };
 
 onMounted(async () => {
-  console.log("onMounted executado");
-
   const anonymousMode = sessionStorage.getItem("anonymousMode");
   isAnonymousMode.value = anonymousMode === "true";
 
@@ -242,7 +243,6 @@ async function selectIntent(intent: "today" | "soon") {
   margin-bottom: 5px;
   margin-top: 5px;
   object-fit: contain;
-  
 }
 
 .why {
@@ -262,8 +262,8 @@ async function selectIntent(intent: "today" | "soon") {
 
 .calendar-container {
   display: flex;
-  justify-content: center; 
-  align-items: center; 
+  justify-content: center;
+  align-items: center;
   width: 100%;
 }
 </style>

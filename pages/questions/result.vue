@@ -2,23 +2,26 @@
   <div class="result-container" ref="result">
     <div v-if="isFormFailed" class="result-failed">
       <NuxtImg src="/images/hemofalha.svg" alt="Falha" class="result-image" />
-      <h2 class="result-title">
-        Parece que você não pode doar neste momento.
-      </h2>
+      <h2 class="result-title">Parece que você não pode doar neste momento.</h2>
 
-     <div class="result-reason-container">
-  <ul class="result-reason-list">
-    <li v-for="reason in failingReasons" :key="reason">
-      {{ reason }}
-    </li>
-  </ul>
-</div>
+      <div class="result-reason-container">
+        <ul class="result-reason-list">
+          <li v-for="reason in failingReasons" :key="reason">
+            {{ reason }}
+          </li>
+        </ul>
+      </div>
 
       <p class="result-subtext">
         Você pode colaborar com o Hemocione e ajudar a salvar ainda mais vidas.
       </p>
       <div class="fixed-buttons">
-        <el-button class="action-button" @click="goIrmaoDeSangue">Seja um Irmão de Sangue</el-button>
+        <el-button
+          class="action-button"
+          v-if="iframeValidated && !iframed"
+          @click="goIrmaoDeSangue"
+          >Seja um Irmão de Sangue</el-button
+        >
         <el-button class="secondary-button" @click="goBack"
           >Voltar ao início</el-button
         >
@@ -38,9 +41,19 @@
         dia e no local da doação.
       </p>
       <div class="fixed-buttons">
-        <el-button class="action-button" @click="goAgendarDoacao">Agendar doação em evento</el-button>
-        <el-button class="secondary-button" @click="goOndeDoar"
-          >Encontrar bancos de sangue</el-button
+        <el-button
+          class="action-button"
+          v-if="iframeValidated && !iframed"
+          @click="goAgendarDoacao"
+          >Agendar doação em evento</el-button
+        >
+        <el-button
+          class="secondary-button"
+          v-if="iframeValidated"
+          @click="handleSecondarySuccessClick"
+          >{{
+            iframed ? "Voltar ao início" : "Encontrar bancos de sangue"
+          }}</el-button
         >
       </div>
     </div>
@@ -52,9 +65,13 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 import { useRuntimeConfig } from "#app";
 import party from "party-js";
-party.settings.gravity = 600
+party.settings.gravity = 600;
 
-definePageMeta({ layout: "questionnaire", resultPage: true, blockDirectAccess: true});
+definePageMeta({
+  layout: "questionnaire",
+  resultPage: true,
+  blockDirectAccess: true,
+});
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -62,11 +79,21 @@ const config = useRuntimeConfig();
 
 const result = ref<HTMLDivElement | null>(null);
 
-const { isFormFailed } = storeToRefs(userStore);
+const { isFormFailed, iframed, iframeValidated } = storeToRefs(userStore);
 
-const eventosHemocione: string = (config.public.eventosHemocione as string) ?? "";
+const handleSecondarySuccessClick = () => {
+  if (iframed.value) {
+    goBack();
+  } else {
+    goOndeDoar();
+  }
+};
+
+const eventosHemocione: string =
+  (config.public.eventosHemocione as string) ?? "";
 const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
-const ondeDoarHemocione: string = (config.public.ondeDoarHemocione as string) ?? "";
+const ondeDoarHemocione: string =
+  (config.public.ondeDoarHemocione as string) ?? "";
 
 const failingReasons = computed(() => {
   if (!userStore.failingReasons) return [];
@@ -90,18 +117,20 @@ function goBack() {
 }
 
 onMounted(() => {
-
   setTimeout(() => {
-    if (isFormFailed.value || !result.value) return
+    if (isFormFailed.value || !result.value) return;
 
     const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
     party.confetti(result.value, {
-      count: party.variation.range(isLowPerfDevice ? 50 : 150, isLowPerfDevice ? 150 : 400),
+      count: party.variation.range(
+        isLowPerfDevice ? 50 : 150,
+        isLowPerfDevice ? 150 : 400
+      ),
       size: party.variation.range(0.8, 2),
       speed: party.variation.range(200, 700),
     });
-  }, 300)
-})
+  }, 300);
+});
 </script>
 
 <style scoped>
@@ -109,8 +138,8 @@ onMounted(() => {
   padding: 20px;
   height: calc(100% - 120px);
   padding: 1rem;
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
 }
 
@@ -198,13 +227,13 @@ onMounted(() => {
   margin-bottom: 5px;
   display: flex;
   align-items: flex-start;
-  gap: 5px; 
-  white-space: normal; 
-  word-wrap: break-word; 
+  gap: 5px;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .result-reason-list li::before {
-  content: "•"; 
+  content: "•";
   margin-right: 5px;
   font-weight: bold;
   color: var(--hemo-color-primary-medium);
