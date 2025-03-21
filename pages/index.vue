@@ -1,34 +1,55 @@
 <template>
   <div class="eligibility-page">
     <header class="header">
-      <NuxtImg src="images/logo-horizontal-branca.svg" alt="Logo Hemocione" class="logo" />
+      <NuxtImg
+        src="images/logo-horizontal-branca.svg"
+        alt="Logo Hemocione"
+        class="logo"
+      />
     </header>
 
     <main class="content">
       <h1>Posso doar?</h1>
       <p>
-        Responda as perguntas mais frequentes sobre doação de sangue e descubra se você está
-        elegível para doar sangue
+        Responda as perguntas mais frequentes sobre doação de sangue e descubra
+        se você está elegível para doar sangue
       </p>
 
-      <NuxtImg src="images/donation-illustration.png" alt="Ilustração de Doação" class="illustration" />
+      <NuxtImg
+        src="images/donation-illustration.png"
+        alt="Ilustração de Doação"
+        class="illustration"
+      />
     </main>
 
     <div class="button-container">
-      <button v-if="loggedIn" class="register-button" @click="goRegister" :disabled="loadingLogin">
-        Continuar como <b>{{ user?.givenName }}</b>
-      </button>
-      <button v-else class="register-button" @click="goRegister" :disabled="loadingLogin">
-        Acesse sua conta e descubra se pode doar
-      </button>
-
-      <button v-if="loggedIn" class="continue-button" @click="handleWrongUser" :disabled="loadingLogin">
-        Não é você? Clique aqui para sair da conta
-      </button>
-      <button v-else class="continue-button" @click="goToIntention" :disabled="loadingLogin">
-        Continuar sem conta →
+      <button
+        class="register-button"
+        @click="principalButtonAction"
+        :loading="!iframeValidated"
+        :disabled="loadingLogin || !iframeValidated"
+      >
+        {{ principalButtonText }}
       </button>
 
+      <template v-if="iframeValidated && !iframed">
+        <button
+          v-if="loggedIn"
+          class="continue-button"
+          @click="handleWrongUser"
+          :disabled="loadingLogin"
+        >
+          Não é você? Clique aqui para sair da conta
+        </button>
+        <button
+          v-else
+          class="continue-button"
+          @click="goToIntention"
+          :disabled="loadingLogin"
+        >
+          Continuar sem conta →
+        </button>
+      </template>
     </div>
   </div>
 </template>
@@ -40,7 +61,8 @@ import { redirectToID } from "~/middleware/auth";
 
 const router = useRouter();
 const userStore = useUserStore();
-const { user, loadingLogin, loggedIn } = storeToRefs(userStore)
+const { user, loadingLogin, loggedIn, iframeValidated, iframed } =
+  storeToRefs(userStore);
 
 function goToIntention() {
   sessionStorage.setItem("anonymousMode", "true");
@@ -49,8 +71,35 @@ function goToIntention() {
 
 onMounted(() => {
   userStore.clearFormResponse();
-  sessionStorage.removeItem("selectedIntent")
-})
+  sessionStorage.removeItem("selectedIntent");
+});
+
+const principalButtonText = computed(() => {
+  if (!iframeValidated.value) return "";
+
+  if (iframed.value) {
+    return "Começar";
+  }
+
+  return loggedIn.value
+    ? `Continuar como ${user.value?.givenName}`
+    : "Continuar com conta Hemocione";
+});
+
+const principalButtonAction = computed(() => {
+  if (!iframeValidated.value) return () => console.log("not validated");
+
+  const goNonAnonymous = () => {
+    sessionStorage.setItem("anonymousMode", "false");
+    goToIntention();
+  };
+
+  if (iframed.value) {
+    return goNonAnonymous;
+  }
+
+  return loggedIn.value ? goNonAnonymous : goRegister;
+});
 
 async function goRegister() {
   if (loggedIn.value) {
@@ -100,7 +149,7 @@ async function handleWrongUser() {
   border-bottom-right-radius: 32px;
   padding-bottom: 100px;
   width: 100%;
-  height: calc((100dvh - var(--navbar-height))*0.7);
+  height: calc((100dvh - var(--navbar-height)) * 0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -130,7 +179,7 @@ async function handleWrongUser() {
   background-color: var(--hemo-color-white);
   padding: 20px 20px 60px;
   width: 100%;
-  height: calc((100dvh - var(--navbar-height))*0.3);
+  height: calc((100dvh - var(--navbar-height)) * 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;

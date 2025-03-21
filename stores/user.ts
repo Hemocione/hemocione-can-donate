@@ -9,7 +9,9 @@ export const useUserStore = defineStore("user", {
     token: null as string | null,
     formResponse: null as any, // To be replaced with a specific type if available
     donationIntent: null as "today" | "soon" | null,
-    loadingLogin: true as Boolean,
+    loadingLogin: true as boolean,
+    iframed: false as boolean,
+    iframeValidated: false as boolean,
   }),
   getters: {
     formQuestions(state) {
@@ -40,6 +42,10 @@ export const useUserStore = defineStore("user", {
     },
   },
   actions: {
+    setIsIframed(value: boolean) {
+      this.iframed = value;
+      this.iframeValidated = true;
+    },
     setUser(user: CurrentUserData | null) {
       this.user = user;
     },
