@@ -28,6 +28,7 @@
           class="answer-button"
           :class="{ selected: selectedAnswer === 'positive' }"
           @click="answerQuestion('positive')"
+          :key="`answer-positive-${currentQuestionIndex}`"
         >
           👍 Sim
         </el-button>
@@ -35,6 +36,7 @@
           class="answer-button"
           :class="{ selected: selectedAnswer === 'negative' }"
           @click="answerQuestion('negative')"
+          :key="`answer-negative-${currentQuestionIndex}`"
         >
           👎 Não
         </el-button>
