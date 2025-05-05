@@ -70,16 +70,15 @@ export const useUserStore = defineStore("user", {
       this.formResponse = null;
     },
 
-    async ensureFormResponse() {
+    async ensureFormResponse(retryCount = 0) {
       if (!this.formResponse || !this.formResponse._id) {
         console.log("Form response not found. Creating a new one...");
         const response = await this.createFormResponse();
         if (response) {
           this.setFormResponse(response);
           console.log("New form response created:", response);
-        } else {
-          console.error("Failed to create a form response.");
-          throw new Error("Failed to create form response");
+        } else if (retryCount < 3) {
+          await this.ensureFormResponse(retryCount + 1);
         }
       }
     },
