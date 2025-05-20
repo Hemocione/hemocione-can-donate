@@ -83,7 +83,7 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async createFormResponse(integration?: any) {
+    async createFormResponse(integration?: { slug: string; params?: Record<string, unknown> } | null) {
       try {
 
         const formResponse = await $fetch("/api/v1/formResponse", {
@@ -94,7 +94,7 @@ export const useUserStore = defineStore("user", {
           },
           body: { integration }
         });
-        
+
         this.setFormResponse(formResponse);
         console.log(
           "✅ FormResponse stored with mode:",

@@ -9,7 +9,7 @@ import type { Answer } from "~/server/api/v1/formResponse/[formId]/answers/[answ
 export async function createFormResponse(
   user: HemocioneUserAuthTokenData | null,
   token?: string,
-  integration?: any | null
+  integration?: { slug: string; params?: Record<string, unknown> } | null
 ) {
   const mode = user ? "logged-in" : "anonymous";
 

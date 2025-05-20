@@ -81,9 +81,8 @@ async function initializeQuestionnaire() {
 
       // Criamos o Date no timezone local, sem UTC
       const eventDateObj = new Date(year, month - 1, day);
-      const today = new Date();
 
-      if (eventDateObj.getDay() === today.getDay()) {
+      if (isToday(eventDateObj)) {
         intent = "today";
         console.log("📆 eventDate é hoje. Definindo intenção como 'today'.");
       } else {
@@ -98,12 +97,16 @@ async function initializeQuestionnaire() {
     console.warn("⚠️ Nenhuma eventDate fornecida. Intenção padrão 'soon' será usada.");
   }
 
-  await userStore.createFormResponse(integration)
-  sessionStorage.setItem("selectedIntent", intent);
-  userStore.setDonationIntent(intent);
-  await userStore.updateDonationIntent(intent);
-  console.log(`📌 selectedIntent salvo como: '${intent}'`);
-
+  try {
+    await userStore.createFormResponse(integration);
+    sessionStorage.setItem("selectedIntent", intent);
+    userStore.setDonationIntent(intent);
+    await userStore.updateDonationIntent(intent);
+    console.log(`📌 selectedIntent salvo como: '${intent}'`);
+  } catch (error) {
+    console.error("❌ Erro ao criar/atualizar resposta do formulário:", error);
+  }
+  
   // Recupera a primeira pergunta disponível
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;
   if (firstQuestionSlug) {
@@ -117,9 +120,18 @@ async function initializeQuestionnaire() {
   }
 }
 
+function isToday(date: Date): Boolean {
+  const today = new Date();
+  return date.getFullYear() === today.getFullYear()
+         && date.getMonth() === today.getMonth()
+         && date.getDate() === today.getDate();
+}
+
 // Inicializa no momento em que a página montar
 onMounted(() => {
-  initializeQuestionnaire();
+initializeQuestionnaire().catch(error => {
+  console.error("❌ Erro ao inicializar questionário:", error);
+  });
 });
 
 </script>
