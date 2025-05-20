@@ -1,8 +1,26 @@
 <template>
-  <img src="/images/baseLogo.svg" class="logo" />
+  <div class="splash">
+    <img
+      src="/images/baseLogo.svg"
+      alt="App logo"
+      class="logo"
+    />
+  </div>
 </template>
 
-<style scoped>
+<style>
+.splash {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes zoom-in-zoom-out {
+  0% { transform: scale(0.5); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0.5); }
+}
 .logo {
   animation: zoom-in-zoom-out 5s cubic-bezier(0.175, 0.885, 0.32, 1.275)
     infinite;
