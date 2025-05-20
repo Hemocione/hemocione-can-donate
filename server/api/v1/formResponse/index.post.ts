@@ -10,9 +10,13 @@ export default defineEventHandler(async (event) => {
     console.warn("⚠️ No user detected, defaulting to anonymous.");
   }
 
+  const body = await readBody(event);
+  const integration = body?.integration ?? null;
+
   const formResponse = await createFormResponse(
     user ?? null,
-    event.headers.get("Authorization") ?? undefined
+    event.headers.get("Authorization") ?? undefined,
+    integration
   );
   console.log("🛠 Created form response:", formResponse);
 

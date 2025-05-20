@@ -29,6 +29,26 @@ const AnswerSchema = new Schema({
   },
 });
 
+// Schema “base” (só diz qual é o discriminator key)
+export const IntegrationBaseSchema = new Schema(
+  { integrationSlug: { type: String, required: true } },
+  { _id: false, discriminatorKey: 'integrationSlug' },
+);
+
+// Integração para o Eventos
+export const EventIntegrationSchema = new Schema(
+  {
+    eventSlug: { type: String, required: true },
+    eventDate: { type: Date, required: true },
+  },
+  { _id: false },
+);
+
+// registra as duas integrações que vem de eventos
+['events-flow-schedule', 'events-adhoc-ticket'].forEach((name) =>
+  IntegrationBaseSchema.discriminator(name, EventIntegrationSchema),
+);
+
 const FormResponseSchema = new Schema(
   {
     mode: {
@@ -80,6 +100,11 @@ const FormResponseSchema = new Schema(
         type: String,
       },
     ],
+    integration: {
+      type: IntegrationBaseSchema,
+      default: null,          // allows it to be null / omitted
+    },
+
   },
   {
     timestamps: true,

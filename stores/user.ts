@@ -83,14 +83,16 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async createFormResponse() {
+    async createFormResponse(integration?: { slug: string; params?: Record<string, unknown> } | null) {
       try {
+
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
           },
+          body: { integration }
         });
 
         this.setFormResponse(formResponse);
