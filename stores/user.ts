@@ -86,8 +86,6 @@ export const useUserStore = defineStore("user", {
     async createFormResponse(integration?: any) {
       try {
 
-        console.log("Olha aqui:");
-        console.log(integration);
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
@@ -96,10 +94,7 @@ export const useUserStore = defineStore("user", {
           },
           body: { integration }
         });
-
-        console.log("Resposta do POST");
-        console.log(formResponse)
-
+        
         this.setFormResponse(formResponse);
         console.log(
           "✅ FormResponse stored with mode:",
