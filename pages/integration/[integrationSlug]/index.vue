@@ -43,10 +43,34 @@ const integrationSlug = route.params.integrationSlug as string;
 const eventSlug = route.query.eventSlug as string | undefined;
 const eventDate = route.query.eventDate as string | undefined;
 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const integration = {
   slug: integrationSlug,
   params: { eventSlug, eventDate },
 };
+
+function getUserTimeZone(): string {
+  // Fallback para dayjs.tz.guess() quando a API do browser falha
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || dayjs.tz.guess();
+}
+
+function computeDonationIntent(eventDateISO?: string): 'today' | 'soon' {
+  if (!eventDateISO) return 'soon';
+
+  const tz = getUserTimeZone();
+
+  // Convertendo a data recebida em UTC para TimeZone do usuário
+  const eventDay = dayjs.utc(eventDateISO).tz(tz).startOf('day');
+  const today = dayjs().tz(tz).startOf('day');
+
+  // Se hoje for antes da data recebida → "soon"
+  return today.isBefore(eventDay) ? 'soon' : 'today';
+}
 
 // Variável que vai guardar a URL para a próxima pergunta
 const nextQuestionUrl = ref<string>("");
@@ -72,41 +96,14 @@ async function initializeQuestionnaire() {
   console.log("📌 questionnaireStarted salvo na sessionStorage");
 
   // Define a intenção de doação ("today" ou "soon")
-  let intent: "today" | "soon" = "soon"; // valor padrão
+  const intent = computeDonationIntent(eventDate);
 
-  if (eventDate) {
-    try {
-      // Separamos manualmente o ano, mês e dia da string
-      const [year, month, day] = eventDate.split("-").map(Number);
+  await userStore.createFormResponse(integration);
+  sessionStorage.setItem("selectedIntent", intent);
+  userStore.setDonationIntent(intent);
+  await userStore.updateDonationIntent(intent);
+  console.log(`📌 selectedIntent salvo como: '${intent}'`);
 
-      // Criamos o Date no timezone local, sem UTC
-      const eventDateObj = new Date(year, month - 1, day);
-
-      if (isToday(eventDateObj)) {
-        intent = "today";
-        console.log("📆 eventDate é hoje. Definindo intenção como 'today'.");
-      } else {
-        intent = "soon";
-        console.log("📆 eventDate não é hoje. Definindo intenção como 'soon'.");
-      }
-    } catch (error) {
-      console.error("❌ Erro ao interpretar eventDate:", error);
-      // fallback: mantém "soon"
-    }
-  } else {
-    console.warn("⚠️ Nenhuma eventDate fornecida. Intenção padrão 'soon' será usada.");
-  }
-
-  try {
-    await userStore.createFormResponse(integration);
-    sessionStorage.setItem("selectedIntent", intent);
-    userStore.setDonationIntent(intent);
-    await userStore.updateDonationIntent(intent);
-    console.log(`📌 selectedIntent salvo como: '${intent}'`);
-  } catch (error) {
-    console.error("❌ Erro ao criar/atualizar resposta do formulário:", error);
-  }
-  
   // Recupera a primeira pergunta disponível
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;
   if (firstQuestionSlug) {
@@ -118,13 +115,6 @@ async function initializeQuestionnaire() {
   } else {
     console.error("❌ Nenhuma pergunta encontrada para iniciar o questionário.");
   }
-}
-
-function isToday(date: Date): Boolean {
-  const today = new Date();
-  return date.getFullYear() === today.getFullYear()
-         && date.getMonth() === today.getMonth()
-         && date.getDate() === today.getDate();
 }
 
 // Inicializa no momento em que a página montar

@@ -29,13 +29,24 @@ const AnswerSchema = new Schema({
   },
 });
 
-// NEW – tiny schema just to keep things tidy (no own _id)
-const IntegrationSchema = new Schema(
+// Schema “base” (só diz qual é o discriminator key)
+export const IntegrationBaseSchema = new Schema(
+  { integrationSlug: { type: String, required: true } },
+  { _id: false, discriminatorKey: 'integrationSlug' },
+);
+
+// Integração para o Eventos
+export const EventIntegrationSchema = new Schema(
   {
-    slug: { type: String, required: true },
-    params: { type: Schema.Types.Mixed, default: {} }, // “any” JSON
+    eventSlug: { type: String, required: true },
+    eventDate: { type: Date, required: true },
   },
-  { _id: false }
+  { _id: false },
+);
+
+// registra as duas integrações que vem de eventos
+['events-flow-schedule', 'events-adhoc-ticket'].forEach((name) =>
+  IntegrationBaseSchema.discriminator(name, EventIntegrationSchema),
 );
 
 const FormResponseSchema = new Schema(
@@ -90,7 +101,7 @@ const FormResponseSchema = new Schema(
       },
     ],
     integration: {
-      type: IntegrationSchema,
+      type: IntegrationBaseSchema,
       default: null,          // allows it to be null / omitted
     },
 
