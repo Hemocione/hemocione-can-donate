@@ -42,6 +42,7 @@
           class="intention-button"
           :class="{ selected: selectedIntent === 'today' }"
           @click="selectIntent('today')"
+          :loading="loadingAfterSelected"
         >
           ⏰ Hoje
         </el-button>
@@ -49,6 +50,7 @@
           class="intention-button"
           :class="{ selected: selectedIntent === 'soon' }"
           @click="selectIntent('soon')"
+          :loading="loadingAfterSelected"
         >
           ⏳ Em breve
         </el-button>
@@ -118,32 +120,43 @@ async function startQuestionnaire() {
   sessionStorage.setItem("questionnaireStarted", "true");
 }
 
+const loadingAfterSelected = ref(false);
+
 // Handles selecting a donation intent
 async function selectIntent(intent: "today" | "soon") {
-  console.log(`Selecionando a intenção: ${intent}`);
+  if (loadingAfterSelected.value) return;
 
-  selectedIntent.value = intent;
-  sessionStorage.setItem("selectedIntent", intent);
+  loadingAfterSelected.value = true;
+  try {
+    console.log(`Selecionando a intenção: ${intent}`);
 
-  userStore.setDonationIntent(intent);
+    selectedIntent.value = intent;
+    sessionStorage.setItem("selectedIntent", intent);
 
-  if (!isAnonymousMode.value) {
-    const isLoggedIn = await evaluateCurrentLogin();
-    if (!isLoggedIn) {
-      console.log("Usuário não autenticado. Redirecionando para login...");
-      redirectToID(window.location.pathname);
-      return;
+    userStore.setDonationIntent(intent);
+
+    if (!isAnonymousMode.value) {
+      const isLoggedIn = await evaluateCurrentLogin();
+      if (!isLoggedIn) {
+        console.log("Usuário não autenticado. Redirecionando para login...");
+        redirectToID(window.location.pathname);
+        return;
+      }
     }
+
+    await userStore.updateDonationIntent(intent);
+
+    const firstQuestionSlug = userStore.formQuestions[0]?.slug;
+    if (firstQuestionSlug) {
+      router.push(`/questions/${firstQuestionSlug}`);
+    } else {
+      console.error("No questions found for the selected intent.");
+    }
+  } catch (error) {
+    console.error("Error selecting intent:", error);
   }
 
-  await userStore.updateDonationIntent(intent);
-
-  const firstQuestionSlug = userStore.formQuestions[0]?.slug;
-  if (firstQuestionSlug) {
-    router.push(`/questions/${firstQuestionSlug}`);
-  } else {
-    console.error("No questions found for the selected intent.");
-  }
+  loadingAfterSelected.value = false;
 }
 </script>
 
