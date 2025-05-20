@@ -84,15 +84,22 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async createFormResponse() {
+    async createFormResponse(integration?: any) {
       try {
+
+        console.log("Olha aqui:");
+        console.log(integration);
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
           },
+          body: { integration }
         });
+
+        console.log("Resposta do POST");
+        console.log(formResponse)
 
         this.setFormResponse(formResponse);
         console.log(

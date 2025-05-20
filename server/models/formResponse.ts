@@ -29,6 +29,15 @@ const AnswerSchema = new Schema({
   },
 });
 
+// NEW – tiny schema just to keep things tidy (no own _id)
+const IntegrationSchema = new Schema(
+  {
+    slug: { type: String, required: true },
+    params: { type: Schema.Types.Mixed, default: {} }, // “any” JSON
+  },
+  { _id: false }
+);
+
 const FormResponseSchema = new Schema(
   {
     mode: {
@@ -80,6 +89,11 @@ const FormResponseSchema = new Schema(
         type: String,
       },
     ],
+    integration: {
+      type: IntegrationSchema,
+      default: null,          // allows it to be null / omitted
+    },
+
   },
   {
     timestamps: true,

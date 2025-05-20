@@ -25,6 +25,11 @@ const integrationSlug = route.params.integrationSlug as string;
 const eventSlug = route.query.eventSlug as string | undefined;
 const eventDate = route.query.eventDate as string | undefined;
 
+const integration = {
+  slug: integrationSlug,
+  params: { eventSlug, eventDate },
+};
+
 // Variável que vai guardar a URL para a próxima pergunta
 const nextQuestionUrl = ref<string>("");
 
@@ -75,6 +80,7 @@ async function initializeQuestionnaire() {
     console.warn("⚠️ Nenhuma eventDate fornecida. Intenção padrão 'soon' será usada.");
   }
 
+  await userStore.createFormResponse(integration)
   sessionStorage.setItem("selectedIntent", intent);
   userStore.setDonationIntent(intent);
   await userStore.updateDonationIntent(intent);
