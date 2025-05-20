@@ -1,10 +1,13 @@
 <template>
-  <!-- <div style="color: black; padding: 20px;">
-    <h1>Iniciando o questionário...</h1>
-    <p>Usuário seria redirecionado para:</p>
-    <p style="font-weight: bold;">{{ nextQuestionUrl }}</p>
-  </div> -->
+  <img src="/images/baseLogo.svg" class="logo" />
 </template>
+
+<style scoped>
+.logo {
+  animation: zoom-in-zoom-out 5s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+    infinite;
+}
+</style>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
@@ -36,7 +39,7 @@ async function initializeQuestionnaire() {
   const isLoggedIn = await evaluateCurrentLogin();
   if (!isLoggedIn) {
     console.warn("⚠️ Usuário não autenticado. Deveria ser redirecionado para login.");
-redirectToID(window.location.pathname + window.location.search);
+    redirectToID(window.location.pathname + window.location.search);
     return;
   }
   console.log("✅ Usuário autenticado:", userStore.user);
