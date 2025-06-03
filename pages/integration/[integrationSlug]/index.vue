@@ -32,14 +32,21 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '~/stores/user';
-import { evaluateCurrentLogin, redirectToID } from '~/middleware/auth';
-import { getIntegrationDefinition } from '~/utils/integrations';   // ← mesmo nome do arquivo util
-
+import {
+  getIntegrationDefinition,
+  type IntegrationPayload,
+  type EventsIntegration
+} from '~/utils/integrations';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+definePageMeta({
+  middleware: ['auth'],   // arquivo middleware/auth.ts
+  ssr: false              // client-only page
+});
 
 // --- Instâncias de rota/estado ---
 const route  = useRoute();
@@ -52,7 +59,7 @@ const integrationDefinition = getIntegrationDefinition(
 );
 
 // 2) Constrói o payload específico
-const payload = integrationDefinition.buildPayload(route);
+let payload: IntegrationPayload | null = integrationDefinition.buildPayload(route);
 
 if (!payload) {
   console.error('❌ Parâmetros insuficientes para construir o payload');
@@ -60,7 +67,9 @@ if (!payload) {
 }
 
 // Desestrutura o que você realmente usa
-const { integrationSlug, eventSlug, eventDate } = payload ?? {};
+const integrationSlug = payload?.integrationSlug;
+const eventSlug  = (payload as EventsIntegration | null)?.eventSlug;
+const eventDate  = (payload as EventsIntegration | null)?.eventDate;
 
 // --- Helpers de data / intent ---
 function getUserTimeZone(): string {
@@ -85,13 +94,6 @@ const nextQuestionUrl = ref<string>('');
 async function initializeQuestionnaire() {
   console.log('🔵 Iniciando página de integração...');
   console.table({ integrationSlug, eventSlug, eventDate });
-
-  // 1. Autenticação
-  const isLoggedIn = await evaluateCurrentLogin();
-  if (!isLoggedIn) {
-    redirectToID(window.location.pathname + window.location.search);
-    return;
-  }
 
   // 2. Marca que começou
   sessionStorage.setItem('questionnaireStarted', 'true');

@@ -26,7 +26,7 @@ export interface IntegrationDefinition<
   /** Constroi o payload que deve ser criado em << FormResponse.integration >>. */
   buildPayload: (
     route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
-  ) => P | null;
+  ) => IntegrationPayload | null;
 
   getButtonConfig?: (formResponse: FormResponseSchema) => Promise<any>;
 }
