@@ -1,5 +1,7 @@
 import { useHemocioneUserAuth } from "~/server/services/auth";
 import { createFormResponse } from "~/server/services/formResponse";
+import { isIntegrationSlug } from "~/utils/integrations";
+import type { IntegrationPayload } from "~/utils/integrations";
 
 export default defineEventHandler(async (event) => {
   let user: ReturnType<typeof useHemocioneUserAuth> | undefined = undefined;
@@ -11,7 +13,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const integration = body?.integration ?? null;
+  let integration: IntegrationPayload | null = null;
+  if (body?.integration && isIntegrationSlug(body.integration.integrationSlug)) {
+    integration = body.integration as IntegrationPayload;
+  }
 
   const formResponse = await createFormResponse(
     user ?? null,

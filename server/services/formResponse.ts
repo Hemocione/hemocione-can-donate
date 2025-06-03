@@ -4,12 +4,13 @@ import { HemocioneUserAuthTokenData } from "./auth";
 import { getMe } from "./hemocioneId";
 import { calculateAge } from "~/utils/calculateAge";
 import type { Answer } from "~/server/api/v1/formResponse/[formId]/answers/[answerSlug]/index.put";
+import type { IntegrationPayload } from "~/utils/integrations";
 
 // Função para criar uma resposta de formulário e salvar no banco de dados
 export async function createFormResponse(
   user: HemocioneUserAuthTokenData | null,
   token?: string,
-  integration?: { slug: string; params?: Record<string, unknown> } | null
+  integration?: IntegrationPayload | null
 ) {
   const mode = user ? "logged-in" : "anonymous";
 

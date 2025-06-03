@@ -29,9 +29,13 @@ const AnswerSchema = new Schema({
   },
 });
 
+export const integrationSlugs = ['events-flow-schedule', 'events-adhoc-ticket'] as const;
+
+export type IntegrationSlug = typeof integrationSlugs[number];
+
 // Schema “base” (só diz qual é o discriminator key)
 export const IntegrationBaseSchema = new Schema(
-  { integrationSlug: { type: String, required: true } },
+  { integrationSlug: { type: String, required: true, enum: integrationSlugs } },
   { _id: false, discriminatorKey: 'integrationSlug' },
 );
 

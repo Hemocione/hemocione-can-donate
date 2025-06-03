@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { redirectToID } from "~/middleware/auth";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
 import { getQuestionsFromContext, type Question } from "~/utils/questions";
+import type { IntegrationPayload } from "~/utils/integrations";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -83,8 +84,8 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async createFormResponse(integration?: { slug: string; params?: Record<string, unknown> } | null) {
-      try {
+    async createFormResponse(integration: IntegrationPayload | null = null) {
+    try {
 
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",

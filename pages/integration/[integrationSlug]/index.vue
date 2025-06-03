@@ -32,6 +32,7 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 import { evaluateCurrentLogin, redirectToID } from "~/middleware/auth";
+import { buildIntegrationPayload } from "~/utils/integrations";
 
 // Captura da rota e store
 const route = useRoute();
@@ -49,10 +50,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const integration = {
-  slug: integrationSlug,
-  params: { eventSlug, eventDate },
-};
+const integration = buildIntegrationPayload(route);  // tipo: IntegrationPayload | null
 
 function getUserTimeZone(): string {
   // Fallback para dayjs.tz.guess() quando a API do browser falha
