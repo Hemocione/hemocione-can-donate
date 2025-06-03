@@ -28,21 +28,12 @@
 </style>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "~/stores/user";
-import { evaluateCurrentLogin, redirectToID } from "~/middleware/auth";
-import { buildIntegrationPayload } from "~/utils/integrations";
-
-// Captura da rota e store
-const route = useRoute();
-const router = useRouter();
-const userStore = useUserStore();
-
-// Captura dos parâmetros da rota
-const integrationSlug = route.params.integrationSlug as string;
-const eventSlug = route.query.eventSlug as string | undefined;
-const eventDate = route.query.eventDate as string | undefined;
+// --- Imports (externos e internos) ---
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '~/stores/user';
+import { evaluateCurrentLogin, redirectToID } from '~/middleware/auth';
+import { getIntegrationDefinition } from '~/utils/integrations';   // ← mesmo nome do arquivo util
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -50,76 +41,83 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const integration = buildIntegrationPayload(route);  // tipo: IntegrationPayload | null
+// --- Instâncias de rota/estado ---
+const route  = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
 
+// 1) Qual integration chegou?
+const integrationDefinition = getIntegrationDefinition(
+  route.params.integrationSlug as string | undefined
+);
+
+// 2) Constrói o payload específico
+const payload = integrationDefinition.buildPayload(route);
+
+if (!payload) {
+  console.error('❌ Parâmetros insuficientes para construir o payload');
+  // Opcional: router.replace('/erro');
+}
+
+// Desestrutura o que você realmente usa
+const { integrationSlug, eventSlug, eventDate } = payload ?? {};
+
+// --- Helpers de data / intent ---
 function getUserTimeZone(): string {
-  // Fallback para dayjs.tz.guess() quando a API do browser falha
   return Intl.DateTimeFormat().resolvedOptions().timeZone || dayjs.tz.guess();
 }
 
-function computeDonationIntent(eventDateISO?: string): 'today' | 'soon' {
-  if (!eventDateISO) return 'soon';
+function computeDonationIntent(
+  isoDate?: string | Date
+): 'today' | 'soon' {
+  if (!isoDate) return 'soon';
 
   const tz = getUserTimeZone();
+  const eventDay = dayjs.utc(isoDate).tz(tz).startOf('day');
+  const today    = dayjs().tz(tz).startOf('day');
 
-  // Convertendo a data recebida em UTC para TimeZone do usuário
-  const eventDay = dayjs.utc(eventDateISO).tz(tz).startOf('day');
-  const today = dayjs().tz(tz).startOf('day');
-
-  // Se hoje for antes da data recebida → "soon"
   return today.isBefore(eventDay) ? 'soon' : 'today';
 }
 
-// Variável que vai guardar a URL para a próxima pergunta
-const nextQuestionUrl = ref<string>("");
+// --- Controle de fluxo ---
+const nextQuestionUrl = ref<string>('');
 
-// Função que inicializa o questionário
 async function initializeQuestionnaire() {
-  console.log("🔵 Iniciando página de integração...");
-  console.log("🔹 integrationSlug:", integrationSlug);
-  console.log("🔹 eventSlug:", eventSlug);
-  console.log("🔹 eventDate:", eventDate);
+  console.log('🔵 Iniciando página de integração...');
+  console.table({ integrationSlug, eventSlug, eventDate });
 
-  // Verifica se usuário está logado
+  // 1. Autenticação
   const isLoggedIn = await evaluateCurrentLogin();
   if (!isLoggedIn) {
-    console.warn("⚠️ Usuário não autenticado. Deveria ser redirecionado para login.");
     redirectToID(window.location.pathname + window.location.search);
     return;
   }
-  console.log("✅ Usuário autenticado:", userStore.user);
 
-  // Marca que o questionário foi iniciado
-  sessionStorage.setItem("questionnaireStarted", "true");
-  console.log("📌 questionnaireStarted salvo na sessionStorage");
+  // 2. Marca que começou
+  sessionStorage.setItem('questionnaireStarted', 'true');
 
-  // Define a intenção de doação ("today" ou "soon")
-  const intent = computeDonationIntent(eventDate);
+  // 3. Define intenção da doação
+  const intent = computeDonationIntent(eventDate as string | undefined);
 
-  await userStore.createFormResponse(integration);
-  sessionStorage.setItem("selectedIntent", intent);
+  // 4. Cria FormResponse já com o payload da integração
+  await userStore.createFormResponse(payload);
+  sessionStorage.setItem('selectedIntent', intent);
   userStore.setDonationIntent(intent);
   await userStore.updateDonationIntent(intent);
-  console.log(`📌 selectedIntent salvo como: '${intent}'`);
 
-  // Recupera a primeira pergunta disponível
+  // 5. Redireciona para a primeira pergunta
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;
   if (firstQuestionSlug) {
     nextQuestionUrl.value = `/questions/${firstQuestionSlug}`;
-    console.log("➡️ Próxima URL para onde o usuário será redirecionado:", nextQuestionUrl.value);
-
-    // Faz o redirecionamento de fato
     router.push(nextQuestionUrl.value);
   } else {
-    console.error("❌ Nenhuma pergunta encontrada para iniciar o questionário.");
+    console.error('❌ Nenhuma pergunta encontrada para iniciar o questionário.');
   }
 }
 
-// Inicializa no momento em que a página montar
 onMounted(() => {
-initializeQuestionnaire().catch(error => {
-  console.error("❌ Erro ao inicializar questionário:", error);
-  });
+  initializeQuestionnaire().catch(err =>
+    console.error('❌ Erro ao inicializar questionário:', err)
+  );
 });
-
 </script>
