@@ -35,22 +35,44 @@ export type IntegrationSlug = typeof integrationSlugs[number];
 
 // Schema “base” (só diz qual é o discriminator key)
 export const IntegrationBaseSchema = new Schema(
-  { integrationSlug: { type: String, required: true, enum: integrationSlugs } },
-  { _id: false, discriminatorKey: 'integrationSlug' },
-);
-
-// Integração para o Eventos
-export const EventIntegrationSchema = new Schema(
   {
-    eventSlug: { type: String, required: true },
-    eventDate: { type: Date, required: true },
+    integrationSlug: {
+      type: String,
+      required: true,
+      enum: integrationSlugs,
+    },
+    payload: {
+      type: Schema.Types.Mixed,
+      required: true,
+    },
   },
-  { _id: false },
+  { _id: false, discriminatorKey: "integrationSlug" }
 );
 
-// registra as duas integrações que vem de eventos
-['events-flow-schedule', 'events-adhoc-ticket'].forEach((name) =>
-  IntegrationBaseSchema.discriminator(name, EventIntegrationSchema),
+IntegrationBaseSchema.discriminator(
+  "events-flow-schedule",
+  new Schema(
+    {
+      payload: {
+        eventSlug: { type: String, required: true },
+        eventDate: { type: Date, required: true },
+      },
+    },
+    { _id: false }
+  )
+);
+
+IntegrationBaseSchema.discriminator(
+  "events-adhoc-ticket",
+  new Schema(
+    {
+      payload: {
+        eventSlug: { type: String, required: true },
+        eventDate: { type: Date, required: true },
+      },
+    },
+    { _id: false }
+  )
 );
 
 const FormResponseSchema = new Schema(

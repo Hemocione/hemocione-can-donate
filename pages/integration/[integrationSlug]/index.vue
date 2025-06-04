@@ -32,14 +32,12 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '~/stores/user';
-import {
-  getIntegrationDefinition,
-  type IntegrationPayload,
-  type EventsIntegration
-} from '~/utils/integrations';
+import type { IntegrationPayload, EventsIntegration } from '~/utils/integrations'; 
+import { getIntegrationDefinition, isEventsIntegration } from '~/utils/integrations';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import type { IntegrationSlug } from '~/server/models/formResponse';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -53,21 +51,25 @@ const route  = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
+const integrationSlug = route.params.integrationSlug as IntegrationSlug | undefined;
+
+if (!isIntegrationSlug(integrationSlug)) {
+  console.error('❌ IntegrationSlug não reconhecido')
+}
+
 // 1) Qual integration chegou?
 const integrationDefinition = getIntegrationDefinition(
   route.params.integrationSlug as string | undefined
 );
 
 // 2) Constrói o payload específico
-let payload: IntegrationPayload | null = integrationDefinition.buildPayload(route);
+let payload: IntegrationPayload | null = await integrationDefinition.buildPayload(route);
 
 if (!payload) {
   console.error('❌ Parâmetros insuficientes para construir o payload');
-  // Opcional: router.replace('/erro');
 }
 
 // Desestrutura o que você realmente usa
-const integrationSlug = payload?.integrationSlug;
 const eventSlug  = (payload as EventsIntegration | null)?.eventSlug;
 const eventDate  = (payload as EventsIntegration | null)?.eventDate;
 
@@ -93,7 +95,6 @@ const nextQuestionUrl = ref<string>('');
 
 async function initializeQuestionnaire() {
   console.log('🔵 Iniciando página de integração...');
-  console.table({ integrationSlug, eventSlug, eventDate });
 
   // 2. Marca que começou
   sessionStorage.setItem('questionnaireStarted', 'true');
@@ -102,7 +103,7 @@ async function initializeQuestionnaire() {
   const intent = computeDonationIntent(eventDate as string | undefined);
 
   // 4. Cria FormResponse já com o payload da integração
-  await userStore.createFormResponse(payload);
+  await userStore.createFormResponse(integrationSlug, payload);
   sessionStorage.setItem('selectedIntent', intent);
   userStore.setDonationIntent(intent);
   await userStore.updateDonationIntent(intent);

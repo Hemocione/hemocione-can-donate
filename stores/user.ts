@@ -3,6 +3,7 @@ import { redirectToID } from "~/middleware/auth";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
 import { getQuestionsFromContext, type Question } from "~/utils/questions";
 import type { IntegrationPayload } from "~/utils/integrations";
+import type { IntegrationSlug } from "~/server/models/formResponse";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -84,17 +85,20 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async createFormResponse(integration: IntegrationPayload | null = null) {
+    async createFormResponse(integrationSlug: IntegrationSlug | null = null, integrationPayload: IntegrationPayload | null = null) {
     try {
-
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
           },
-          body: { integration }
-        });
+          body: {
+            integration: integrationSlug && integrationPayload
+              ? { integrationSlug, payload: integrationPayload }
+              : null,
+          }       
+         });
 
         this.setFormResponse(formResponse);
         console.log(

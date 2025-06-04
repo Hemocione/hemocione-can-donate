@@ -6,13 +6,7 @@ export function isIntegrationSlug(value: unknown): value is IntegrationSlug {
   return typeof value === "string" && (integrationSlugs as readonly string[]).includes(value);
 }
 
-/** Todo objeto guardado em `formResponse.integration` deve ser um extend disso. */
-export interface BaseIntegration {
-  integrationSlug: IntegrationSlug;
-}
-
-export interface EventsIntegration extends BaseIntegration {
-  integrationSlug: "events-flow-schedule" | "events-adhoc-ticket";
+export interface EventsIntegration {
   eventSlug: string;
   eventDate: string | Date; // ISO string no front, Date no back
 }
@@ -20,21 +14,19 @@ export interface EventsIntegration extends BaseIntegration {
 /** Union de todos os payloads existentes. */
 export type IntegrationPayload = EventsIntegration;
 
-export interface IntegrationDefinition<
-  P extends BaseIntegration = BaseIntegration
-> {
+export interface IntegrationDefinition {
   /** Constroi o payload que deve ser criado em << FormResponse.integration >>. */
   buildPayload: (
     route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
-  ) => IntegrationPayload | null;
+  ) => Promise<IntegrationPayload | null>;
 
   getButtonConfig?: (formResponse: FormResponseSchema) => Promise<any>;
 }
 
 /** "events-flow-schedule" e "events-adhoc-ticket" compartilham a mesma lógica. */
-const buildEventsPayload = (
+const buildEventsPayload = async (
   route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
-): EventsIntegration | null => {
+): Promise<EventsIntegration | null> => {
   const slug = route.params.integrationSlug as IntegrationSlug | undefined;
   if (slug !== "events-flow-schedule" && slug !== "events-adhoc-ticket") return null;
 
@@ -42,7 +34,7 @@ const buildEventsPayload = (
   const eventDate = route.query.eventDate as string | undefined;
   if (!eventSlug || !eventDate) return null;
 
-  return { integrationSlug: slug, eventSlug, eventDate };
+  return { eventSlug, eventDate };
 };
 
 export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
@@ -69,4 +61,15 @@ export function getIntegrationDefinition(
   const def = integrations[slug];
   if (!def) throw new Error(`Nenhum IntegrationDefinition registrado para '${slug}'`);
   return def;
+}
+
+export function isEventsIntegration(
+  payload: IntegrationPayload | null | undefined
+): payload is EventsIntegration {
+  return (
+    !!payload &&
+    typeof (payload as any).eventSlug === "string" &&
+    (typeof (payload as any).eventDate === "string" ||
+      (payload as any).eventDate instanceof Date)
+  );
 }

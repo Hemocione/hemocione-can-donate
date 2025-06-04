@@ -1,5 +1,5 @@
 import { InferSchemaType } from "mongoose";
-import { FormResponse, FormResponseSchema } from "../models/formResponse";
+import { FormResponse, FormResponseSchema, IntegrationSlug } from "../models/formResponse";
 import { HemocioneUserAuthTokenData } from "./auth";
 import { getMe } from "./hemocioneId";
 import { calculateAge } from "~/utils/calculateAge";
@@ -10,7 +10,7 @@ import type { IntegrationPayload } from "~/utils/integrations";
 export async function createFormResponse(
   user: HemocioneUserAuthTokenData | null,
   token?: string,
-  integration?: IntegrationPayload | null
+  integrationDoc?: Record<string, unknown> | null
 ) {
   const mode = user ? "logged-in" : "anonymous";
 
@@ -26,7 +26,7 @@ export async function createFormResponse(
     const formResponse = new FormResponse({
       mode,
       user: userData,
-      integration,
+      integration: integrationDoc,      
       ...extraFormInitialData,
     });
 
