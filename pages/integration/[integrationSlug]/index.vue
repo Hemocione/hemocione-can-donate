@@ -33,7 +33,8 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '~/stores/user';
 import type { IntegrationPayload, EventsIntegration } from '~/utils/integrations'; 
-import { getIntegrationDefinition, isEventsIntegration } from '~/utils/integrations';
+import { getIntegrationDefinition } from '~/utils/integrations';
+import { evaluateCurrentLogin } from '~/middleware/auth';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -70,7 +71,6 @@ if (!payload) {
 }
 
 // Desestrutura o que você realmente usa
-const eventSlug  = (payload as EventsIntegration | null)?.eventSlug;
 const eventDate  = (payload as EventsIntegration | null)?.eventDate;
 
 // --- Helpers de data / intent ---
@@ -118,9 +118,12 @@ async function initializeQuestionnaire() {
   }
 }
 
-onMounted(() => {
-  initializeQuestionnaire().catch(err =>
-    console.error('❌ Erro ao inicializar questionário:', err)
-  );
+onMounted(async () => {
+  const isLoggedIn = await evaluateCurrentLogin()
+  if (isLoggedIn) {
+    initializeQuestionnaire().catch(err =>
+      console.error('❌ Erro ao inicializar questionário:', err)
+    );
+  }
 });
 </script>
