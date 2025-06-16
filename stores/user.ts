@@ -85,7 +85,7 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async createFormResponse(integrationSlug: IntegrationSlug | null = null, integrationPayload: IntegrationPayload | null = null) {
+    async createFormResponse(integrationSlug: IntegrationSlug | null = null, integrationPayload: IntegrationPayload | null = null, donationIntent: "today" | "soon" | null = null) {
     try {
         const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
@@ -97,6 +97,7 @@ export const useUserStore = defineStore("user", {
             integration: integrationSlug && integrationPayload
               ? { integrationSlug, payload: integrationPayload }
               : null,
+              dontationIntent: donationIntent,
           }       
          });
 

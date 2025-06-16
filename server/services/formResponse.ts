@@ -10,7 +10,8 @@ import type { IntegrationPayload } from "~/utils/integrations";
 export async function createFormResponse(
   user: HemocioneUserAuthTokenData | null,
   token?: string,
-  integrationDoc?: Record<string, unknown> | null
+  integrationDoc?: Record<string, unknown> | null,
+  intent?: "today" | "soon" | null,
 ) {
   const mode = user ? "logged-in" : "anonymous";
 
@@ -26,7 +27,8 @@ export async function createFormResponse(
     const formResponse = new FormResponse({
       mode,
       user: userData,
-      integration: integrationDoc,      
+      integration: integrationDoc,
+      donationIntent: intent,      
       ...extraFormInitialData,
     });
 

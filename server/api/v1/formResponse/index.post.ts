@@ -20,7 +20,8 @@ export default defineEventHandler(async (event) => {
   const formResponse = await createFormResponse(
     user ?? null,
     event.headers.get("Authorization") ?? undefined,
-    body.integration
+    body.integration,
+    body.dontationIntent,
     );
   console.log("🛠 Created form response:", formResponse);
 

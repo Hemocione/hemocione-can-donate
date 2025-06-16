@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 .splash {
   height: 100%;
   display: flex;
@@ -35,6 +35,7 @@ import { useUserStore } from '~/stores/user';
 import type { IntegrationPayload, EventsIntegration } from '~/utils/integrations'; 
 import { getIntegrationDefinition } from '~/utils/integrations';
 import { evaluateCurrentLogin } from '~/middleware/auth';
+import { getUserTimeZone } from '~/utils/getUserTimeZone';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -55,7 +56,7 @@ const userStore = useUserStore();
 const integrationSlug = route.params.integrationSlug as IntegrationSlug | undefined;
 
 if (!isIntegrationSlug(integrationSlug)) {
-  console.error('❌ IntegrationSlug não reconhecido')
+  navigateTo('/');
 }
 
 // 1) Qual integration chegou?
@@ -64,19 +65,17 @@ const integrationDefinition = getIntegrationDefinition(
 );
 
 // 2) Constrói o payload específico
-let payload: IntegrationPayload | null = await integrationDefinition.buildPayload(route);
+let payload: IntegrationPayload | null = null;
+if (integrationDefinition) {
+  payload = await integrationDefinition.buildPayload(route);
+}
 
 if (!payload) {
-  console.error('❌ Parâmetros insuficientes para construir o payload');
+  navigateTo('/');
 }
 
 // Desestrutura o que você realmente usa
 const eventDate  = (payload as EventsIntegration | null)?.eventDate;
-
-// --- Helpers de data / intent ---
-function getUserTimeZone(): string {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone || dayjs.tz.guess();
-}
 
 function computeDonationIntent(
   isoDate?: string | Date
@@ -103,10 +102,10 @@ async function initializeQuestionnaire() {
   const intent = computeDonationIntent(eventDate as string | undefined);
 
   // 4. Cria FormResponse já com o payload da integração
-  await userStore.createFormResponse(integrationSlug, payload);
+  await userStore.createFormResponse(integrationSlug, payload, intent);
   sessionStorage.setItem('selectedIntent', intent);
   userStore.setDonationIntent(intent);
-  await userStore.updateDonationIntent(intent);
+  // await userStore.updateDonationIntent(intent);
 
   // 5. Redireciona para a primeira pergunta
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;

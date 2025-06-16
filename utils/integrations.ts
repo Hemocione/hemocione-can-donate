@@ -27,9 +27,6 @@ export interface IntegrationDefinition {
 const buildEventsPayload = async (
   route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
 ): Promise<EventsIntegration | null> => {
-  const slug = route.params.integrationSlug as IntegrationSlug | undefined;
-  if (slug !== "events-flow-schedule" && slug !== "events-adhoc-ticket") return null;
-
   const eventSlug = route.query.eventSlug as string | undefined;
   const eventDate = route.query.eventDate as string | undefined;
   if (!eventSlug || !eventDate) return null;
@@ -56,20 +53,9 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
 /** A partir de qualquer slug, pega a IntegrationDefinition correspondente */
 export function getIntegrationDefinition(
   slug: string | undefined
-): IntegrationDefinition {
-  if (!isIntegrationSlug(slug)) throw new Error(`Slug inválido: '${slug}'`);
+): IntegrationDefinition | null {
+  if (!isIntegrationSlug(slug)) return null;
   const def = integrations[slug];
-  if (!def) throw new Error(`Nenhum IntegrationDefinition registrado para '${slug}'`);
+  if (!def) return null;
   return def;
-}
-
-export function isEventsIntegration(
-  payload: IntegrationPayload | null | undefined
-): payload is EventsIntegration {
-  return (
-    !!payload &&
-    typeof (payload as any).eventSlug === "string" &&
-    (typeof (payload as any).eventDate === "string" ||
-      (payload as any).eventDate instanceof Date)
-  );
 }
