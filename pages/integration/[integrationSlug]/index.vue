@@ -45,7 +45,6 @@ dayjs.extend(timezone);
 
 definePageMeta({
   middleware: ['auth'],   // arquivo middleware/auth.ts
-  ssr: false              // client-only page
 });
 
 // --- Instâncias de rota/estado ---
