@@ -11,7 +11,7 @@ export const useUserStore = defineStore("user", {
     token: null as string | null,
     formResponse: null as any, // To be replaced with a specific type if available
     donationIntent: null as "today" | "soon" | null,
-    loadingLogin: true as boolean,
+    loadingLogin: true as Boolean,
     iframed: false as boolean,
     iframeValidated: false as boolean,
   }),
@@ -87,18 +87,17 @@ export const useUserStore = defineStore("user", {
 
     async createFormResponse(integrationSlug: IntegrationSlug | null = null, integrationPayload: IntegrationPayload | null = null, donationIntent: "today" | "soon" | null = null) {
     try {
-        const formResponse = await $fetch("/api/v1/formResponse", {
+      const hasIntegration = integrationSlug && integrationPayload !== null;
+      const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
           },
           body: {
-            integration: integrationSlug && integrationPayload
-              ? { integrationSlug, payload: integrationPayload }
-              : null,
-              dontationIntent: donationIntent,
-          }       
+          ...(hasIntegration ? { integration: { integrationSlug, payload: integrationPayload } } : {}),
+          ...(donationIntent ? { donationIntent } : {}),
+          }
          });
 
         this.setFormResponse(formResponse);

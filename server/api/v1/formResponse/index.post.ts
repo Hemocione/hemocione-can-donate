@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event);
 
-  if (!isIntegrationSlug(body?.integration.integrationSlug)) {
+  if (body?.integration && !isIntegrationSlug(body?.integration.integrationSlug)) {
     throw createError({ statusCode: 400, statusMessage: "Invalid integrationSlug" });
   }
   
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     user ?? null,
     event.headers.get("Authorization") ?? undefined,
     body.integration,
-    body.dontationIntent,
+    body.donationIntent,
     );
   console.log("🛠 Created form response:", formResponse);
 
