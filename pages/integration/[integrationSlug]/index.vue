@@ -30,18 +30,13 @@
 <script setup lang="ts">
 // --- Imports (externos e internos) ---
 import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '~/stores/user';
-import type { IntegrationPayload, EventsIntegration } from '~/utils/integrations'; 
-import { getIntegrationDefinition } from '~/utils/integrations';
+import { useRoute, useRouter } from 'vue-router';
 import { evaluateCurrentLogin } from '~/middleware/auth';
-import { getUserTimeZone } from '~/utils/getUserTimeZone';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import { getIntegrationDefinition } from '~/utils/integrations';
+
+import type { IntegrationPayload } from '~/utils/integrations'; 
 import type { IntegrationSlug } from '~/server/models/formResponse';
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 definePageMeta({
   middleware: ['auth'],   // arquivo middleware/auth.ts
@@ -65,27 +60,20 @@ const integrationDefinition = getIntegrationDefinition(
 
 // 2) Constrói o payload específico
 let payload: IntegrationPayload | null = null;
+let intent: 'today' | 'soon' | null = null;
 if (integrationDefinition) {
-  payload = await integrationDefinition.buildPayload(route);
+  const result = await integrationDefinition.buildPayload(route);
+
+  if (result) {
+    intent = result.intent;
+
+    const { intent: _discard, ...rest } = result;
+    payload = rest;
+  }
 }
 
 if (!payload) {
   navigateTo('/');
-}
-
-// Desestrutura o que você realmente usa
-const eventDate  = (payload as EventsIntegration | null)?.eventDate;
-
-function computeDonationIntent(
-  isoDate?: string | Date
-): 'today' | 'soon' {
-  if (!isoDate) return 'soon';
-
-  const tz = getUserTimeZone();
-  const eventDay = dayjs.utc(isoDate).tz(tz).startOf('day');
-  const today    = dayjs().tz(tz).startOf('day');
-
-  return today.isBefore(eventDay) ? 'soon' : 'today';
 }
 
 // --- Controle de fluxo ---
@@ -97,13 +85,12 @@ async function initializeQuestionnaire() {
   // 2. Marca que começou
   sessionStorage.setItem('questionnaireStarted', 'true');
 
-  // 3. Define intenção da doação
-  const intent = computeDonationIntent(eventDate as string | undefined);
-
   // 4. Cria FormResponse já com o payload da integração
-  await userStore.createFormResponse(integrationSlug, payload, intent);
-  sessionStorage.setItem('selectedIntent', intent);
-  userStore.setDonationIntent(intent);
+  if (intent) {
+    await userStore.createFormResponse(integrationSlug, payload, intent);
+    sessionStorage.setItem('selectedIntent', intent);
+    userStore.setDonationIntent(intent);
+  }
   // await userStore.updateDonationIntent(intent);
 
   // 5. Redireciona para a primeira pergunta

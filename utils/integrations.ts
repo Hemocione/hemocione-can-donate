@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import type { FormResponseSchema, IntegrationSlug } from "~/server/models/formResponse";
 import { integrationSlugs } from "~/server/models/formResponse";
@@ -18,20 +19,28 @@ export interface IntegrationDefinition {
   /** Constroi o payload que deve ser criado em << FormResponse.integration >>. */
   buildPayload: (
     route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
-  ) => Promise<IntegrationPayload | null>;
+  ) => Promise<EventsPayloadWithIntent | null>;
 
   getButtonConfig?: (formResponse: FormResponseSchema) => Promise<any>;
 }
 
+type EventsPayloadWithIntent = EventsIntegration & { intent: "today" | "soon" };
+
 /** "events-flow-schedule" e "events-adhoc-ticket" compartilham a mesma lógica. */
 const buildEventsPayload = async (
   route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
-): Promise<EventsIntegration | null> => {
+): Promise<EventsPayloadWithIntent | null> => {
   const eventSlug = route.query.eventSlug as string | undefined;
   const eventDate = route.query.eventDate as string | undefined;
   if (!eventSlug || !eventDate) return null;
 
-  return { eventSlug, eventDate };
+  const tz = getUserTimeZone();
+  const eventDay = dayjs.utc(eventDate).tz(tz).startOf("day");
+  const today = dayjs().tz(tz).startOf("day");
+
+  const intent: "today" | "soon" = today.isBefore(eventDay) ? "soon" : "today";
+
+  return { intent, eventSlug, eventDate };
 };
 
 export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
