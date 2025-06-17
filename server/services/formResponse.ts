@@ -1,14 +1,17 @@
 import { InferSchemaType } from "mongoose";
-import { FormResponse, FormResponseSchema } from "../models/formResponse";
+import { FormResponse, FormResponseSchema, IntegrationSlug } from "../models/formResponse";
 import { HemocioneUserAuthTokenData } from "./auth";
 import { getMe } from "./hemocioneId";
 import { calculateAge } from "~/utils/calculateAge";
 import type { Answer } from "~/server/api/v1/formResponse/[formId]/answers/[answerSlug]/index.put";
+import type { IntegrationPayload } from "~/utils/integrations";
 
 // Função para criar uma resposta de formulário e salvar no banco de dados
 export async function createFormResponse(
   user: HemocioneUserAuthTokenData | null,
-  token?: string
+  token?: string,
+  integrationDoc?: Record<string, unknown> | null,
+  intent?: "today" | "soon" | null,
 ) {
   const mode = user ? "logged-in" : "anonymous";
 
@@ -24,6 +27,8 @@ export async function createFormResponse(
     const formResponse = new FormResponse({
       mode,
       user: userData,
+      integration: integrationDoc,
+      donationIntent: intent,      
       ...extraFormInitialData,
     });
 

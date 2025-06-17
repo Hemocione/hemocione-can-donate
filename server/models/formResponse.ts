@@ -29,6 +29,52 @@ const AnswerSchema = new Schema({
   },
 });
 
+export const integrationSlugs = ['events-flow-schedule', 'events-adhoc-ticket'] as const;
+
+export type IntegrationSlug = typeof integrationSlugs[number];
+
+// Schema “base” (só diz qual é o discriminator key)
+export const IntegrationBaseSchema = new Schema(
+  {
+    integrationSlug: {
+      type: String,
+      required: true,
+      enum: integrationSlugs,
+    },
+    payload: {
+      type: Schema.Types.Mixed,
+      required: true,
+    },
+  },
+  { _id: false, discriminatorKey: "integrationSlug" }
+);
+
+IntegrationBaseSchema.discriminator(
+  "events-flow-schedule",
+  new Schema(
+    {
+      payload: {
+        eventSlug: { type: String, required: true },
+        eventDate: { type: Date, required: true },
+      },
+    },
+    { _id: false }
+  )
+);
+
+IntegrationBaseSchema.discriminator(
+  "events-adhoc-ticket",
+  new Schema(
+    {
+      payload: {
+        eventSlug: { type: String, required: true },
+        eventDate: { type: Date, required: true },
+      },
+    },
+    { _id: false }
+  )
+);
+
 const FormResponseSchema = new Schema(
   {
     mode: {
@@ -80,6 +126,11 @@ const FormResponseSchema = new Schema(
         type: String,
       },
     ],
+    integration: {
+      type: IntegrationBaseSchema,
+      default: null,          // allows it to be null / omitted
+    },
+
   },
   {
     timestamps: true,
