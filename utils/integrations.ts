@@ -56,11 +56,17 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
       const isFailed = formResponse.status === "unable-to-donate";
+      const config = useRuntimeConfig();
+      
       const eventSlug = formResponse.integration?.payload?.eventSlug;
-      const eventDate = formResponse.integration?.payload?.eventDate;
-      // TODO: Montar o URL de seleção de horário do evento
-      const eventScheduleUrl = `TODO_EVENT_SCHEDULE_URL?eventSlug=${eventSlug}&eventDate=${eventDate}`;
-      // TODO: URL para "Ajudar causa de outra forma"
+      const eventosHemocioneUrl: string =
+        (config.public.eventosHemocioneUrl as string) ?? "";
+
+      const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
+      const status = formResponse.status;
+
+      const eventScheduleUrl = `${eventosHemocioneUrl}/event/${eventSlug}/schedules?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
+      // TODO: URL para "Ajudar causa de outra forma" (passar pelo fluxo de cancelamento)
       const helpUrl = "TODO_HELP_URL";
       if (!isFailed) {
         return [
@@ -91,11 +97,17 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
       const isFailed = formResponse.status === "unable-to-donate";
+      const config = useRuntimeConfig();
+      
       const eventSlug = formResponse.integration?.payload?.eventSlug;
-      const eventDate = formResponse.integration?.payload?.eventDate;
-      // TODO: Montar o URL da página de ticket do usuário
-      const ticketUrl = `TODO_TICKET_URL?eventSlug=${eventSlug}&eventDate=${eventDate}`;
-      // TODO: URL para "Ajudar causa de outra forma"
+      const eventosHemocioneUrl: string =
+        (config.public.eventosHemocioneUrl as string) ?? "";
+
+      const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
+      const status = formResponse.status;
+
+      const ticketUrl = `${eventosHemocioneUrl}/event/${eventSlug}/ticket?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
+      // TODO: URL para "Ajudar causa de outra forma" (passar pelo fluxo de cancelamento)
       const helpUrl = "TODO_HELP_URL";
       if (!isFailed) {
         return [
