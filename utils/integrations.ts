@@ -15,13 +15,21 @@ export interface EventsIntegration {
 /** Union de todos os payloads existentes. */
 export type IntegrationPayload = EventsIntegration;
 
+export type ButtonConfig = {
+  label: string;
+  type: "primary" | "secondary";
+  onClick?: () => void; // para ações internas
+  url?: string; // para navegação externa
+  visible?: boolean;
+};
+
 export interface IntegrationDefinition {
   /** Constroi o payload que deve ser criado em << FormResponse.integration >>. */
   buildPayload: (
     route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
   ) => Promise<EventsPayloadWithIntent | null>;
 
-  getButtonConfig?: (formResponse: FormResponseSchema) => Promise<any>;
+  getButtonConfig?: (formResponse: FormResponseSchema) => Promise<ButtonConfig[]>;
 }
 
 type EventsPayloadWithIntent = EventsIntegration & { intent: "today" | "soon" };
@@ -47,14 +55,70 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
   "events-flow-schedule": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
-      // TODO: implement
+      const isFailed = formResponse.status === "unable-to-donate";
+      const eventSlug = formResponse.integration?.payload?.eventSlug;
+      const eventDate = formResponse.integration?.payload?.eventDate;
+      // TODO: Montar o URL de seleção de horário do evento
+      const eventScheduleUrl = `TODO_EVENT_SCHEDULE_URL?eventSlug=${eventSlug}&eventDate=${eventDate}`;
+      // TODO: URL para "Ajudar causa de outra forma"
+      const helpUrl = "TODO_HELP_URL";
+      if (!isFailed) {
+        return [
+          {
+            label: "Selecionar horário para Doação",
+            type: "primary",
+            url: eventScheduleUrl,
+          },
+        ];
+      } else {
+        return [
+          {
+            label: "Ajudar causa de outra forma",
+            type: "primary",
+            url: helpUrl,
+          },
+          {
+            label: "Continuar mesmo assim",
+            type: "secondary",
+            url: eventScheduleUrl,
+          },
+        ];
+      }
     },
   },
 
   "events-adhoc-ticket": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
-      // TODO: implement
+      const isFailed = formResponse.status === "unable-to-donate";
+      const eventSlug = formResponse.integration?.payload?.eventSlug;
+      const eventDate = formResponse.integration?.payload?.eventDate;
+      // TODO: Montar o URL da página de ticket do usuário
+      const ticketUrl = `TODO_TICKET_URL?eventSlug=${eventSlug}&eventDate=${eventDate}`;
+      // TODO: URL para "Ajudar causa de outra forma"
+      const helpUrl = "TODO_HELP_URL";
+      if (!isFailed) {
+        return [
+          {
+            label: "Voltar para ticket",
+            type: "primary",
+            url: ticketUrl,
+          },
+        ];
+      } else {
+        return [
+          {
+            label: "Ajudar causa de outra forma",
+            type: "primary",
+            url: helpUrl,
+          },
+          {
+            label: "Continuar mesmo assim",
+            type: "secondary",
+            url: ticketUrl,
+          },
+        ];
+      }
     },
   },
 };
