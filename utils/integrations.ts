@@ -66,8 +66,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
       const status = formResponse.status;
 
       const eventScheduleUrl = `${eventosHemocioneUrl}/event/${eventSlug}/schedules?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
-      // TODO: URL para "Ajudar causa de outra forma" (passar pelo fluxo de cancelamento)
-      const helpUrl = "TODO_HELP_URL";
+      const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
       if (!isFailed) {
         return [
           {
@@ -81,7 +80,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
           {
             label: "Ajudar causa de outra forma",
             type: "primary",
-            url: helpUrl,
+            url: apoieHemocione,
           },
           {
             label: "Continuar mesmo assim",
@@ -107,8 +106,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
       const status = formResponse.status;
 
       const ticketUrl = `${eventosHemocioneUrl}/event/${eventSlug}/ticket?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
-      // TODO: URL para "Ajudar causa de outra forma" (passar pelo fluxo de cancelamento)
-      const helpUrl = "TODO_HELP_URL";
+      const cancelURL = `${eventosHemocioneUrl}/event/${eventSlug}/ticket?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}&shouldCancel=true`;
       if (!isFailed) {
         return [
           {
@@ -120,9 +118,9 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
       } else {
         return [
           {
-            label: "Ajudar causa de outra forma",
+            label: "Cancelar inscrição",
             type: "primary",
-            url: helpUrl,
+            url: cancelURL,
           },
           {
             label: "Continuar mesmo assim",

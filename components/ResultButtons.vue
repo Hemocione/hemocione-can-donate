@@ -1,6 +1,6 @@
 <template>
   <div class="fixed-buttons">
-    <!-- NOVO: Renderização dinâmica se buttonConfig existir e tiver itens -->
+    <!-- Fluxo com integração -->
     <template v-if="buttonConfig && buttonConfig.length">
       <template v-for="(btn, idx) in buttonConfig" :key="idx">
         <el-button
@@ -12,7 +12,8 @@
         </el-button>
       </template>
     </template>
-    <!-- Fluxo antigo como fallback -->
+
+    <!-- Fluxo sem integração -->
     <template v-else>
       <!-- Falha no formulário -->
       <template v-if="isFormFailed">
