@@ -51,84 +51,93 @@ const buildEventsPayload = async (
   return { intent, eventSlug, eventDate };
 };
 
+/** Função auxiliar para construir os botões das integrações de eventos */
+function buildEventButtonConfig({
+  formResponse,
+  mainLabel,
+  mainUrl,
+  failPrimaryLabel,
+  failPrimaryUrl,
+  failSecondaryLabel,
+  failSecondaryUrl,
+}: {
+  formResponse: FormResponseSchema;
+  mainLabel: string;
+  mainUrl: string;
+  failPrimaryLabel: string;
+  failPrimaryUrl: string;
+  failSecondaryLabel: string;
+  failSecondaryUrl: string;
+}): ButtonConfig[] {
+  const isFailed = formResponse.status === "unable-to-donate";
+  if (!isFailed) {
+    return [
+      {
+        label: mainLabel,
+        type: "primary",
+        url: mainUrl,
+      },
+    ];
+  } else {
+    return [
+      {
+        label: failPrimaryLabel,
+        type: "primary",
+        url: failPrimaryUrl,
+      },
+      {
+        label: failSecondaryLabel,
+        type: "secondary",
+        url: failSecondaryUrl,
+      },
+    ];
+  }
+}
+
 export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
   "events-flow-schedule": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
-      const isFailed = formResponse.status === "unable-to-donate";
       const config = useRuntimeConfig();
-      
       const eventSlug = formResponse.integration?.payload?.eventSlug;
       const eventosHemocioneUrl: string =
         (config.public.eventosHemocioneUrl as string) ?? "";
-
       const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
       const status = formResponse.status;
-
       const eventScheduleUrl = `${eventosHemocioneUrl}/event/${eventSlug}/schedules?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
       const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
-      if (!isFailed) {
-        return [
-          {
-            label: "Selecionar horário para Doação",
-            type: "primary",
-            url: eventScheduleUrl,
-          },
-        ];
-      } else {
-        return [
-          {
-            label: "Ajudar causa de outra forma",
-            type: "primary",
-            url: apoieHemocione,
-          },
-          {
-            label: "Continuar mesmo assim",
-            type: "secondary",
-            url: eventScheduleUrl,
-          },
-        ];
-      }
+      return buildEventButtonConfig({
+        formResponse,
+        mainLabel: "Selecionar horário para Doação",
+        mainUrl: eventScheduleUrl,
+        failPrimaryLabel: "Ajudar causa de outra forma",
+        failPrimaryUrl: apoieHemocione,
+        failSecondaryLabel: "Continuar mesmo assim",
+        failSecondaryUrl: eventScheduleUrl,
+      });
     },
   },
 
   "events-adhoc-ticket": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
-      const isFailed = formResponse.status === "unable-to-donate";
       const config = useRuntimeConfig();
-      
       const eventSlug = formResponse.integration?.payload?.eventSlug;
       const eventosHemocioneUrl: string =
         (config.public.eventosHemocioneUrl as string) ?? "";
-
       const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
       const status = formResponse.status;
-
       const ticketUrl = `${eventosHemocioneUrl}/event/${eventSlug}/ticket?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
       const cancelURL = `${eventosHemocioneUrl}/event/${eventSlug}/ticket?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}&shouldCancel=true`;
-      if (!isFailed) {
-        return [
-          {
-            label: "Voltar para ticket",
-            type: "primary",
-            url: ticketUrl,
-          },
-        ];
-      } else {
-        return [
-          {
-            label: "Cancelar inscrição",
-            type: "primary",
-            url: cancelURL,
-          },
-          {
-            label: "Continuar mesmo assim",
-            type: "secondary",
-            url: ticketUrl,
-          },
-        ];
-      }
+      return buildEventButtonConfig({
+        formResponse,
+        mainLabel: "Voltar para ticket",
+        mainUrl: ticketUrl,
+        failPrimaryLabel: "Cancelar inscrição",
+        failPrimaryUrl: cancelURL,
+        failSecondaryLabel: "Continuar mesmo assim",
+        failSecondaryUrl: ticketUrl,
+      });
     },
   },
 };

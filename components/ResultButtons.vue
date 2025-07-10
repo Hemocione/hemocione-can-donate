@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
-import { useRuntimeConfig, navigateTo } from "#app";
+import { navigateTo } from "#app";
 import type { ButtonConfig } from "~/utils/integrations";
 
 const props = defineProps<{
@@ -63,18 +63,11 @@ const props = defineProps<{
   onIrmaoDeSangue?: () => void;
   onOndeDoar?: () => void;
   onBack?: () => void;
-  buttonConfig?: Array<{
-    label: string;
-    type: "primary" | "secondary";
-    onClick?: () => void;
-    url?: string;
-    visible?: boolean;
-  }>;
+  buttonConfig?: ButtonConfig[];
 }>();
 
 const userStore = useUserStore();
 const router = useRouter();
-const config = useRuntimeConfig();
 
 const { isFormFailed, iframed, iframeValidated } = storeToRefs(userStore);
 
@@ -84,28 +77,6 @@ function onSecondarySuccessClick() {
   } else {
     props.onOndeDoar && props.onOndeDoar();
   }
-}
-
-const eventosHemocione: string =
-  (config.public.eventosHemocione as string) ?? "";
-const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
-const ondeDoarHemocione: string =
-  (config.public.ondeDoarHemocione as string) ?? "";
-
-function onAgendarDoacao() {
-  props.onAgendarDoacao && props.onAgendarDoacao();
-}
-
-function onIrmaoDeSangue() {
-  props.onIrmaoDeSangue && props.onIrmaoDeSangue();
-}
-
-function onOndeDoar() {
-  props.onOndeDoar && props.onOndeDoar();
-}
-
-function onBack() {
-  props.onBack && props.onBack();
 }
 
 function handleBtnClick(btn: ButtonConfig) {
