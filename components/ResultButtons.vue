@@ -6,7 +6,7 @@
         <el-button
           :class="btn.type === 'primary' ? 'action-button' : 'secondary-button'"
           v-if="btn.visible !== false"
-          @click="handleButtonClick(btn)"
+          @click="handleBtnClick(btn)"
         >
           {{ btn.label }}
         </el-button>
@@ -52,7 +52,8 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig, navigateTo } from "#app";
+import type { ButtonConfig } from "~/utils/integrations";
 
 const props = defineProps<{
   isFormFailed: boolean;
@@ -107,15 +108,15 @@ function onBack() {
   props.onBack && props.onBack();
 }
 
-// Handler para botões dinâmicos
-function handleButtonClick(btn: {
-  onClick?: () => void;
-  url?: string;
-}) {
-  if (btn.onClick) {
+function handleBtnClick(btn: ButtonConfig) {
+  console.log(`Tried to navigate to URL: ${btn.url}`);
+  if (btn.url) {
+    navigateTo(btn.url, {external: true});
+  } else if (btn.onClick) {
     btn.onClick();
   }
 }
+
 </script>
 
 <style scoped>
