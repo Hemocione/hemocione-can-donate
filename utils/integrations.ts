@@ -87,6 +87,21 @@ function buildEventButtonConfig(
   }
 }
 
+/** Função auxiliar para construir URLs de eventos */
+function buildEventUrls(
+  eventSlug: string | undefined,
+  formResponseId: string,
+  status: string,
+  baseUrl: string
+) {
+  const queryParams = `formResponseId=${formResponseId}&status=${status}`;
+  return {
+    schedule: `${baseUrl}/event/${eventSlug}/schedules?${queryParams}`,
+    ticket: `${baseUrl}/event/${eventSlug}/ticket?${queryParams}`,
+    cancel: `${baseUrl}/event/${eventSlug}/ticket?${queryParams}&shouldCancel=true`,
+  };
+}
+
 export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
   "events-flow-schedule": {
     buildPayload: buildEventsPayload,
@@ -97,12 +112,12 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
         (config.public.eventosHemocioneUrl as string) ?? "";
       const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
       const status = formResponse.status;
-      const eventScheduleUrl = `${eventosHemocioneUrl}/event/${eventSlug}/schedules?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
+      const urls = buildEventUrls(eventSlug, formResponseId, status, eventosHemocioneUrl);
       const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
       return buildEventButtonConfig(formResponse, {
         main: {
           label: "Selecionar horário para Doação",
-          url: eventScheduleUrl,
+          url: urls.schedule,
         },
         fail: {
           primary: {
@@ -111,7 +126,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
           },
           secondary: {
             label: "Continuar mesmo assim",
-            url: eventScheduleUrl,
+            url: urls.schedule,
           },
         },
       });
@@ -127,21 +142,20 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
         (config.public.eventosHemocioneUrl as string) ?? "";
       const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
       const status = formResponse.status;
-      const ticketUrl = `${eventosHemocioneUrl}/event/${eventSlug}/ticket?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}`;
-      const cancelURL = `${eventosHemocioneUrl}/event/${eventSlug}/ticket?formResponseId=${formResponseId ?? ""}&status=${status ?? ""}&shouldCancel=true`;
+      const urls = buildEventUrls(eventSlug, formResponseId, status, eventosHemocioneUrl);
       return buildEventButtonConfig(formResponse, {
         main: {
           label: "Voltar para ticket",
-          url: ticketUrl,
+          url: urls.ticket,
         },
         fail: {
           primary: {
             label: "Cancelar inscrição",
-            url: cancelURL,
+            url: urls.cancel,
           },
           secondary: {
             label: "Continuar mesmo assim",
-            url: ticketUrl,
+            url: urls.ticket,
           },
         },
       });
