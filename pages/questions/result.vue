@@ -93,7 +93,7 @@ const failingReasons = computed(() => {
   return userStore.failingReasons.split(". ").filter(Boolean);
 });
 
-onMounted(async () => {
+onBeforeMount(async () => {
   const formResponse = userStore.formResponse;
   const integrationSlug = formResponse?.integration?.integrationSlug;
   if (integrationSlug) {
@@ -101,10 +101,10 @@ onMounted(async () => {
     if (integrationDef?.getButtonConfig) {
       buttonConfig.value = await integrationDef.getButtonConfig(formResponse);
     }
-  } else {
-    buttonConfig.value = [];
   }
+})
 
+onMounted(async () => {
   setTimeout(() => {
     if (isFormFailed.value || !result.value) return;
 

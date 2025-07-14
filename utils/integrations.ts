@@ -71,20 +71,19 @@ function buildEventButtonConfig(
         url: config.main.url,
       },
     ];
-  } else {
-    return [
-      {
-        label: config.fail.primary.label,
-        type: "primary",
-        url: config.fail.primary.url,
-      },
-      {
-        label: config.fail.secondary.label,
-        type: "secondary",
-        url: config.fail.secondary.url,
-      },
-    ];
   }
+  return [
+    {
+      label: config.fail.primary.label,
+      type: "primary",
+      url: config.fail.primary.url,
+    },
+    {
+      label: config.fail.secondary.label,
+      type: "secondary",
+      url: config.fail.secondary.url,
+    },
+  ];
 }
 
 /** Função auxiliar para construir URLs de eventos */
@@ -145,7 +144,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
       const urls = buildEventUrls(eventSlug, formResponseId, status, eventosHemocioneUrl);
       return buildEventButtonConfig(formResponse, {
         main: {
-          label: "Voltar para ticket",
+          label: "Voltar para ingresso",
           url: urls.ticket,
         },
         fail: {

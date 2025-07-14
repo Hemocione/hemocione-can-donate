@@ -80,7 +80,6 @@ function onSecondarySuccessClick() {
 }
 
 function handleBtnClick(btn: ButtonConfig) {
-  console.log(`Tried to navigate to URL: ${btn.url}`);
   if (btn.url) {
     navigateTo(btn.url, {external: true});
   } else if (btn.onClick) {
