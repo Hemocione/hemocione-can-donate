@@ -15,13 +15,21 @@ export interface EventsIntegration {
 /** Union de todos os payloads existentes. */
 export type IntegrationPayload = EventsIntegration;
 
+export type ButtonConfig = {
+  label: string;
+  type: "primary" | "secondary";
+  onClick?: () => void; // para ações internas
+  url?: string; // para navegação externa
+  visible?: boolean;
+};
+
 export interface IntegrationDefinition {
   /** Constroi o payload que deve ser criado em << FormResponse.integration >>. */
   buildPayload: (
     route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
   ) => Promise<EventsPayloadWithIntent | null>;
 
-  getButtonConfig?: (formResponse: FormResponseSchema) => Promise<any>;
+  getButtonConfig?: (formResponse: FormResponseSchema) => Promise<ButtonConfig[]>;
 }
 
 type EventsPayloadWithIntent = EventsIntegration & { intent: "today" | "soon" };
@@ -43,18 +51,113 @@ const buildEventsPayload = async (
   return { intent, eventSlug, eventDate };
 };
 
+/** Função auxiliar para construir os botões das integrações de eventos */
+function buildEventButtonConfig(
+  formResponse: FormResponseSchema,
+  config: {
+    main: { label: string; url: string };
+    fail: {
+      primary: { label: string; url: string };
+      secondary: { label: string; url: string };
+    };
+  }
+): ButtonConfig[] {
+  const isFailed = formResponse.status === "unable-to-donate";
+  if (!isFailed) {
+    return [
+      {
+        label: config.main.label,
+        type: "primary",
+        url: config.main.url,
+      },
+    ];
+  }
+  return [
+    {
+      label: config.fail.primary.label,
+      type: "primary",
+      url: config.fail.primary.url,
+    },
+    {
+      label: config.fail.secondary.label,
+      type: "secondary",
+      url: config.fail.secondary.url,
+    },
+  ];
+}
+
+/** Função auxiliar para construir URLs de eventos */
+function buildEventUrls(
+  eventSlug: string | undefined,
+  formResponseId: string,
+  status: string,
+  baseUrl: string
+) {
+  const queryParams = `formResponseId=${formResponseId}&status=${status}`;
+  return {
+    schedule: `${baseUrl}/event/${eventSlug}/schedules?${queryParams}`,
+    ticket: `${baseUrl}/event/${eventSlug}/ticket?${queryParams}`,
+    cancel: `${baseUrl}/event/${eventSlug}/ticket?${queryParams}&shouldCancel=true`,
+  };
+}
+
 export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
   "events-flow-schedule": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
-      // TODO: implement
+      const config = useRuntimeConfig();
+      const eventSlug = formResponse.integration?.payload?.eventSlug;
+      const eventosHemocioneUrl: string =
+        (config.public.eventosHemocioneUrl as string) ?? "";
+      const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
+      const status = formResponse.status;
+      const urls = buildEventUrls(eventSlug, formResponseId, status, eventosHemocioneUrl);
+      const apoieHemocione: string = (config.public.apoieHemocione as string) ?? "";
+      return buildEventButtonConfig(formResponse, {
+        main: {
+          label: "Selecionar horário para Doação",
+          url: urls.schedule,
+        },
+        fail: {
+          primary: {
+            label: "Ajudar causa de outra forma",
+            url: apoieHemocione,
+          },
+          secondary: {
+            label: "Continuar mesmo assim",
+            url: urls.schedule,
+          },
+        },
+      });
     },
   },
 
   "events-adhoc-ticket": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
-      // TODO: implement
+      const config = useRuntimeConfig();
+      const eventSlug = formResponse.integration?.payload?.eventSlug;
+      const eventosHemocioneUrl: string =
+        (config.public.eventosHemocioneUrl as string) ?? "";
+      const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
+      const status = formResponse.status;
+      const urls = buildEventUrls(eventSlug, formResponseId, status, eventosHemocioneUrl);
+      return buildEventButtonConfig(formResponse, {
+        main: {
+          label: "Voltar para ingresso",
+          url: urls.ticket,
+        },
+        fail: {
+          primary: {
+            label: "Cancelar inscrição",
+            url: urls.cancel,
+          },
+          secondary: {
+            label: "Continuar mesmo assim",
+            url: urls.ticket,
+          },
+        },
+      });
     },
   },
 };
