@@ -108,7 +108,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
       const config = useRuntimeConfig();
       const eventSlug = formResponse.integration?.payload?.eventSlug;
       const eventosHemocioneUrl: string =
-        (config.public.eventosHemocioneUrl as string) ?? "";
+        (config.public.eventosHemocione as string) ?? "";
       const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
       const status = formResponse.status;
       const urls = buildEventUrls(eventSlug, formResponseId, status, eventosHemocioneUrl);
