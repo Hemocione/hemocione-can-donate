@@ -34,7 +34,7 @@ export interface IntegrationDefinition {
 
 type EventsPayloadWithIntent = EventsIntegration & { intent: "today" | "soon" };
 
-/** "events-flow-schedule" e "events-adhoc-ticket" compartilham a mesma lógica. */
+/** "event-flow-schedule" e "event-adhoc-ticket" compartilham a mesma lógica. */
 const buildEventsPayload = async (
   route: Pick<RouteLocationNormalizedLoaded, "params" | "query">
 ): Promise<EventsPayloadWithIntent | null> => {
@@ -102,13 +102,13 @@ function buildEventUrls(
 }
 
 export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
-  "events-flow-schedule": {
+  "event-flow-schedule": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
       const config = useRuntimeConfig();
       const eventSlug = formResponse.integration?.payload?.eventSlug;
       const eventosHemocioneUrl: string =
-        (config.public.eventosHemocioneUrl as string) ?? "";
+        (config.public.eventosHemocione as string) ?? "";
       const formResponseId = (formResponse as any)._id?.toString?.() ?? "";
       const status = formResponse.status;
       const urls = buildEventUrls(eventSlug, formResponseId, status, eventosHemocioneUrl);
@@ -132,7 +132,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
     },
   },
 
-  "events-adhoc-ticket": {
+  "event-adhoc-ticket": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
       const config = useRuntimeConfig();

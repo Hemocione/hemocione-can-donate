@@ -29,7 +29,7 @@ const AnswerSchema = new Schema({
   },
 });
 
-export const integrationSlugs = ['events-flow-schedule', 'events-adhoc-ticket'] as const;
+export const integrationSlugs = ['event-flow-schedule', 'event-adhoc-ticket'] as const;
 
 export type IntegrationSlug = typeof integrationSlugs[number];
 
@@ -50,7 +50,7 @@ export const IntegrationBaseSchema = new Schema(
 );
 
 IntegrationBaseSchema.discriminator(
-  "events-flow-schedule",
+  "event-flow-schedule",
   new Schema(
     {
       payload: {
@@ -63,7 +63,7 @@ IntegrationBaseSchema.discriminator(
 );
 
 IntegrationBaseSchema.discriminator(
-  "events-adhoc-ticket",
+  "event-adhoc-ticket",
   new Schema(
     {
       payload: {
