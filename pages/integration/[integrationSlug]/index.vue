@@ -57,6 +57,9 @@ if (!isIntegrationSlug(integrationSlug)) {
 const integrationDefinition = getIntegrationDefinition(
   route.params.integrationSlug as string | undefined
 );
+if (!integrationDefinition) {
+  navigateTo('/');
+}
 
 // 2) Constrói o payload específico
 let payload: IntegrationPayload | null = null;
@@ -90,8 +93,9 @@ async function initializeQuestionnaire() {
     await userStore.createFormResponse(integrationSlug, payload, intent);
     sessionStorage.setItem('selectedIntent', intent);
     userStore.setDonationIntent(intent);
+  } else {
+    navigateTo('/');
   }
-  // await userStore.updateDonationIntent(intent);
 
   // 5. Redireciona para a primeira pergunta
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;
