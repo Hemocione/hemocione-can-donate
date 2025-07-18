@@ -29,7 +29,7 @@ const AnswerSchema = new Schema({
   },
 });
 
-export const integrationSlugs = ['event-flow-schedule', 'event-adhoc-ticket'] as const;
+export const integrationSlugs = ['event-flow-schedule', 'event-ticket-adhoc'] as const;
 
 export type IntegrationSlug = typeof integrationSlugs[number];
 
