@@ -132,7 +132,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
     },
   },
 
-  "event-adhoc-ticket": {
+  "event-ticket-adhoc": {
     buildPayload: buildEventsPayload,
     async getButtonConfig(formResponse) {
       const config = useRuntimeConfig();
