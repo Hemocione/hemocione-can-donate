@@ -115,4 +115,9 @@ onMounted(async () => {
     );
   }
 });
+
+onBeforeMount(async () => {
+  console.log("onBeforeMount: formResponse");
+  console.log(userStore.formResponse);
+});
 </script>
