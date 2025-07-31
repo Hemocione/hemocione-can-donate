@@ -191,9 +191,57 @@ const questionsLength = computed(() => {
   return questions.value.length;
 });
 
-function goBack() {
+async function goBack() {
+  // Verifica se existe integration no formResponse
+  const hasIntegration = userStore.formResponse?.integration != null;
+  
   if (isIntentionRoute.value || isResultPage.value) {
-    router.push("/");
+    if (hasIntegration) {
+      try {
+        const formResponse = userStore.formResponse;
+        const integrationSlug = formResponse?.integration?.integrationSlug;
+        
+        if (integrationSlug) {
+          const integrationDef = getIntegrationDefinition(integrationSlug);
+          
+          if (integrationDef?.getRedirectURL) {
+            const url = await integrationDef.getRedirectURL(formResponse);
+            
+            if (url) {
+              await navigateTo(url, { external: true });
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao redirecionar para integração:', error);
+      }
+      
+      // Fallback: se algo der errado, vai para a página inicial
+      router.push("/");
+    } else {
+      router.push("/");
+    }
+  } else if (hasIntegration && currentQuestionIndex.value == 0) {
+      try {
+        const formResponse = userStore.formResponse;
+        const integrationSlug = formResponse?.integration?.integrationSlug;
+        
+        if (integrationSlug) {
+          const integrationDef = getIntegrationDefinition(integrationSlug);
+          
+          if (integrationDef?.getRedirectURL) {
+            const url = await integrationDef.getRedirectURL(formResponse);
+            
+            if (url) {
+              await navigateTo(url, { external: true });
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao redirecionar para integração:', error);
+      }
   } else {
     router.back();
   }
@@ -220,8 +268,11 @@ function resetSelection() {
   selectedIntent.value = null; // Reseta a intenção selecionada
 }
 
-function exitQuestionnaire() {
+async function exitQuestionnaire() {
   console.log("Saindo do questionário...");
+
+  const hasIntegration = userStore.formResponse?.integration != null;
+  const currentFormResponse = userStore.formResponse; // Salva referência antes de limpar
 
   // Limpa o sessionStorage
   sessionStorage.removeItem("questionnaireStarted");
@@ -233,7 +284,26 @@ function exitQuestionnaire() {
 
   resetSelection();
 
-  router.push("/");
+  if (hasIntegration && currentFormResponse) {
+    try {
+      const integrationSlug = currentFormResponse.integration?.integrationSlug;
+      
+      if (integrationSlug) {
+        const integrationDef = getIntegrationDefinition(integrationSlug);
+        
+        if (integrationDef?.getRedirectURL) {
+          const url = await integrationDef.getRedirectURL(currentFormResponse);
+          
+          if (url) {
+            await navigateTo(url, { external: true });
+            return;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao redirecionar para integração:', error);
+    }
+  }
 }
 
 watchEffect(() => {
