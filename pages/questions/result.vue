@@ -15,17 +15,14 @@
       <p class="result-subtext">
         Você pode colaborar com o Hemocione e ajudar a salvar ainda mais vidas.
       </p>
-      <div class="fixed-buttons">
-        <el-button
-          class="action-button"
-          v-if="iframeValidated && !iframed"
-          @click="goIrmaoDeSangue"
-          >Seja um Irmão de Sangue</el-button
-        >
-        <el-button class="secondary-button" @click="goBack"
-          >Voltar ao início</el-button
-        >
-      </div>
+      <ResultButtons
+        :isFormFailed="isFormFailed"
+        :iframeValidated="iframeValidated"
+        :iframed="iframed"
+        :onIrmaoDeSangue="goIrmaoDeSangue"
+        :onBack="goBack"
+        :buttonConfig="buttonConfig"
+      />
     </div>
 
     <div v-else class="result-success">
@@ -40,22 +37,15 @@
         entanto, a triagem final será realizada por profissionais de saúde no
         dia e no local da doação.
       </p>
-      <div class="fixed-buttons">
-        <el-button
-          class="action-button"
-          v-if="iframeValidated && !iframed"
-          @click="goAgendarDoacao"
-          >Agendar doação em evento</el-button
-        >
-        <el-button
-          class="secondary-button"
-          v-if="iframeValidated"
-          @click="handleSecondarySuccessClick"
-          >{{
-            iframed ? "Voltar ao início" : "Encontrar bancos de sangue"
-          }}</el-button
-        >
-      </div>
+      <ResultButtons
+        :isFormFailed="isFormFailed"
+        :iframeValidated="iframeValidated"
+        :iframed="iframed"
+        :onAgendarDoacao="goAgendarDoacao"
+        :onOndeDoar="goOndeDoar"
+        :onBack="goBack"
+        :buttonConfig="buttonConfig"
+      />
     </div>
   </div>
 </template>
@@ -65,6 +55,9 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 import { useRuntimeConfig } from "#app";
 import party from "party-js";
+import ResultButtons from "~/components/ResultButtons.vue";
+import { ref, onMounted, computed } from 'vue';
+import { getIntegrationDefinition, type ButtonConfig } from '~/utils/integrations';
 party.settings.gravity = 600;
 
 definePageMeta({
@@ -76,8 +69,8 @@ definePageMeta({
 const userStore = useUserStore();
 const router = useRouter();
 const config = useRuntimeConfig();
-
 const result = ref<HTMLDivElement | null>(null);
+const buttonConfig = ref<ButtonConfig[]>([]);
 
 const { isFormFailed, iframed, iframeValidated } = storeToRefs(userStore);
 
@@ -100,6 +93,33 @@ const failingReasons = computed(() => {
   return userStore.failingReasons.split(". ").filter(Boolean);
 });
 
+onBeforeMount(async () => {
+  const formResponse = userStore.formResponse;
+  const integrationSlug = formResponse?.integration?.integrationSlug;
+  if (integrationSlug) {
+    const integrationDef = getIntegrationDefinition(integrationSlug);
+    if (integrationDef?.getButtonConfig) {
+      buttonConfig.value = await integrationDef.getButtonConfig(formResponse);
+    }
+  }
+})
+
+onMounted(async () => {
+  setTimeout(() => {
+    if (isFormFailed.value || !result.value) return;
+
+    const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
+    party.confetti(result.value, {
+      count: party.variation.range(
+        isLowPerfDevice ? 50 : 150,
+        isLowPerfDevice ? 150 : 400
+      ),
+      size: party.variation.range(0.8, 2),
+      speed: party.variation.range(200, 700),
+    });
+  }, 300);
+});
+
 function goAgendarDoacao() {
   navigateTo(eventosHemocione, { external: true });
 }
@@ -115,22 +135,6 @@ function goOndeDoar() {
 function goBack() {
   router.push("/");
 }
-
-onMounted(() => {
-  setTimeout(() => {
-    if (isFormFailed.value || !result.value) return;
-
-    const isLowPerfDevice = window.navigator.hardwareConcurrency <= 4;
-    party.confetti(result.value, {
-      count: party.variation.range(
-        isLowPerfDevice ? 50 : 150,
-        isLowPerfDevice ? 150 : 400
-      ),
-      size: party.variation.range(0.8, 2),
-      speed: party.variation.range(200, 700),
-    });
-  }, 300);
-});
 </script>
 
 <style scoped>

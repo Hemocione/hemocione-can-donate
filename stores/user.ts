@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { redirectToID } from "~/middleware/auth";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
 import { getQuestionsFromContext, type Question } from "~/utils/questions";
+import type { IntegrationPayload } from "~/utils/integrations";
+import type { IntegrationSlug } from "~/server/models/formResponse";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -9,7 +11,7 @@ export const useUserStore = defineStore("user", {
     token: null as string | null,
     formResponse: null as any, // To be replaced with a specific type if available
     donationIntent: null as "today" | "soon" | null,
-    loadingLogin: true as boolean,
+    loadingLogin: true as Boolean,
     iframed: false as boolean,
     iframeValidated: false as boolean,
   }),
@@ -83,15 +85,20 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async createFormResponse() {
-      try {
-        const formResponse = await $fetch("/api/v1/formResponse", {
+    async createFormResponse(integrationSlug: IntegrationSlug | null = null, integrationPayload: IntegrationPayload | null = null, donationIntent: "today" | "soon" | null = null) {
+    try {
+      const hasIntegration = integrationSlug && integrationPayload !== null;
+      const formResponse = await $fetch("/api/v1/formResponse", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
           },
-        });
+          body: {
+          ...(hasIntegration ? { integration: { integrationSlug, payload: integrationPayload } } : {}),
+          ...(donationIntent ? { donationIntent } : {}),
+          }
+         });
 
         this.setFormResponse(formResponse);
         console.log(
