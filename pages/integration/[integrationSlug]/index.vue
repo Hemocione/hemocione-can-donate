@@ -101,7 +101,7 @@ async function initializeQuestionnaire() {
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;
   if (firstQuestionSlug) {
     nextQuestionUrl.value = `/questions/${firstQuestionSlug}`;
-    router.push(nextQuestionUrl.value);
+    router.replace(nextQuestionUrl.value);
   } else {
     console.error('❌ Nenhuma pergunta encontrada para iniciar o questionário.');
   }
