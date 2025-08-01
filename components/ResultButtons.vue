@@ -53,6 +53,7 @@
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 import { navigateTo } from "#app";
+import { getIntegrationDefinition } from "~/utils/integrations";
 import type { ButtonConfig } from "~/utils/integrations";
 
 const props = defineProps<{
@@ -71,6 +72,31 @@ const router = useRouter();
 
 const { isFormFailed, iframed, iframeValidated } = storeToRefs(userStore);
 
+// Helper function to add query parameters for hemocione.com.br domains
+function addHemocioneQueryParams(url: string): string {
+  try {
+    const urlObj = new URL(url);
+
+    // Check if domain includes hemocione.com.br
+    if (urlObj.hostname.includes("hemocione.com.br")) {
+      // Add iframed parameter if iframed is true
+      if (iframed.value) {
+        urlObj.searchParams.set("iframed", "true");
+      }
+
+      // Add token parameter if user has a token
+      if (userStore.token) {
+        urlObj.searchParams.set("token", userStore.token);
+      }
+    }
+
+    return urlObj.toString();
+  } catch (error) {
+    console.error("Error modifying URL:", error);
+    return url;
+  }
+}
+
 function onSecondarySuccessClick() {
   if (props.iframed) {
     props.onBack && props.onBack();
@@ -81,16 +107,15 @@ function onSecondarySuccessClick() {
 
 function handleBtnClick(btn: ButtonConfig) {
   if (btn.url) {
-    navigateTo(btn.url, {external: true});
+    const modifiedUrl = addHemocioneQueryParams(btn.url);
+    navigateTo(modifiedUrl, { external: true });
   } else if (btn.onClick) {
     btn.onClick();
   }
 }
-
 </script>
 
 <style scoped>
-
 .action-button {
   background-color: var(--hemo-color-primary-medium);
   /* Vermelho do botão principal */
@@ -148,5 +173,4 @@ function handleBtnClick(btn: ButtonConfig) {
   text-align: center;
   font-size: 1rem;
 }
-
 </style>
