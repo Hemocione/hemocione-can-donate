@@ -126,6 +126,31 @@ const drawer = ref(false);
 const direction = ref<DrawerProps["direction"]>("btt");
 const selectedIntent = ref<"today" | "soon" | null>(null);
 
+// Helper function to add query parameters for hemocione.com.br domains
+function addHemocioneQueryParams(url: string): string {
+  try {
+    const urlObj = new URL(url);
+
+    // Check if domain includes hemocione.com.br
+    if (urlObj.hostname.includes("hemocione.com.br")) {
+      // Add iframed parameter if iframed is true
+      if (iframed.value) {
+        urlObj.searchParams.set("iframed", "true");
+      }
+
+      // Add token parameter if user has a token
+      if (userStore.token) {
+        urlObj.searchParams.set("token", userStore.token);
+      }
+    }
+
+    return urlObj.toString();
+  } catch (error) {
+    console.error("Error modifying URL:", error);
+    return url;
+  }
+}
+
 const buttonText = computed(() => {
   return user.value ? `Sair (${user.value?.givenName?.trim()})` : "Entrar";
 });
@@ -194,54 +219,56 @@ const questionsLength = computed(() => {
 async function goBack() {
   // Verifica se existe integration no formResponse
   const hasIntegration = userStore.formResponse?.integration != null;
-  
+
   if (isIntentionRoute.value || isResultPage.value) {
     if (hasIntegration) {
       try {
         const formResponse = userStore.formResponse;
         const integrationSlug = formResponse?.integration?.integrationSlug;
-        
+
         if (integrationSlug) {
           const integrationDef = getIntegrationDefinition(integrationSlug);
-          
+
           if (integrationDef?.getRedirectURL) {
             const url = await integrationDef.getRedirectURL(formResponse);
-            
-            if (url) {
-              await navigateTo(url, { external: true });
+
+            if (url && typeof url === "string") {
+              const modifiedUrl = addHemocioneQueryParams(url);
+              await navigateTo(modifiedUrl, { external: true });
               return;
             }
           }
         }
       } catch (error) {
-        console.error('Erro ao redirecionar para integração:', error);
+        console.error("Erro ao redirecionar para integração:", error);
       }
-      
+
       // Fallback: se algo der errado, vai para a página inicial
       router.push("/");
     } else {
       router.push("/");
     }
   } else if (hasIntegration && currentQuestionIndex.value == 0) {
-      try {
-        const formResponse = userStore.formResponse;
-        const integrationSlug = formResponse?.integration?.integrationSlug;
-        
-        if (integrationSlug) {
-          const integrationDef = getIntegrationDefinition(integrationSlug);
-          
-          if (integrationDef?.getRedirectURL) {
-            const url = await integrationDef.getRedirectURL(formResponse);
-            
-            if (url) {
-              await navigateTo(url, { external: true });
-              return;
-            }
+    try {
+      const formResponse = userStore.formResponse;
+      const integrationSlug = formResponse?.integration?.integrationSlug;
+
+      if (integrationSlug) {
+        const integrationDef = getIntegrationDefinition(integrationSlug);
+
+        if (integrationDef?.getRedirectURL) {
+          const url = await integrationDef.getRedirectURL(formResponse);
+
+          if (url && typeof url === "string") {
+            const modifiedUrl = addHemocioneQueryParams(url);
+            await navigateTo(modifiedUrl, { external: true });
+            return;
           }
         }
-      } catch (error) {
-        console.error('Erro ao redirecionar para integração:', error);
       }
+    } catch (error) {
+      console.error("Erro ao redirecionar para integração:", error);
+    }
   } else {
     router.back();
   }
@@ -287,21 +314,22 @@ async function exitQuestionnaire() {
   if (hasIntegration && currentFormResponse) {
     try {
       const integrationSlug = currentFormResponse.integration?.integrationSlug;
-      
+
       if (integrationSlug) {
         const integrationDef = getIntegrationDefinition(integrationSlug);
-        
+
         if (integrationDef?.getRedirectURL) {
           const url = await integrationDef.getRedirectURL(currentFormResponse);
-          
-          if (url) {
-            await navigateTo(url, { external: true });
+
+          if (url && typeof url === "string") {
+            const modifiedUrl = addHemocioneQueryParams(url);
+            await navigateTo(modifiedUrl, { external: true });
             return;
           }
         }
       }
     } catch (error) {
-      console.error('Erro ao redirecionar para integração:', error);
+      console.error("Erro ao redirecionar para integração:", error);
     }
   }
 }
