@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import type { RouteLocationNormalizedLoaded } from "vue-router";
+import type { RouteLocationNormalizedLoaded, RouteLocationRaw } from "vue-router";
 import type { FormResponseSchema, IntegrationSlug } from "~/server/models/formResponse";
 import { integrationSlugs } from "~/server/models/formResponse";
 
@@ -30,6 +30,8 @@ export interface IntegrationDefinition {
   ) => Promise<EventsPayloadWithIntent | null>;
 
   getButtonConfig?: (formResponse: FormResponseSchema) => Promise<ButtonConfig[]>;
+
+  getRedirectURL?: (formResponse: FormResponseSchema) => Promise<RouteLocationRaw>;
 }
 
 type EventsPayloadWithIntent = EventsIntegration & { intent: "today" | "soon" };
@@ -130,6 +132,15 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
         },
       });
     },
+
+    async getRedirectURL(formResponse) {
+      const config = useRuntimeConfig();
+      const eventSlug = formResponse.integration?.payload?.eventSlug;
+      const eventosHemocioneUrl: string = (config.public.eventosHemocione as string) ?? "";
+
+      const url = new URL(`/event/${encodeURIComponent(eventSlug)}/pre-screening`, eventosHemocioneUrl);
+      return url.toString();
+    },
   },
 
   "event-ticket-adhoc": {
@@ -158,6 +169,15 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
           },
         },
       });
+    },
+
+    async getRedirectURL(formResponse) {
+      const config = useRuntimeConfig();
+      const eventSlug = formResponse.integration?.payload?.eventSlug;
+      const eventosHemocioneUrl: string = (config.public.eventosHemocione as string) ?? "";
+
+      const url = new URL(`/event/${encodeURIComponent(eventSlug)}/ticket`, eventosHemocioneUrl);
+      return url.toString();
     },
   },
 };
