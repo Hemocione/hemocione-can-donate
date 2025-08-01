@@ -1,7 +1,13 @@
 <template>
   <div class="result-container" ref="result">
     <div v-if="isFormFailed" class="result-failed">
-      <NuxtImg src="/images/hemofalha.svg" alt="Falha" class="result-image" />
+      <NuxtImg
+        src="/images/hemofalha.svg"
+        alt="Falha"
+        class="result-image"
+        width="150"
+        height="150"
+      />
       <h2 class="result-title">Parece que você não pode doar neste momento.</h2>
 
       <div class="result-reason-container">
@@ -26,10 +32,13 @@
     </div>
 
     <div v-else class="result-success">
+      
       <NuxtImg
         src="/images/hemosucesso.svg"
         alt="Sucesso"
         class="result-image"
+        width="150"
+        height="150"
       />
       <h2 class="result-title">Ótimo, você pode doar!</h2>
       <p class="result-reason">
