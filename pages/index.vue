@@ -19,6 +19,8 @@
         src="images/donation-illustration.png"
         alt="Ilustração de Doação"
         class="illustration"
+        width="400"
+        height="400"
       />
     </main>
 
