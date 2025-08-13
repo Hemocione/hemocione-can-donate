@@ -105,7 +105,7 @@ const questions: Question[] = [
   },
   {
     question:
-      "Você possui algum piercing na boca, nariz ou região genital, ou retirou um há menos de 12 meses?",
+      "Você possui algum piercing na boca ou região genital, ou retirou um há menos de 12 meses?",
     slug: "mouthPiercing",
     description:
       "Piercings em áreas sensíveis podem aumentar o risco de infecções. É importante garantir que você esteja saudável para a doação.",
