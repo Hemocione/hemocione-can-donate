@@ -1,6 +1,5 @@
 <template>
-  <div class="fixed-buttons">
-    <!-- Fluxo com integração -->
+  <div class="result-buttons-container">
     <template v-if="buttonConfig && buttonConfig.length">
       <template v-for="(btn, idx) in buttonConfig" :key="idx">
         <el-button
@@ -13,9 +12,7 @@
       </template>
     </template>
 
-    <!-- Fluxo sem integração -->
     <template v-else>
-      <!-- Falha no formulário -->
       <template v-if="isFormFailed">
         <el-button
           class="action-button"
@@ -28,7 +25,6 @@
           Voltar ao início
         </el-button>
       </template>
-      <!-- Sucesso no formulário -->
       <template v-else>
         <el-button
           class="action-button"
@@ -116,54 +112,46 @@ function handleBtnClick(btn: ButtonConfig) {
 </script>
 
 <style scoped>
-.action-button {
-  background-color: var(--hemo-color-primary-medium);
-  /* Vermelho do botão principal */
-  color: white;
-  font-weight: bold;
-  width: 90%;
-  /* Define a largura dos botões */
-  max-width: 400px;
-  /* Largura máxima para evitar distorção em telas grandes */
-  height: 48px;
-  border-radius: 8px;
-  /* Bordas arredondadas */
-  padding: 12px 0;
-  /* Altura do botão */
-  text-align: center;
-  /* Centraliza o texto */
-  font-size: 1rem;
-  /* Tamanho do texto */
-}
-
-.fixed-buttons {
+.result-buttons-container {
   display: flex;
   flex-direction: column;
-  /* Alinha os botões verticalmente */
   align-items: center;
-  /* Centraliza os botões horizontalmente */
   gap: 15px;
-  /* Espaçamento vertical entre os botões */
   padding: 20px 0;
-  /* Espaçamento interno */
   background-color: white;
   border-top: 1px solid var(--hemo-color-black-15);
-  position: fixed;
-  bottom: 0;
+  margin-top: auto;
   width: 100%;
-  max-width: var(--hemo-page-max-width);
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  z-index: 10;
+}
+
+.action-button {
+  background-color: var(--hemo-color-primary-medium) !important;
+  color: white !important;
+  font-weight: bold;
+  width: 90%;
+  max-width: 400px;
+  height: 48px;
+  border-radius: 8px;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 1rem;
+  border: none !important;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.action-button:hover {
+  background-color: var(--hemo-color-primary-dark) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .secondary-button {
-  background-color: white;
-  /* Fundo branco */
-  color: var(--hemo-color-primary-medium);
-  /* Texto vermelho */
-  border: 2px solid var(--hemo-color-primary-medium);
-  /* Borda vermelha */
+  background-color: white !important;
+  color: var(--hemo-color-primary-medium) !important;
+  border: 2px solid var(--hemo-color-primary-medium) !important;
   font-weight: bold;
   width: 90%;
   height: 48px;
@@ -172,5 +160,37 @@ function handleBtnClick(btn: ButtonConfig) {
   padding: 12px 0;
   text-align: center;
   font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.secondary-button:hover {
+  background-color: var(--hemo-color-primary-ultra-light) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 480px) {
+  .action-button,
+  .secondary-button {
+    width: 95%;
+    max-width: 350px;
+    font-size: 0.9rem;
+  }
+  
+  .result-buttons-container {
+    padding: 15px 0;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .action-button,
+  .secondary-button {
+    width: 98%;
+    max-width: 300px;
+    font-size: 0.85rem;
+    height: 44px;
+  }
 }
 </style>

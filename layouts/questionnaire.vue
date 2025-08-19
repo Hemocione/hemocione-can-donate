@@ -392,10 +392,14 @@ async function goToQuestion(index: number) {
 .route-wrapper {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .question-route {
   height: calc(100% - 2rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
@@ -453,6 +457,8 @@ async function goToQuestion(index: number) {
   height: calc(
     100% - var(--flex-navbar-height) - var(--secondary-header-height)
   );
+  display: flex;
+  flex-direction: column;
 }
 
 .content p {
