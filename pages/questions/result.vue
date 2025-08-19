@@ -98,18 +98,29 @@ const ondeDoarHemocione: string =
   (config.public.ondeDoarHemocione as string) ?? "";
 
 const failingReasons = computed(() => {
-  if (!userStore.failingReasons) return [];
-  return userStore.failingReasons.split(". ").filter(Boolean);
+  try {
+    if (!userStore.failingReasons || typeof userStore.failingReasons !== 'string') return [];
+    return userStore.failingReasons.split(". ").filter(Boolean);
+  } catch (error) {
+    console.error('Erro ao processar failingReasons:', error);
+    return [];
+  }
 });
 
 onBeforeMount(async () => {
-  const formResponse = userStore.formResponse;
-  const integrationSlug = formResponse?.integration?.integrationSlug;
-  if (integrationSlug) {
-    const integrationDef = getIntegrationDefinition(integrationSlug);
-    if (integrationDef?.getButtonConfig) {
-      buttonConfig.value = await integrationDef.getButtonConfig(formResponse);
+  try {
+    const formResponse = userStore.formResponse;
+    if (!formResponse) return;
+    
+    const integrationSlug = formResponse?.integration?.integrationSlug;
+    if (integrationSlug) {
+      const integrationDef = getIntegrationDefinition(integrationSlug);
+      if (integrationDef?.getButtonConfig) {
+        buttonConfig.value = await integrationDef.getButtonConfig(formResponse);
+      }
     }
+  } catch (error) {
+    console.error('Erro ao configurar botões:', error);
   }
 })
 
