@@ -84,7 +84,7 @@
 
     <main class="content">
       <Transition name="slide-fade-down" mode="out-in" appear>
-        <div v-if="isQuestionsRoute" class="progress-bar">
+        <div v-if="isQuestionsRoute && questions && questions.length > 0" class="progress-bar">
           <div
             v-for="(question, index) in questions"
             :key="index"
@@ -179,7 +179,7 @@ async function logOut() {
 const { isFormFailed } = storeToRefs(userStore);
 
 const isFormCompleted = computed(() => {
-  return currentQuestionIndex.value === -1;
+  return currentQuestionIndex.value === -1 && questions.value && Array.isArray(questions.value) && questions.value.length > 0;
 });
 
 const isQuestionsRoute = computed(() => {
@@ -207,13 +207,14 @@ const questions = computed(() => {
 });
 
 const currentQuestionIndex = computed(() => {
+  if (!questions.value || !Array.isArray(questions.value)) return -1;
   return questions.value.findIndex((question) => {
-    return question.slug == currentQuestionSlug.value;
+    return question?.slug == currentQuestionSlug.value;
   });
 });
 
 const questionsLength = computed(() => {
-  return questions.value.length;
+  return questions.value && Array.isArray(questions.value) ? questions.value.length : 0;
 });
 
 async function goBack() {
@@ -342,7 +343,7 @@ watchEffect(() => {
 });
 
 function isQuestionAnswered(index: number): boolean {
-  if (index < 0 || index >= questions.value.length) {
+  if (!questions.value || !Array.isArray(questions.value) || index < 0 || index >= questions.value.length) {
     return false;
   }
 
@@ -353,7 +354,7 @@ function isQuestionAnswered(index: number): boolean {
 }
 
 async function goToQuestion(index: number) {
-  if (index < 0 || index >= questions.value.length) return;
+  if (!questions.value || !Array.isArray(questions.value) || index < 0 || index >= questions.value.length) return;
 
   const answeredIndices = questions.value
     .map((_, i) => (isQuestionAnswered(i) ? i : -1))
@@ -373,7 +374,9 @@ async function goToQuestion(index: number) {
     return;
   }
 
-  const questionSlug = questions.value[index].slug;
+  const questionSlug = questions.value[index]?.slug;
+  if (!questionSlug) return;
+  
   await router.push(`/questions/${questionSlug}`);
 }
 </script>
@@ -392,10 +395,14 @@ async function goToQuestion(index: number) {
 .route-wrapper {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .question-route {
   height: calc(100% - 2rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
@@ -453,6 +460,8 @@ async function goToQuestion(index: number) {
   height: calc(
     100% - var(--flex-navbar-height) - var(--secondary-header-height)
   );
+  display: flex;
+  flex-direction: column;
 }
 
 .content p {
@@ -542,7 +551,7 @@ async function goToQuestion(index: number) {
 }
 
 .progress-dot {
-  width: calc(100% / var(--questions-length));
+  width: calc(100% / max(var(--questions-length), 1));
   height: 8px;
   border-radius: 20px;
   background-color: var(--hemo-color-black-15);
