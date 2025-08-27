@@ -146,10 +146,9 @@ async function handleWrongUser() {
 .content {
   background-color: var(--hemo-color-primary-extra-light);
   color: var(--hemo-color-white);
-  padding: 20px;
+  padding: 60px 20px 100px;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
-  padding-bottom: 100px;
   width: 100%;
   height: calc((100dvh - var(--navbar-height)) * 0.7);
   display: flex;
@@ -157,13 +156,13 @@ async function handleWrongUser() {
   align-items: center;
   text-align: center;
   justify-content: center;
-  gap: 16px;
+  gap: 0;
 }
 
 .content h1 {
   font-size: 2rem;
   font-weight: bold;
-  margin: 0;
+  margin: 0 0 8px 0;
 }
 
 .content p {
@@ -172,9 +171,10 @@ async function handleWrongUser() {
 }
 
 .illustration {
-  height: 70%;
-  max-width: 500px;
-  max-height: 500px;
+  width: 400px;
+  height: 400px;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .button-container {
