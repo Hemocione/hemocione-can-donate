@@ -146,7 +146,7 @@ async function handleWrongUser() {
 .content {
   background-color: var(--hemo-color-primary-extra-light);
   color: var(--hemo-color-white);
-  padding: 60px 20px 100px;
+  padding: 80px 20px 60px;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
   width: 100%;
@@ -165,6 +165,18 @@ async function handleWrongUser() {
   margin: 0 0 8px 0;
 }
 
+@media (max-width: 480px) {
+  .content h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .content h1 {
+    font-size: 1.25rem;
+  }
+}
+
 .content p {
   font-size: 1rem;
   margin: 0;
@@ -179,7 +191,7 @@ async function handleWrongUser() {
 
 .button-container {
   background-color: var(--hemo-color-white);
-  padding: 20px 20px 60px;
+  padding: 40px 20px 60px;
   width: 100%;
   height: calc((100dvh - var(--navbar-height)) * 0.3);
   display: flex;
