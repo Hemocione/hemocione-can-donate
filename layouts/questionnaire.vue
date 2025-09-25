@@ -583,4 +583,19 @@ async function goToQuestion(index: number) {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Fix mínimo para modal cortado */
+:deep(.el-drawer) {
+  height: auto !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+}
+
+:deep(.el-drawer__body) {
+  height: auto !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  overflow-y: auto !important;
+  padding: 20px !important;
+}
 </style>
