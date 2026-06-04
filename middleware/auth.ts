@@ -6,7 +6,12 @@ import { getHemocioneIdUrl } from "~/utils/getHemocioneIdUrl";
 export default defineNuxtRouteMiddleware(async (to, from) => {
   if (import.meta.server) return;
 
-  const isLoggedIn = await evaluateCurrentLogin(from.query);
+  // O token chega na URL de destino (to.query) quando o usuário entra na
+  // integração vindo do digital-event ou retorna do login. Lemos to.query
+  // primeiro e mantemos from.query como rede de segurança. Depender do cookie
+  // .hemocione.com.br quebra no Safari (ITP segura o cookie cross-subdomínio
+  // no primeiro hit), por isso a URL é a fonte primária de auth aqui.
+  const isLoggedIn = await evaluateCurrentLogin({ ...from.query, ...to.query });
   if (!isLoggedIn) {
     redirectToID(to.fullPath);
     return;
@@ -68,8 +73,9 @@ export async function evaluateCurrentLogin(query?: LocationQuery) {
 }
 
 export function getCurrentToken(query?: LocationQuery): string | null {
-  if (query?.token) {
-    return String(query.token);
+  const queryToken = normalizeQueryToken(query?.token);
+  if (queryToken) {
+    return queryToken;
   }
 
   const { token } = useUserStore();
@@ -80,6 +86,21 @@ export function getCurrentToken(query?: LocationQuery): string | null {
   const config = useRuntimeConfig();
   const cookieToken = useCookie(config.public.authCookieKey).value as string;
   return cookieToken;
+}
+
+// A URL pode chegar com mais de um `token`: o hemocione-id faz append do token
+// recém-emitido numa URL que já carregava o token do goToCanDonate, e o
+// vue-router transforma isso num array. Pega o último valor não-vazio, que é o
+// mais recente.
+function normalizeQueryToken(
+  token: LocationQuery[string] | undefined,
+): string | null {
+  if (token == null) return null;
+  if (Array.isArray(token)) {
+    const last = token.filter(Boolean).pop();
+    return last ? String(last) : null;
+  }
+  return String(token);
 }
 
 export function redirectToID(fullPath: string) {
