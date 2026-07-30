@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { InferSchemaType, Schema, model } from "mongoose";
 import {
   getFailingQuestionsForContext,
@@ -29,7 +30,11 @@ const AnswerSchema = new Schema({
   },
 });
 
-export const integrationSlugs = ['event-flow-schedule', 'event-ticket-adhoc'] as const;
+export const integrationSlugs = [
+  'event-flow-schedule',
+  'event-ticket-adhoc',
+  'competition-participation',
+] as const;
 
 export type IntegrationSlug = typeof integrationSlugs[number];
 
@@ -69,6 +74,22 @@ IntegrationBaseSchema.discriminator(
       payload: {
         eventSlug: { type: String, required: true },
         eventDate: { type: Date, required: true },
+      },
+    },
+    { _id: false }
+  )
+);
+
+IntegrationBaseSchema.discriminator(
+  "competition-participation",
+  new Schema(
+    {
+      payload: {
+        competitionSlug: { type: String, required: true },
+        // Path RELATIVO sobre a base allowlistada em runtimeConfig.
+        // Nunca URL completa — seria open-redirect, ja que o can-donate faz
+        // navigateTo(url, { external: true }) com usuario logado.
+        returnPath: { type: String, required: true },
       },
     },
     { _id: false }
@@ -129,6 +150,23 @@ const FormResponseSchema = new Schema(
     integration: {
       type: IntegrationBaseSchema,
       default: null,          // allows it to be null / omitted
+    },
+
+    // Identificador do comprovante publico de pre-triagem.
+    //
+    // Nao usamos o _id: ObjectId embute timestamp e counter, logo e
+    // parcialmente enumeravel — e do outro lado do link ha veredito de
+    // triagem de pessoa identificavel.
+    //
+    // sparse e OBRIGATORIO: os documentos que ja existem na colecao nao tem
+    // este campo, e num indice unique nao-sparse o Mongo trata ausente como
+    // null — mais de um documento sem o campo colidiria e a criacao do indice
+    // falharia.
+    publicToken: {
+      type: String,
+      unique: true,
+      sparse: true,
+      default: () => randomBytes(16).toString("hex"), // 16 bytes -> 32 chars hex
     },
 
   },
