@@ -55,6 +55,10 @@ export default defineNuxtConfig({
       eventosHemocione: process.env.EVENTOS_HEMOCIONE || "https://eventos.hemocione.com.br/",
       apoieHemocione: process.env.APOIE_HEMOCIONE || "https://apoie.hemocione.com.br/",
       ondeDoarHemocione: process.env.ONDE_DOAR_HEMOCIONE || "https://ondedoar.hemocione.com.br/",
+      copaHemocione: process.env.COPA_HEMOCIONE || "https://copa.d.hemocione.com.br",
+      // Base sobre a qual o returnPath relativo das integracoes de copa e
+      // resolvido. Nunca aceitamos URL completa por query string.
+      yduqsSite: process.env.YDUQS_SITE || "https://yduqs.hemocione.com.br",
     },
     hemocioneIdJwtSecretKey:
       process.env.HEMOCIONE_ID_JWT_SECRET_KEY ?? "secret",

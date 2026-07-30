@@ -6,7 +6,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@element-plus/nuxt": "^1.0.10",
@@ -19,6 +21,7 @@
     "mongoose": "^8.9.5",
     "nuxt": "~3.12.3",
     "nuxt-bugsnag": "8.3.1",
+    "vitest": "^2.1.8",
     "party-js": "^2.2.0",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"
