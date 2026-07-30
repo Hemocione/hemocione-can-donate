@@ -1,9 +1,22 @@
-import { randomBytes } from "node:crypto";
 import { InferSchemaType, Schema, model } from "mongoose";
 import {
   getFailingQuestionsForContext,
   getQuestionsFromContext,
 } from "~/utils/questions";
+
+/**
+ * 16 bytes em hex (32 chars).
+ *
+ * Usa a Web Crypto API global, disponivel tanto no Node 18+ quanto no browser,
+ * em vez de importar `randomBytes` de `node:crypto`. Este arquivo e importado
+ * pelo client — `utils/integrations.ts` consome `integrationSlugs` daqui —,
+ * entao um import Node-only faz o Vite resolver para
+ * `__vite-browser-external` e o build de producao quebra.
+ */
+const generatePublicToken = () =>
+  Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 
 export const formModes = ["anonymous", "logged-in"] as const;
 
@@ -166,7 +179,7 @@ const FormResponseSchema = new Schema(
       type: String,
       unique: true,
       sparse: true,
-      default: () => randomBytes(16).toString("hex"), // 16 bytes -> 32 chars hex
+      default: generatePublicToken,
     },
 
   },
