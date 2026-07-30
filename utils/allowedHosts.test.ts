@@ -45,6 +45,13 @@ describe("buildAllowedUrl", () => {
     expect(buildAllowedUrl("", "/apto")).toBeNull();
   });
 
+  it("rejeita valor que nao e string — param repetido chega como array", () => {
+    expect(buildAllowedUrl(base, ["/apto", "/outro"])).toBeNull();
+    expect(buildAllowedUrl(base, undefined)).toBeNull();
+    expect(buildAllowedUrl(base, 123)).toBeNull();
+    expect(buildAllowedUrl(base, null)).toBeNull();
+  });
+
   it("nunca deixa o host da base ser trocado", () => {
     const result = buildAllowedUrl(base, "/apto");
     expect(new URL(result!).host).toBe("yduqs.hemocione.com.br");

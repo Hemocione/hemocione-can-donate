@@ -10,8 +10,12 @@
  */
 export function buildAllowedUrl(
   base: string,
-  relativePath: string,
+  relativePath: unknown,
 ): string | null {
+  // relativePath vem de query string: param repetido
+  // (?returnPath=a&returnPath=b) chega como array, e chamar metodo de string
+  // nele estouraria dentro de um caminho de redirect.
+  if (typeof relativePath !== "string") return null;
   if (!base || !relativePath) return null;
 
   // "//evil.com" e protocol-relative; "https://..." e absoluto; "javascript:"
