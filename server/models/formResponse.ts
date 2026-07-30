@@ -74,6 +74,10 @@ IntegrationBaseSchema.discriminator(
       payload: {
         eventSlug: { type: String, required: true },
         eventDate: { type: Date, required: true },
+        // Slug da copa relacionada ao evento. SEM esta linha o Mongoose
+        // descarta o campo em strict mode, e o botao "Registrar participacao"
+        // nunca aparece para quem e reprovado na pre-triagem vindo de evento.
+        competitionSlug: { type: String, required: false },
       },
     },
     { _id: false }
@@ -87,6 +91,10 @@ IntegrationBaseSchema.discriminator(
       payload: {
         eventSlug: { type: String, required: true },
         eventDate: { type: Date, required: true },
+        // Slug da copa relacionada ao evento. SEM esta linha o Mongoose
+        // descarta o campo em strict mode, e o botao "Registrar participacao"
+        // nunca aparece para quem e reprovado na pre-triagem vindo de evento.
+        competitionSlug: { type: String, required: false },
       },
     },
     { _id: false }
