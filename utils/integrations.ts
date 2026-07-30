@@ -59,7 +59,11 @@ const buildEventsPayload = async (
   const eventDate = route.query.eventDate as string | undefined;
   if (!eventSlug || !eventDate) return null;
 
-  const competitionSlug = route.query.competitionSlug as string | undefined;
+  const competitionSlug =
+    typeof route.query.competitionSlug === "string" &&
+    route.query.competitionSlug.trim()
+      ? route.query.competitionSlug
+      : undefined;
 
   const tz = getUserTimeZone();
   const eventDay = dayjs.utc(eventDate).tz(tz).startOf("day");
@@ -293,10 +297,15 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
    */
   "competition-participation": {
     async buildPayload(route) {
-      const competitionSlug = route.query.competitionSlug as string | undefined;
+      // Query string nao e confiavel: param repetido chega como array, e
+      // qualquer coisa que nao seja string simples nao e slug nem path.
+      const asPlainString = (value: unknown): string | undefined =>
+        typeof value === "string" && value.trim() ? value : undefined;
+
+      const competitionSlug = asPlainString(route.query.competitionSlug);
       if (!competitionSlug) return null;
 
-      const returnPath = (route.query.returnPath as string | undefined) ?? "/apto";
+      const returnPath = asPlainString(route.query.returnPath) ?? "/apto";
 
       // Fora de evento nao ha data marcada: a pessoa vai doar por conta
       // propria, hoje.

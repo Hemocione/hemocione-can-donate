@@ -55,6 +55,10 @@ const { data: comprovante } = await useFetch<{
 const formattedDate = computed(() => {
   if (!comprovante.value?.finishedAt) return "";
   return new Date(comprovante.value.finishedAt).toLocaleString("pt-BR", {
+    // Fuso fixo: um comprovante e documento de evidencia, entao a hora nele nao
+    // pode mudar conforme o fuso de quem abre o link. Quem confere a
+    // participacao pode estar em outro fuso que quem fez a pre-triagem.
+    timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
