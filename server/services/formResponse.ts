@@ -15,8 +15,15 @@ export async function createFormResponse(
 ) {
   const mode = user ? "logged-in" : "anonymous";
 
+  // Guarda nome COMPLETO: o comprovante publico de pre-triagem mostra
+  // "Primeiro I." e, com apenas o givenName, nunca teria o sobrenome para
+  // abreviar — sairia so o primeiro nome, fraco como prova de identidade.
   const userData = user
-    ? { id: user.id, name: user.givenName, email: user.email }
+    ? {
+        id: user.id,
+        name: [user.givenName, user.surName].filter(Boolean).join(" "),
+        email: user.email,
+      }
     : {};
 
   try {
