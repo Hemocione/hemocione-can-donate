@@ -38,7 +38,10 @@ export type ButtonConfig = {
   visible?: boolean;
 };
 
-type PayloadWithIntent = IntegrationPayload & { intent: "today" | "soon" };
+/** intent nulo significa "pergunte a pessoa" — ver pages/integration. */
+type PayloadWithIntent = IntegrationPayload & {
+  intent: "today" | "soon" | null;
+};
 
 export interface IntegrationDefinition {
   /** Constroi o payload que deve ser criado em << FormResponse.integration >>. */
@@ -307,9 +310,12 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
 
       const returnPath = asPlainString(route.query.returnPath) ?? "/apto";
 
-      // Fora de evento nao ha data marcada: a pessoa vai doar por conta
-      // propria, hoje.
-      return { intent: "today", competitionSlug, returnPath };
+      // intent NULO de proposito: fora de evento nao existe data marcada, e a
+      // pessoa vai ao banco de sangue quando preferir. Cravar "today" fazia o
+      // questionario perguntar "comeu hoje?", "dormiu bem?" e "bebeu?" — tres
+      // perguntas exclusivas do contexto de hoje — e reprovar quem so vai doar
+      // semana que vem. Quem responde e a propria pessoa, na tela /intention.
+      return { intent: null, competitionSlug, returnPath };
     },
 
     async getButtonConfig(formResponse) {

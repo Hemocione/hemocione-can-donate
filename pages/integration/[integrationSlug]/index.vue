@@ -89,15 +89,21 @@ async function initializeQuestionnaire() {
   sessionStorage.setItem('questionnaireStarted', 'true');
 
   // 4. Cria FormResponse já com o payload da integração
-  if (intent) {
-    await userStore.createFormResponse(integrationSlug, payload, intent);
-    sessionStorage.setItem('selectedIntent', intent);
-    userStore.setDonationIntent(intent);
-  } else {
-    navigateTo('/');
+  await userStore.createFormResponse(integrationSlug, payload, intent);
+
+  // 5. Integração que NÃO sabe a data da doação (ex.: ida a um banco de sangue
+  //    por conta própria) deixa a pergunta para a própria pessoa: sem isso o
+  //    questionário assumiria um contexto errado e faria perguntas que só valem
+  //    para quem doa hoje.
+  if (!intent) {
+    router.replace('/intention');
+    return;
   }
 
-  // 5. Redireciona para a primeira pergunta
+  sessionStorage.setItem('selectedIntent', intent);
+  userStore.setDonationIntent(intent);
+
+  // 6. Redireciona para a primeira pergunta
   const firstQuestionSlug = userStore.formQuestions[0]?.slug;
   if (firstQuestionSlug) {
     nextQuestionUrl.value = `/questions/${firstQuestionSlug}`;
