@@ -32,6 +32,11 @@ const getCurrentEnv = () => {
 };
 
 const siteUrl = getSiteUrl();
+
+const defaultCopaUrl =
+  process.env.VERCEL_ENV === "production"
+    ? "https://copa.hemocione.com.br"
+    : "https://copa.d.hemocione.com.br";
 const currentEnv = getCurrentEnv();
 export default defineNuxtConfig({
   // Habilitar ferramentas de desenvolvimento
@@ -55,7 +60,10 @@ export default defineNuxtConfig({
       eventosHemocione: process.env.EVENTOS_HEMOCIONE || "https://eventos.hemocione.com.br/",
       apoieHemocione: process.env.APOIE_HEMOCIONE || "https://apoie.hemocione.com.br/",
       ondeDoarHemocione: process.env.ONDE_DOAR_HEMOCIONE || "https://ondedoar.hemocione.com.br/",
-      copaHemocione: process.env.COPA_HEMOCIONE || "https://copa.d.hemocione.com.br",
+      // Derivado do ambiente: um default fixo de dev aqui levaria usuario de
+      // PRODUCAO para a copa de dev caso a env nao esteja setada — e o botao
+      // "Registrar participacao" e justamente o que manda a pessoa para la.
+      copaHemocione: process.env.COPA_HEMOCIONE || defaultCopaUrl,
       // Base sobre a qual o returnPath relativo das integracoes de copa e
       // resolvido. Nunca aceitamos URL completa por query string.
       yduqsSite: process.env.YDUQS_SITE || "https://yduqs.hemocione.com.br",
