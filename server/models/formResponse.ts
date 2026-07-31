@@ -4,6 +4,20 @@ import {
   getQuestionsFromContext,
 } from "~/utils/questions";
 
+/**
+ * 16 bytes em hex (32 chars).
+ *
+ * Usa a Web Crypto API global, disponivel tanto no Node 18+ quanto no browser,
+ * em vez de importar `randomBytes` de `node:crypto`. Este arquivo e importado
+ * pelo client — `utils/integrations.ts` consome `integrationSlugs` daqui —,
+ * entao um import Node-only faz o Vite resolver para
+ * `__vite-browser-external` e o build de producao quebra.
+ */
+const generatePublicToken = () =>
+  Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+
 export const formModes = ["anonymous", "logged-in"] as const;
 
 export const donationIntents = ["today", "soon", null] as const;
@@ -29,7 +43,11 @@ const AnswerSchema = new Schema({
   },
 });
 
-export const integrationSlugs = ['event-flow-schedule', 'event-ticket-adhoc'] as const;
+export const integrationSlugs = [
+  'event-flow-schedule',
+  'event-ticket-adhoc',
+  'competition-participation',
+] as const;
 
 export type IntegrationSlug = typeof integrationSlugs[number];
 
@@ -56,6 +74,10 @@ IntegrationBaseSchema.discriminator(
       payload: {
         eventSlug: { type: String, required: true },
         eventDate: { type: Date, required: true },
+        // Slug da copa relacionada ao evento. SEM esta linha o Mongoose
+        // descarta o campo em strict mode, e o botao "Registrar participacao"
+        // nunca aparece para quem e reprovado na pre-triagem vindo de evento.
+        competitionSlug: { type: String, required: false },
       },
     },
     { _id: false }
@@ -69,6 +91,26 @@ IntegrationBaseSchema.discriminator(
       payload: {
         eventSlug: { type: String, required: true },
         eventDate: { type: Date, required: true },
+        // Slug da copa relacionada ao evento. SEM esta linha o Mongoose
+        // descarta o campo em strict mode, e o botao "Registrar participacao"
+        // nunca aparece para quem e reprovado na pre-triagem vindo de evento.
+        competitionSlug: { type: String, required: false },
+      },
+    },
+    { _id: false }
+  )
+);
+
+IntegrationBaseSchema.discriminator(
+  "competition-participation",
+  new Schema(
+    {
+      payload: {
+        competitionSlug: { type: String, required: true },
+        // Path RELATIVO sobre a base allowlistada em runtimeConfig.
+        // Nunca URL completa — seria open-redirect, ja que o can-donate faz
+        // navigateTo(url, { external: true }) com usuario logado.
+        returnPath: { type: String, required: true },
       },
     },
     { _id: false }
@@ -129,6 +171,23 @@ const FormResponseSchema = new Schema(
     integration: {
       type: IntegrationBaseSchema,
       default: null,          // allows it to be null / omitted
+    },
+
+    // Identificador do comprovante publico de pre-triagem.
+    //
+    // Nao usamos o _id: ObjectId embute timestamp e counter, logo e
+    // parcialmente enumeravel — e do outro lado do link ha veredito de
+    // triagem de pessoa identificavel.
+    //
+    // sparse e OBRIGATORIO: os documentos que ja existem na colecao nao tem
+    // este campo, e num indice unique nao-sparse o Mongo trata ausente como
+    // null — mais de um documento sem o campo colidiria e a criacao do indice
+    // falharia.
+    publicToken: {
+      type: String,
+      unique: true,
+      sparse: true,
+      default: generatePublicToken,
     },
 
   },
