@@ -85,13 +85,18 @@ const buildEventsPayload = async (
 /**
  * URL de registro na copa.
  *
- * `kind` vem pre-selecionado mas permanece editavel no formulario da copa: o
- * campo e autodeclarado, entao mentir pelo query param equivale a mentir
- * clicando no radio — nao ha garantia perdida.
+ * `lockKind` faz a copa NAO perguntar "voce conseguiu doar?". Usado quando o
+ * link sai do resultado da pre-triagem: nesse momento a pessoa ainda nao doou,
+ * por definicao, e perguntar convidaria a resposta errada — que viraria bolsa
+ * de sangue no historico de quem nao doou.
  */
 export function buildCompetitionRegisterUrl(
   competitionSlug: string,
-  opts: { kind?: "donation" | "participation"; proofUrl?: string } = {},
+  opts: {
+    kind?: "donation" | "participation";
+    proofUrl?: string;
+    lockKind?: boolean;
+  } = {},
 ): string | null {
   const config = useRuntimeConfig();
   const base = (config.public.copaHemocione as string) ?? "";
@@ -104,6 +109,7 @@ export function buildCompetitionRegisterUrl(
     );
     if (opts.kind) url.searchParams.set("kind", opts.kind);
     if (opts.proofUrl) url.searchParams.set("proofUrl", opts.proofUrl);
+    if (opts.lockKind) url.searchParams.set("lockKind", "true");
     return url.toString();
   } catch {
     return null;
@@ -160,6 +166,7 @@ function buildEventButtonConfig(
   const registerUrl = competitionSlug
     ? buildCompetitionRegisterUrl(competitionSlug, {
         kind: "participation",
+        lockKind: true,
         proofUrl: buildComprovanteUrl(formResponse) ?? undefined,
       })
     : null;
@@ -353,6 +360,7 @@ export const integrations: Record<IntegrationSlug, IntegrationDefinition> = {
       const buttons: ButtonConfig[] = [];
       const registerUrl = buildCompetitionRegisterUrl(competitionSlug, {
         kind: "participation",
+        lockKind: true,
         proofUrl: buildComprovanteUrl(formResponse) ?? undefined,
       });
       if (registerUrl) {
