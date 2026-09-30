@@ -7,6 +7,7 @@ interface Me {
   phone: string;
   document: string;
   birthDate: string;
+  donations?: { reviewStatus?: string | null }[];
 }
 
 export async function getMe(token: string): Promise<Me> {

@@ -17,7 +17,7 @@ const FRONTEND_FIELDS = [
   "user.id",
   "donationIntent",
   "answers",
-  "ageAutoFilled",
+  "autoFilledAnswers",
   "startedAt",
   "finishedAt",
   "status",

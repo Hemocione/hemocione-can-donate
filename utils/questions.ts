@@ -1,29 +1,49 @@
 import type { AnswerValue, DonationIntent } from "~/server/models/formResponse";
 
+interface Answer {
+  value?: AnswerValue | null;
+}
+
+export type Answers = Record<string, Answer | undefined>;
+
 export interface Question {
   question: string;
   slug: string;
   description: string;
-  // Pergunta que some do fluxo quando o servidor ja preencheu a resposta a
-  // partir do cadastro no Hemocione ID (ver `ageAutoFilled`).
-  skipWhenAutoFilled?: Boolean;
   donationIntents?: DonationIntent[];
+  // Pergunta condicional: so entra no questionario quando a condicao vale para
+  // as respostas atuais.
+  showIf?: (answers: Answers) => boolean;
   failingResponses: string[]; // Para comparar e ver se alguma pergunta falha
   //Se alguma falhar, salva o forms como falha, se não, não
   failingReason: string;
   image: string;
 }
 
-// Portaria GM/MS nº 11.685/2026 (vigente desde 30/09/2026): nao existe mais
-// idade maxima para quem ja doou antes. A primeira doacao continua limitada a
-// 60 anos, 11 meses e 29 dias.
+// Portaria GM/MS nº 11.685/2026 (vigente desde 30/09/2026): a primeira doacao
+// continua limitada a 60 anos, 11 meses e 29 dias, e nao existe mais idade
+// maxima para quem ja doou antes.
+//
+// "Nao" na pergunta de idade nao reprova sozinho: abre `priorDonation`, que
+// separa quem tem mais de 60 e ja doou (apto) de quem tem menos de 16 ou nunca
+// doou (inapto).
 const ageQuestion: Question = {
-  question:
-    "Você tem entre 16 e 60 anos, ou tem mais de 60 anos e já doou sangue alguma vez?",
+  question: "Você tem entre 16 e 60 anos?",
   slug: "age",
   description:
-    "A idade mínima para doação é de 16 anos. Menores de 18 anos devem apresentar consentimento formal do responsável legal. A primeira doação deve acontecer até os 60 anos, 11 meses e 29 dias. Quem já doou antes pode continuar doando depois dos 60 anos, sem idade máxima, se estiver com boa saúde e for considerado apto na avaliação clínica do hemocentro.",
-  skipWhenAutoFilled: true,
+    "A idade mínima para doação é de 16 anos. Menores de 18 anos devem apresentar consentimento formal do responsável legal. A primeira doação deve acontecer até os 60 anos, 11 meses e 29 dias.",
+  failingResponses: ["unknown"],
+  failingReason:
+    "Precisamos saber sua idade: a idade mínima para doação é de 16 anos, e a primeira doação deve acontecer até os 60 anos, 11 meses e 29 dias.",
+  image: "images/age.png",
+};
+
+const priorDonationQuestion: Question = {
+  question: "Você tem mais de 60 anos e já doou sangue alguma vez?",
+  slug: "priorDonation",
+  description:
+    "Quem já doou sangue antes pode continuar doando depois dos 60 anos, sem idade máxima, se estiver com boa saúde e for considerado apto na avaliação clínica do hemocentro.",
+  showIf: (answers) => answers.age?.value === "negative",
   failingResponses: ["negative", "unknown"],
   failingReason:
     "A idade mínima para doação é de 16 anos, e a primeira doação deve acontecer até os 60 anos, 11 meses e 29 dias. Depois dos 60 anos, só pode doar quem já doou sangue antes.",
@@ -42,6 +62,7 @@ const questions: Question[] = [
     image: "images/weight.png",
   },
   ageQuestion,
+  priorDonationQuestion,
   {
     question: "Você se alimentou bem hoje?",
     slug: "ateToday",
@@ -136,24 +157,31 @@ const questions: Question[] = [
   },
 ];
 
-// `ageAutoFilled`: o servidor preencheu a resposta de idade pelo cadastro do
-// Hemocione ID. So acontece no modo logado, e nao acontece quando a pessoa tem
-// mais de 60 anos (o cadastro nao diz se ela ja doou antes).
-export function getQuestionsFromContext(
+// Perguntas que valem para a intencao e as respostas atuais. E o conjunto que o
+// formulario precisa ter respondido para terminar, inclusive as respostas que o
+// servidor preencheu pelo cadastro do Hemocione ID.
+export function getApplicableQuestions(
   donationIntent: DonationIntent | null,
-  isAnonymous: boolean,
-  ageAutoFilled: boolean = !isAnonymous
+  answers: Answers = {}
 ): Question[] {
   return questions.filter(
     (question) =>
-      (!question.skipWhenAutoFilled || isAnonymous || !ageAutoFilled) &&
       (!question.donationIntents ||
-        (donationIntent && question.donationIntents.includes(donationIntent)))
+        (donationIntent && question.donationIntents.includes(donationIntent))) &&
+      (!question.showIf || question.showIf(answers))
   );
 }
 
-interface Answer {
-  value?: AnswerValue | null;
+// Perguntas que a pessoa responde na tela: as aplicaveis menos as que o
+// servidor ja preencheu (`autoFilledAnswers`, so no modo logado).
+export function getQuestionsFromContext(
+  donationIntent: DonationIntent | null,
+  answers: Answers = {},
+  autoFilledSlugs: string[] = []
+): Question[] {
+  return getApplicableQuestions(donationIntent, answers).filter(
+    (question) => !autoFilledSlugs.includes(question.slug)
+  );
 }
 
 export function getFilteredQuestions(answersSlugs: string[]) {
@@ -161,30 +189,29 @@ export function getFilteredQuestions(answersSlugs: string[]) {
 }
 
 export function getFailingQuestionsForContext(
-  answers: Record<string, Answer>,
-  donationIntent: DonationIntent | null,
-  isAnonymous: boolean
+  answers: Answers,
+  donationIntent: DonationIntent | null
+): Question[] {
+  return getApplicableQuestions(donationIntent, answers).filter((question) => {
+    const value = answers[question.slug]?.value;
+    return Boolean(value && question.failingResponses.includes(value));
+  });
+}
+
+// Estado do formulario para as respostas atuais: termina quando todas as
+// perguntas aplicaveis tem resposta.
+export function evaluateAnswers(
+  answers: Answers,
+  donationIntent: DonationIntent | null
 ) {
-  let questions = getQuestionsFromContext(donationIntent, isAnonymous);
-  const alreadyHasAgeQuestion = questions.find((q) => q.slug === "age");
-  if (!alreadyHasAgeQuestion) {
-    questions = [ageQuestion].concat(questions);
-  }
-  return (
-    (Object.keys(answers)
-      .map((answerSlug) => {
-        const question = questions.find((q) => q.slug === answerSlug);
-        const answer = answers[answerSlug];
-        if (
-          question &&
-          answer.value &&
-          question.failingResponses.includes(answer.value)
-        ) {
-          return question;
-        }
-      })
-      .filter(Boolean) as Question[]) || []
+  const relevantSlugs = getApplicableQuestions(donationIntent, answers).map(
+    (q) => q.slug
   );
+  const finished = relevantSlugs.every((slug) => Boolean(answers[slug]));
+  const failedQuestions = finished
+    ? getFailingQuestionsForContext(answers, donationIntent).map((q) => q.slug)
+    : [];
+  return { finished, relevantSlugs, failedQuestions };
 }
 
 export default questions;
