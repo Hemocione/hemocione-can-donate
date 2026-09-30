@@ -3,6 +3,7 @@ import { FormResponse, FormResponseSchema, IntegrationSlug } from "../models/for
 import { HemocioneUserAuthTokenData } from "./auth";
 import { getMe } from "./hemocioneId";
 import { calculateAge } from "~/utils/calculateAge";
+import { autoFilledAgeAnswer } from "~/utils/donorAge";
 import type { Answer } from "~/server/api/v1/formResponse/[formId]/answers/[answerSlug]/index.put";
 import type { IntegrationPayload } from "~/utils/integrations";
 
@@ -27,8 +28,9 @@ export async function createFormResponse(
     : {};
 
   try {
-    const extraFormInitialData = token
-      ? { answers: await getInitialAnswerMap(token) }
+    const initialAnswers = token ? await getInitialAnswerMap(token) : null;
+    const extraFormInitialData = initialAnswers
+      ? { answers: initialAnswers, ageAutoFilled: initialAnswers.has("age") }
       : {};
 
     const formResponse = new FormResponse({
@@ -74,16 +76,11 @@ export async function getInitialAnswerMap(
   token: string
 ): Promise<Map<string, Answer>> {
   const { birthDate } = await getMe(token);
-  const age = calculateAge(new Date(birthDate));
+  const value = autoFilledAgeAnswer(calculateAge(new Date(birthDate)));
 
-  const response: Answer = {
-    value: "positive",
-    answeredAt: new Date(),
-  };
+  // Sem resposta deduzida (mais de 60 anos), a pergunta de idade aparece para
+  // a pessoa responder.
+  if (!value) return new Map();
 
-  if (age < 16 || age > 69) {
-    response.value = "negative";
-  }
-
-  return new Map([["age", response]]);
+  return new Map([["age", { value, answeredAt: new Date() }]]);
 }

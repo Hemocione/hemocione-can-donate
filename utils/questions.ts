@@ -4,7 +4,9 @@ export interface Question {
   question: string;
   slug: string;
   description: string;
-  anonymousOnly?: Boolean;
+  // Pergunta que some do fluxo quando o servidor ja preencheu a resposta a
+  // partir do cadastro no Hemocione ID (ver `ageAutoFilled`).
+  skipWhenAutoFilled?: Boolean;
   donationIntents?: DonationIntent[];
   failingResponses: string[]; // Para comparar e ver se alguma pergunta falha
   //Se alguma falhar, salva o forms como falha, se não, não
@@ -12,15 +14,19 @@ export interface Question {
   image: string;
 }
 
+// Portaria GM/MS nº 11.685/2026 (vigente desde 30/09/2026): nao existe mais
+// idade maxima para quem ja doou antes. A primeira doacao continua limitada a
+// 60 anos, 11 meses e 29 dias.
 const ageQuestion: Question = {
-  question: "Você tem entre 16 e 69 anos?",
+  question:
+    "Você tem entre 16 e 60 anos, ou tem mais de 60 anos e já doou sangue alguma vez?",
   slug: "age",
   description:
-    "Para sua segurança, há idades mínima e máxima para doação de sangue. Menores de 18 anos devem apresentar consentimento formal do responsável legal.",
-  anonymousOnly: true,
+    "A idade mínima para doação é de 16 anos. Menores de 18 anos devem apresentar consentimento formal do responsável legal. A primeira doação deve acontecer até os 60 anos, 11 meses e 29 dias. Quem já doou antes pode continuar doando depois dos 60 anos, sem idade máxima, se estiver com boa saúde e for considerado apto na avaliação clínica do hemocentro.",
+  skipWhenAutoFilled: true,
   failingResponses: ["negative", "unknown"],
   failingReason:
-    "A idade mínima para doação é de 16 anos e a máxima é de 69 anos. Isso assegura que você esteja em condições adequadas para o procedimento.",
+    "A idade mínima para doação é de 16 anos, e a primeira doação deve acontecer até os 60 anos, 11 meses e 29 dias. Depois dos 60 anos, só pode doar quem já doou sangue antes.",
   image: "images/age.png",
 };
 
@@ -81,10 +87,11 @@ const questions: Question[] = [
     image: "images/sexRisk.png",
   },
   {
-    question: "Você fez tatuagem ou piercing nos últimos 6 meses?",
+    question:
+      "Você fez tatuagem, maquiagem definitiva, piercing, botox, preenchimento ou microagulhamento nos últimos 7 dias?",
     slug: "tattooOrPiercing",
     description:
-      "Tatuagens e piercings podem aumentar o risco de infecções. Precisamos garantir que você esteja saudável para doar.",
+      "Esses procedimentos podem aumentar o risco de infecções. Se o procedimento foi feito num local que cumpre as normas de segurança, você pode doar depois de 7 dias. Se o hemocentro não conseguir avaliar a segurança do local, o prazo é de 4 meses. Piercing na boca ou na região genital tem uma regra própria, na próxima pergunta.",
     donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
@@ -93,22 +100,22 @@ const questions: Question[] = [
   },
   {
     question:
-      "Você morou ou viajou para fora do Brasil (em áreas de risco) ou para Amazônia Legal nos últimos 12 meses?",
+      "Você esteve em área com risco de malária (Amazônia Legal ou áreas de risco fora do Brasil) nos últimos 30 dias?",
     slug: "traveledAbroad",
     description:
-      "Viagens recentes para fora do Brasil ou para a Amazônia Legal podem apresentar riscos de exposição a doenças endêmicas, como malária, febre amarela e outras, que podem comprometer a segurança da doação. Exemplos de áreas de risco incluem: África (Nigéria, Gana, Camarões, República Democrática do Congo), América do Sul (Amazonas, Acre, Peru, Colômbia, Venezuela) e Sudeste Asiático (Tailândia, Vietnã, Indonésia, Malásia). Para mais informações, consulte o hemocentro local.",
+      "Quem mora ou esteve em área endêmica de malária, ou teve contato com mata, bosque ou floresta nessas regiões, deve esperar 30 dias para doar. Exemplos de áreas de risco incluem: África (Nigéria, Gana, Camarões, República Democrática do Congo), América do Sul (Amazonas, Acre, Peru, Colômbia, Venezuela) e Sudeste Asiático (Tailândia, Vietnã, Indonésia, Malásia). Para mais informações, consulte o hemocentro local.",
     donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
-      "Viagens para áreas de risco podem aumentar a possibilidade de infecções, tornando necessária a avaliação cuidadosa dessas situações.",
+      "Quem esteve em área com risco de malária deve esperar 30 dias antes de doar.",
     image: "images/traveledAbroad.png",
   },
   {
     question:
-      "Você possui algum piercing na boca ou região genital, ou retirou um há menos de 12 meses?",
+      "Você possui algum piercing na boca ou região genital, ou retirou um há menos de 4 meses?",
     slug: "mouthPiercing",
     description:
-      "Piercings em áreas sensíveis podem aumentar o risco de infecções. É importante garantir que você esteja saudável para a doação.",
+      "Piercings em áreas sensíveis podem aumentar o risco de infecções. Você pode doar 4 meses depois de retirar o piercing.",
     donationIntents: ["today", "soon"],
     failingResponses: ["positive", "unknown"],
     failingReason:
@@ -129,13 +136,17 @@ const questions: Question[] = [
   },
 ];
 
+// `ageAutoFilled`: o servidor preencheu a resposta de idade pelo cadastro do
+// Hemocione ID. So acontece no modo logado, e nao acontece quando a pessoa tem
+// mais de 60 anos (o cadastro nao diz se ela ja doou antes).
 export function getQuestionsFromContext(
   donationIntent: DonationIntent | null,
-  isAnonymous: boolean
+  isAnonymous: boolean,
+  ageAutoFilled: boolean = !isAnonymous
 ): Question[] {
   return questions.filter(
     (question) =>
-      (!question.anonymousOnly || isAnonymous) &&
+      (!question.skipWhenAutoFilled || isAnonymous || !ageAutoFilled) &&
       (!question.donationIntents ||
         (donationIntent && question.donationIntents.includes(donationIntent)))
   );
