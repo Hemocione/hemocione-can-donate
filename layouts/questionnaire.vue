@@ -84,10 +84,18 @@
 
     <main class="content">
       <Transition name="slide-fade-down" mode="out-in" appear>
-        <div v-if="isQuestionsRoute && questions && questions.length > 0" class="progress-bar">
+        <!-- Chave pelo slug: uma pergunta condicional (ex.: priorDonation) entra
+             no meio da lista e a barra anima so esse item, sem reaproveitar
+             os vizinhos. -->
+        <TransitionGroup
+          v-if="isQuestionsRoute && questions && questions.length > 0"
+          tag="div"
+          name="progress-dot"
+          class="progress-bar"
+        >
           <div
             v-for="(question, index) in questions"
-            :key="index"
+            :key="question.slug"
             class="progress-dot"
             :class="{
               active: index === currentQuestionIndex,
@@ -95,10 +103,9 @@
               finalSuccess: isFormCompleted && !isFormFailed,
               finalFailed: isFormCompleted && isFormFailed,
             }"
-            :style="{ width: `${100 / questions.length}%` }"
             @click="goToQuestion(index)"
           ></div>
-        </div>
+        </TransitionGroup>
       </Transition>
       <div
         :class="{ 'route-wrapper': true, 'question-route': isQuestionsRoute }"
@@ -535,28 +542,49 @@ async function goToQuestion(index: number) {
 
 .progress-bar {
   display: flex;
-  /* Define layout em linha */
   justify-content: center;
-  /* Centraliza a barra */
   align-items: center;
-  /* Alinha verticalmente */
   flex-wrap: nowrap;
-  /* Evita que os itens quebrem de linha */
-  gap: 10px;
-  /* Define espaçamento fixo entre os elementos */
-  padding: 0 1rem;
+  /* Sem `gap`: o espaco entre os itens vem da margem de cada item, que anima
+     junto quando um item entra ou sai. */
+  padding: 0 calc(1rem - 5px);
   height: 2rem;
   overflow-x: auto;
-  /* Adiciona rolagem horizontal se necessário */
 }
 
 .progress-dot {
-  width: calc(100% / max(var(--questions-length), 1));
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0 5px;
   height: 8px;
   border-radius: 20px;
   background-color: var(--hemo-color-black-15);
   transition: background-color 0.4s ease-in-out, transform 0.3s ease,
     box-shadow 0.3s ease;
+}
+
+/* Pergunta condicional: o item nasce com largura zero no lugar dele e cresce,
+   enquanto os vizinhos encolhem na mesma curva. Na saida, o inverso. */
+.progress-dot-enter-active,
+.progress-dot-leave-active {
+  transition: flex-grow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    margin 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease-out,
+    background-color 0.4s ease-in-out, transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.progress-dot-enter-from,
+.progress-dot-leave-to {
+  flex-grow: 0;
+  margin: 0;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-dot-enter-active,
+  .progress-dot-leave-active {
+    transition: none;
+  }
 }
 
 .progress-dot.active {
