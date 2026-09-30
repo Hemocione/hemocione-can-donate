@@ -1,8 +1,5 @@
 import { InferSchemaType, Schema, model } from "mongoose";
-import {
-  getFailingQuestionsForContext,
-  getQuestionsFromContext,
-} from "~/utils/questions";
+import { evaluateAnswers } from "~/utils/questions";
 
 /**
  * 16 bytes em hex (32 chars).
@@ -150,12 +147,11 @@ const FormResponseSchema = new Schema(
       type: Map,
       of: AnswerSchema,
     },
-    // true quando o servidor preencheu a resposta de idade pelo cadastro do
-    // Hemocione ID. Fica fixo na criacao para a lista de perguntas do front
-    // nao mudar no meio do questionario.
-    ageAutoFilled: {
-      type: Boolean,
-      default: false,
+    // Slugs das respostas que o servidor preencheu pelo cadastro do Hemocione
+    // ID na criacao. O front nao mostra essas perguntas.
+    autoFilledAnswers: {
+      type: [String],
+      default: [],
     },
     startedAt: {
       type: Date,
@@ -204,55 +200,32 @@ const FormResponseSchema = new Schema(
 );
 
 FormResponseSchema.pre("save", function () {
-  // Obtém as perguntas que devem ser respondidas no contexto atual
-  const questionsToBeAnsweredSlugs = Array.from(
-    new Set(
-      getQuestionsFromContext(
-        this.donationIntent ?? null,
-        this.mode === "anonymous",
-        Boolean(this.ageAutoFilled)
-      )
-        .map((q) => q.slug)
-        .concat(["age"]) // age is always required in the formResponse
-    )
+  const answers = this.answers ?? new Map();
+  const evaluation = evaluateAnswers(
+    Object.fromEntries(answers),
+    this.donationIntent ?? null
   );
 
-  // Obtém as slugs das perguntas que já foram respondidas
-  const answeredQuestionsSlugs = this.answers
-    ? Array.from(this.answers.keys())
-    : [];
-
-  // Verifica se todas as perguntas necessárias foram respondidas
-  const allQuestionsAnswered = questionsToBeAnsweredSlugs.every((slug) =>
-    answeredQuestionsSlugs.includes(slug)
-  );
-
-  if (allQuestionsAnswered) {
-    // Marca o formulário como finalizado
-    this.finishedAt = new Date();
-
-    // Remove as respostas que não são relevantes para o contexto atual
-    const relevantAnswers = new Map();
-    questionsToBeAnsweredSlugs.forEach((slug) => {
-      if (this.answers?.has(slug)) {
-        relevantAnswers.set(slug, this.answers.get(slug));
-      }
-    });
-
-    // Atualiza o mapa de respostas com apenas as respostas relevantes
-    this.answers = relevantAnswers;
-
-    const answersObj = Object.fromEntries(this.answers);
-    const failingQuestions = getFailingQuestionsForContext(
-      answersObj,
-      this.donationIntent ?? null,
-      this.mode === "anonymous"
-    );
-    this.status = failingQuestions.length
-      ? "unable-to-donate"
-      : "able-to-donate";
-    this.failedQuestions = failingQuestions.map((q) => q.slug);
+  if (!evaluation.finished) {
+    // Uma resposta alterada pode abrir uma pergunta condicional nova (ex.:
+    // idade "Nao" abre `priorDonation`); o formulario volta a ficar em aberto.
+    this.finishedAt = undefined;
+    this.status = "ongoing";
+    this.failedQuestions = [];
+    return;
   }
+
+  this.finishedAt = new Date();
+  // Remove as respostas que não são relevantes para o contexto atual
+  this.answers = new Map(
+    evaluation.relevantSlugs
+      .filter((slug) => answers.has(slug))
+      .map((slug) => [slug, answers.get(slug)!])
+  );
+  this.status = evaluation.failedQuestions.length
+    ? "unable-to-donate"
+    : "able-to-donate";
+  this.failedQuestions = evaluation.failedQuestions;
 });
 
 export type FormResponseSchema = InferSchemaType<typeof FormResponseSchema>;

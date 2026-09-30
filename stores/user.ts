@@ -18,12 +18,17 @@ export const useUserStore = defineStore("user", {
   getters: {
     formQuestions(state) {
       const isAnonymous = !state.user;
+      // Sem formResponse carregado no modo logado, assume a idade preenchida
+      // pelo cadastro, que e o caso mais comum.
+      const autoFilled: string[] = state.formResponse
+        ? state.formResponse.autoFilledAnswers ?? []
+        : isAnonymous
+          ? []
+          : ["age"];
       return getQuestionsFromContext(
         state.donationIntent,
-        isAnonymous,
-        // Sem formResponse carregado, mantem o comportamento antigo do modo
-        // logado (idade vem do cadastro) para a lista nao mudar de tamanho.
-        state.formResponse ? Boolean(state.formResponse.ageAutoFilled) : !isAnonymous
+        state.formResponse?.answers ?? {},
+        autoFilled
       );
     },
     failedQuestions(state): Question[] {
