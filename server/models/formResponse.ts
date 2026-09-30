@@ -150,6 +150,13 @@ const FormResponseSchema = new Schema(
       type: Map,
       of: AnswerSchema,
     },
+    // true quando o servidor preencheu a resposta de idade pelo cadastro do
+    // Hemocione ID. Fica fixo na criacao para a lista de perguntas do front
+    // nao mudar no meio do questionario.
+    ageAutoFilled: {
+      type: Boolean,
+      default: false,
+    },
     startedAt: {
       type: Date,
       required: true,
@@ -202,7 +209,8 @@ FormResponseSchema.pre("save", function () {
     new Set(
       getQuestionsFromContext(
         this.donationIntent ?? null,
-        this.mode === "anonymous"
+        this.mode === "anonymous",
+        Boolean(this.ageAutoFilled)
       )
         .map((q) => q.slug)
         .concat(["age"]) // age is always required in the formResponse
