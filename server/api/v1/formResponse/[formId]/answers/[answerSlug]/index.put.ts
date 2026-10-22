@@ -2,12 +2,15 @@
 // Atualiza cada resposta individualmente
 import { defineEventHandler, readBody, createError } from "h3";
 import z from "zod";
+import { formChannels } from "~/server/models/formResponse";
 import { isQuestionSlug } from "~/utils/questions";
 
 // Define o esquema de validação com zod
 const answerSchema = z.object({
   value: z.enum(["positive", "negative", "unknown"]),
   answeredAt: z.string().transform((date) => new Date(date)),
+  // Opcional: ausente => o Mongoose aplica o default "site".
+  channel: z.enum(formChannels).optional(),
 });
 
 export type Answer = z.infer<typeof answerSchema>;
