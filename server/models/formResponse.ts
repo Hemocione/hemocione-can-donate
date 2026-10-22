@@ -30,6 +30,12 @@ export const formStatuses = [
 export const answerValues = ["positive", "negative", "unknown"] as const;
 export type AnswerValue = (typeof answerValues)[number];
 
+// Canal em que o formulario/resposta foi feito. Dado de analytics: nao entra
+// na allowlist do front. Documentos antigos nao tem o campo (o default so vale
+// para documentos novos).
+export const formChannels = ["site", "hemarcio"] as const;
+export type FormChannel = (typeof formChannels)[number];
+
 const AnswerSchema = new Schema({
   value: {
     type: String,
@@ -37,6 +43,11 @@ const AnswerSchema = new Schema({
   },
   answeredAt: {
     type: Date,
+  },
+  channel: {
+    type: String,
+    enum: formChannels,
+    default: "site",
   },
 });
 
@@ -142,6 +153,12 @@ const FormResponseSchema = new Schema(
     donationIntent: {
       type: String,
       enum: donationIntents,
+    },
+    // Definido so na criacao; nao existe caminho de update.
+    channel: {
+      type: String,
+      enum: formChannels,
+      default: "site",
     },
     answers: {
       type: Map,
