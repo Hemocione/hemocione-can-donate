@@ -157,13 +157,13 @@ const questions: Question[] = [
   },
 ];
 
-// Perguntas que valem para a intencao e as respostas atuais. E o conjunto que o
-// formulario precisa ter respondido para terminar, inclusive as respostas que o
-// servidor preencheu pelo cadastro do Hemocione ID.
 export function isQuestionSlug(slug: string): boolean {
   return questions.some((question) => question.slug === slug);
 }
 
+// Perguntas que valem para a intencao e as respostas atuais. E o conjunto que o
+// formulario precisa ter respondido para terminar, inclusive as respostas que o
+// servidor preencheu pelo cadastro do Hemocione ID.
 export function getApplicableQuestions(
   donationIntent: DonationIntent | null,
   answers: Answers = {}
