@@ -34,6 +34,14 @@ describe("getNextStep", () => {
     if (step.kind !== "question") throw new Error();
     expect(Object.keys(step.question).sort()).toEqual(["description", "image", "question", "slug"]);
   });
+  it("ongoing sem pendentes mas com autopreenchida sem resposta: pergunta, nunca apto", () => {
+    const step = getNextStep({ donationIntent: "soon", answers: toAnswers({ weight: "positive", sexRisk: "negative", tattooOrPiercing: "negative", traveledAbroad: "negative", mouthPiercing: "negative", medicalTreatmentOrSurgery: "negative" }), autoFilledAnswers: ["age"], status: "ongoing", failedQuestions: [] });
+    expect(step).toMatchObject({ kind: "question", question: { slug: "age" } });
+  });
+  it("ongoing com tudo respondido: pending-evaluation", () => {
+    const step = getNextStep({ donationIntent: "soon", answers: toAnswers({ age: "positive", weight: "positive", sexRisk: "negative", tattooOrPiercing: "negative", traveledAbroad: "negative", mouthPiercing: "negative", medicalTreatmentOrSurgery: "negative" }), autoFilledAnswers: [], status: "ongoing", failedQuestions: [] });
+    expect(step).toEqual({ kind: "pending-evaluation" });
+  });
   it("apenas 3 perguntas tem prazo", () => {
     expect(questions.filter((q) => q.waitingPeriod).map((q) => q.slug).sort()).toEqual(["mouthPiercing", "tattooOrPiercing", "traveledAbroad"]);
   });

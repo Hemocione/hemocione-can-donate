@@ -1,5 +1,6 @@
 import type { DonationIntent } from "~/server/models/formResponse";
 import {
+  getApplicableQuestions,
   getFilteredQuestions,
   getQuestionsFromContext,
   type Answers,
@@ -20,6 +21,7 @@ export type FailedQuestionDTO = {
 };
 export type NextStep =
   | { kind: "needs-intent" }
+  | { kind: "pending-evaluation" }
   | { kind: "question"; question: QuestionDTO; progress: { answered: number; total: number } }
   | {
       kind: "finished";
@@ -54,15 +56,21 @@ export function getNextStep(form: {
     };
   }
 
-  const pending = getQuestionsFromContext(form.donationIntent, form.answers, form.autoFilledAnswers);
-  const answered = pending.filter((q) => form.answers[q.slug]?.value).length;
-  const next = pending.find((q) => !form.answers[q.slug]?.value);
-  if (!next) {
-    return { kind: "finished", status: "able-to-donate", failedQuestions: [], publicToken: form.publicToken ?? null };
-  }
-  return {
-    kind: "question",
-    question: { slug: next.slug, question: next.question, description: next.description, image: next.image },
-    progress: { answered, total: pending.length },
+  const toStep = (list: ReturnType<typeof getApplicableQuestions>): NextStep | null => {
+    const next = list.find((q) => !form.answers[q.slug]);
+    if (!next) return null;
+    return {
+      kind: "question",
+      question: { slug: next.slug, question: next.question, description: next.description, image: next.image },
+      progress: {
+        answered: list.filter((q) => Boolean(form.answers[q.slug])).length,
+        total: list.length,
+      },
+    };
   };
+
+  const pending = getQuestionsFromContext(form.donationIntent, form.answers, form.autoFilledAnswers);
+  // Estado inconsistente (ongoing sem pendentes): nunca declara apto, cai nas aplicaveis.
+  const applicable = getApplicableQuestions(form.donationIntent, form.answers);
+  return toStep(pending) ?? toStep(applicable) ?? { kind: "pending-evaluation" };
 }

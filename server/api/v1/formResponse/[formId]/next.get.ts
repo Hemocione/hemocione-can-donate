@@ -1,3 +1,4 @@
+import type { Answers } from "~/utils/questions";
 import { getNextStep } from "~/utils/nextStep";
 import { loadAccessibleForm } from "~/server/utils/loadAccessibleForm";
 
@@ -7,7 +8,7 @@ export default defineEventHandler(async (event) => {
   const form = doc.toObject();
   return getNextStep({
     donationIntent: form.donationIntent ?? null,
-    answers: Object.fromEntries(form.answers ?? new Map()) as any,
+    answers: Object.fromEntries(form.answers ?? new Map()) as Answers,
     autoFilledAnswers: form.autoFilledAnswers ?? [],
     status: form.status,
     failedQuestions: form.failedQuestions ?? [],
