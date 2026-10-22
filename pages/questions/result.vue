@@ -21,6 +21,12 @@
       <p class="result-subtext">
         Você pode colaborar com o Hemocione e ajudar a salvar ainda mais vidas.
       </p>
+      <HemarcioAskButton
+        v-if="hemarcioContext"
+        intent="possodoar.resultado"
+        :context="hemarcioContext"
+        label="Entender meu resultado com o Hemárcio"
+      />
       <ResultButtons
         :isFormFailed="isFormFailed"
         :iframeValidated="iframeValidated"
@@ -64,6 +70,7 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/user";
 import { useRuntimeConfig } from "#app";
 import party from "party-js";
+import { resultAskContext } from "~/utils/hemarcioAsk";
 import ResultButtons from "~/components/ResultButtons.vue";
 import { ref, onMounted, computed } from 'vue';
 import { getIntegrationDefinition, type ButtonConfig } from '~/utils/integrations';
@@ -82,6 +89,8 @@ const result = ref<HTMLDivElement | null>(null);
 const buttonConfig = ref<ButtonConfig[]>([]);
 
 const { isFormFailed, iframed, iframeValidated } = storeToRefs(userStore);
+
+const hemarcioContext = computed(() => resultAskContext(userStore.formResponse));
 
 const handleSecondarySuccessClick = () => {
   if (iframed.value) {
