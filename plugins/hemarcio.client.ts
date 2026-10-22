@@ -11,7 +11,7 @@ import {
 const SDK_URL = "https://chat.hemocione.com.br/sdk/0.1.1/hemocione-sdk.js";
 
 // os botoes de resposta do questionario ocupam o canto inferior direito ate 1240px de largura
-const BUTTONS_CLEARANCE_Y = 134;
+const BUTTONS_CLEARANCE_Y = 182;
 
 function resolveOffset() {
   const narrow = window.matchMedia("(max-width: 1239px)").matches;
