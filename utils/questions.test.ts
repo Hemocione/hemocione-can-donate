@@ -50,6 +50,23 @@ describe("pergunta condicional priorDonation", () => {
 });
 
 describe("evaluateAnswers", () => {
+  it("sem intencao: nunca termina, mesmo com peso e idade respondidos", () => {
+    const result = evaluateAnswers(
+      toAnswers({ weight: "positive", age: "positive" }),
+      null
+    );
+    expect(result.finished).toBe(false);
+    expect(result.failedQuestions).toEqual([]);
+  });
+
+  it("mesmas respostas com intencao soon e todas as perguntas: termina", () => {
+    const result = evaluateAnswers(
+      toAnswers({ ...passingSoon, age: "positive" }),
+      "soon"
+    );
+    expect(result.finished).toBe(true);
+  });
+
   it("16 a 60 anos: apto", () => {
     const result = evaluateAnswers(
       toAnswers({ ...passingSoon, age: "positive" }),

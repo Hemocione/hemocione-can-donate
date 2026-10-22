@@ -239,7 +239,11 @@ export function evaluateAnswers(
   const relevantSlugs = getApplicableQuestions(donationIntent, answers).map(
     (q) => q.slug
   );
-  const finished = relevantSlugs.every((slug) => Boolean(answers[slug]));
+  // Sem intencao nao ha veredito: as perguntas especificas da intencao ainda
+  // nao se aplicam e o formulario nao pode terminar so com peso e idade.
+  const finished =
+    donationIntent !== null &&
+    relevantSlugs.every((slug) => Boolean(answers[slug]));
   const failedQuestions = finished
     ? getFailingQuestionsForContext(answers, donationIntent).map((q) => q.slug)
     : [];

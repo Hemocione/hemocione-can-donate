@@ -39,6 +39,14 @@ export default defineEventHandler(async (event) => {
 
   const formResponse = await loadAccessibleForm(event, formId);
 
+  // O veredito depende da intencao: sem ela nenhuma resposta e aceita.
+  if (!formResponse.donationIntent) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "Donation intent required",
+    });
+  }
+
   // Inicializa `answers` se estiver undefined e atualiza a resposta
   if (!formResponse.answers) {
     formResponse.answers = new Map(); // Inicializa como um objeto vazio
