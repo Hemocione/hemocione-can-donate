@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { redirectToID } from "~/middleware/auth";
 import type { CurrentUserData } from "~/utils/currentUserTokenDecoder";
+import { authHeaders } from "~/utils/authHeaders";
 import { getQuestionsFromContext, type Question } from "~/utils/questions";
 import type { IntegrationPayload } from "~/utils/integrations";
 import type { IntegrationSlug } from "~/server/models/formResponse";
@@ -103,7 +104,7 @@ export const useUserStore = defineStore("user", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
+            ...authHeaders(this.token),
           },
           body: {
           ...(hasIntegration ? { integration: { integrationSlug, payload: integrationPayload } } : {}),
@@ -157,7 +158,10 @@ export const useUserStore = defineStore("user", {
           `/api/v1/formResponse/${this.formResponse._id}/intention`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...authHeaders(this.token),
+            },
             body: { donationIntent: intent },
           }
         );
@@ -181,7 +185,10 @@ export const useUserStore = defineStore("user", {
           `/api/v1/formResponse/${this.formResponse._id}/answers/${answerSlug}`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...authHeaders(this.token),
+            },
             body: answerData,
           }
         );
@@ -209,6 +216,7 @@ export const useUserStore = defineStore("user", {
           `/api/v1/formResponse/${this.formResponse._id}`,
           {
             method: "GET",
+            headers: authHeaders(this.token),
           }
         );
         this.setFormResponse(formResponse);

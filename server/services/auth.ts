@@ -53,6 +53,16 @@ export function useHemocioneUserAuth(event: H3Event) {
   }
 }
 
+export function useOptionalHemocioneUserAuth(
+  event: H3Event
+): HemocioneUserAuthTokenData | null {
+  try {
+    return useHemocioneUserAuth(event);
+  } catch (error) {
+    return null;
+  }
+}
+
 export function assertHemocioneIdIntegrationSecret(event: H3Event) {
   const headers = event.headers;
   const secret = headers.get("x-hemocione-integration-secret");

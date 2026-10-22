@@ -199,6 +199,8 @@ const FormResponseSchema = new Schema(
   }
 );
 
+FormResponseSchema.index({ "user.id": 1, startedAt: -1 });
+
 FormResponseSchema.pre("save", function () {
   const answers = this.answers ?? new Map();
   const evaluation = evaluateAnswers(

@@ -6,6 +6,13 @@ interface Answer {
 
 export type Answers = Record<string, Answer | undefined>;
 
+export interface WaitingPeriod {
+  value: number;
+  unit: "days" | "months";
+  startsFrom: string;
+  upTo?: { value: number; unit: "days" | "months"; condition: string };
+}
+
 export interface Question {
   question: string;
   slug: string;
@@ -17,6 +24,7 @@ export interface Question {
   failingResponses: string[]; // Para comparar e ver se alguma pergunta falha
   //Se alguma falhar, salva o forms como falha, se não, não
   failingReason: string;
+  waitingPeriod?: WaitingPeriod;
   image: string;
 }
 
@@ -117,6 +125,16 @@ const questions: Question[] = [
     failingResponses: ["positive", "unknown"],
     failingReason:
       "Tatuagens ou piercings recentes podem representar um risco de infecção, impedindo a doação temporariamente.",
+    waitingPeriod: {
+      value: 7,
+      unit: "days",
+      startsFrom: "o procedimento",
+      upTo: {
+        value: 4,
+        unit: "months",
+        condition: "se o hemocentro não conseguir avaliar a segurança do local",
+      },
+    },
     image: "images/tattooOrPiercing.png",
   },
   {
@@ -129,6 +147,11 @@ const questions: Question[] = [
     failingResponses: ["positive", "unknown"],
     failingReason:
       "Quem esteve em área com risco de malária deve esperar 30 dias antes de doar.",
+    waitingPeriod: {
+      value: 30,
+      unit: "days",
+      startsFrom: "a saída da área com risco de malária",
+    },
     image: "images/traveledAbroad.png",
   },
   {
@@ -141,6 +164,11 @@ const questions: Question[] = [
     failingResponses: ["positive", "unknown"],
     failingReason:
       "Piercings recentes em áreas sensíveis podem representar um risco de infecção, impedindo a doação temporariamente.",
+    waitingPeriod: {
+      value: 4,
+      unit: "months",
+      startsFrom: "a retirada do piercing",
+    },
     image: "images/mouthPiercing.svg",
   },
   {
@@ -156,6 +184,10 @@ const questions: Question[] = [
     image: "images/medicalTreatmentOrSurgery.png",
   },
 ];
+
+export function isQuestionSlug(slug: string): boolean {
+  return questions.some((question) => question.slug === slug);
+}
 
 // Perguntas que valem para a intencao e as respostas atuais. E o conjunto que o
 // formulario precisa ter respondido para terminar, inclusive as respostas que o
@@ -207,7 +239,11 @@ export function evaluateAnswers(
   const relevantSlugs = getApplicableQuestions(donationIntent, answers).map(
     (q) => q.slug
   );
-  const finished = relevantSlugs.every((slug) => Boolean(answers[slug]));
+  // Sem intencao nao ha veredito: as perguntas especificas da intencao ainda
+  // nao se aplicam e o formulario nao pode terminar so com peso e idade.
+  const finished =
+    donationIntent !== null &&
+    relevantSlugs.every((slug) => Boolean(answers[slug]));
   const failedQuestions = finished
     ? getFailingQuestionsForContext(answers, donationIntent).map((q) => q.slug)
     : [];

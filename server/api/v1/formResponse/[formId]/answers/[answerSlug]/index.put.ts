@@ -2,7 +2,7 @@
 // Atualiza cada resposta individualmente
 import { defineEventHandler, readBody, createError } from "h3";
 import z from "zod";
-import { FormResponse } from "~/server/models/formResponse";
+import { isQuestionSlug } from "~/utils/questions";
 
 // Define o esquema de validação com zod
 const answerSchema = z.object({
@@ -18,6 +18,13 @@ export default defineEventHandler(async (event) => {
     answerSlug: string;
   };
 
+  if (!isQuestionSlug(answerSlug)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Unknown question slug",
+    });
+  }
+
   // Lê o corpo da requisição diretamente e valida com o zod
   const body = await readBody(event);
   const parsed = answerSchema.safeParse(body);
@@ -30,11 +37,13 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const formResponse = await FormResponse.findById(formId);
-  if (!formResponse) {
+  const formResponse = await loadAccessibleForm(event, formId);
+
+  // O veredito depende da intencao: sem ela nenhuma resposta e aceita.
+  if (!formResponse.donationIntent) {
     throw createError({
-      statusCode: 404,
-      statusMessage: "FormResponse not found",
+      statusCode: 409,
+      statusMessage: "Donation intent required",
     });
   }
 

@@ -1,7 +1,6 @@
 //quando doar
 import { defineEventHandler } from "h3";
 import z from "zod";
-import { FormResponse } from "~/server/models/formResponse";
 import { readBody, createError } from "h3";
 
 const intentionSchema = z.object({
@@ -22,13 +21,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const formResponse = await FormResponse.findById(formId);
-  if (!formResponse) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "FormResponse not found",
-    });
-  }
+  const formResponse = await loadAccessibleForm(event, formId as string);
 
   // Atualiza o campo donationIntent com o valor validado
   formResponse.donationIntent = parsed.data.donationIntent;
