@@ -15,6 +15,12 @@ function notFound() {
   });
 }
 
+// A checagem de dono le user.id; sem ele um formulario com dono viraria anonimo
+function withOwnerField(projection: string): string {
+  const fields = projection.split(/\s+/).filter(Boolean);
+  return fields.includes("user.id") ? projection : [...fields, "user.id"].join(" ");
+}
+
 export async function loadAccessibleForm(
   event: H3Event,
   formId: string,
@@ -27,7 +33,9 @@ export async function loadAccessibleForm(
   const requester = useOptionalHemocioneUserAuth(event);
 
   const query = FormResponse.findById(formId);
-  const doc = await (projection ? query.select(projection) : query);
+  const doc = await (projection
+    ? query.select(withOwnerField(projection))
+    : query);
 
   if (!doc || !canAccessForm(doc.user?.id, requester?.id ?? null)) {
     throw notFound();

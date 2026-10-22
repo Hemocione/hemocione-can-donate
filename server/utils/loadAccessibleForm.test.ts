@@ -86,6 +86,13 @@ describe("loadAccessibleForm", () => {
     expect(select).toHaveBeenCalledWith("mode user.id");
   });
 
+  it("projecao sem user.id recebe user.id e nao-dono continua com 404", async () => {
+    optionalAuth.mockReturnValue({ id: "user-b" });
+    mockDoc({ user: { id: "user-a" } });
+    await expect404(loadAccessibleForm(event, VALID_ID, "status"));
+    expect(select).toHaveBeenCalledWith("status user.id");
+  });
+
   it("nao chama .select sem projecao", async () => {
     optionalAuth.mockReturnValue(null);
     mockDoc({ user: { id: "" } });
