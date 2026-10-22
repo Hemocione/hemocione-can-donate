@@ -2,7 +2,7 @@
 // Atualiza cada resposta individualmente
 import { defineEventHandler, readBody, createError } from "h3";
 import z from "zod";
-import { FormResponse } from "~/server/models/formResponse";
+import { isQuestionSlug } from "~/utils/questions";
 
 // Define o esquema de validação com zod
 const answerSchema = z.object({
@@ -18,6 +18,13 @@ export default defineEventHandler(async (event) => {
     answerSlug: string;
   };
 
+  if (!isQuestionSlug(answerSlug)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Unknown question slug",
+    });
+  }
+
   // Lê o corpo da requisição diretamente e valida com o zod
   const body = await readBody(event);
   const parsed = answerSchema.safeParse(body);
@@ -30,13 +37,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const formResponse = await FormResponse.findById(formId);
-  if (!formResponse) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "FormResponse not found",
-    });
-  }
+  const formResponse = await loadAccessibleForm(event, formId);
 
   // Inicializa `answers` se estiver undefined e atualiza a resposta
   if (!formResponse.answers) {

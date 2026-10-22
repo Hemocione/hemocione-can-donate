@@ -1,6 +1,5 @@
 //pegar o tempo de termino e o forms completo
 import { defineEventHandler } from "h3";
-import { FormResponse } from "~/server/models/formResponse";
 
 // Allowlist explicita dos campos que o front realmente consome.
 //
@@ -32,13 +31,11 @@ const FRONTEND_FIELDS = [
 export default defineEventHandler(async (event) => {
   const formId = event.context.params?.formId;
 
-  const formResponse = await FormResponse.findById(formId).select(FRONTEND_FIELDS);
-  if (!formResponse) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "FormResponse not found",
-    });
-  }
+  const formResponse = await loadAccessibleForm(
+    event,
+    formId as string,
+    FRONTEND_FIELDS
+  );
 
   return { success: true, formResponse };
 });
