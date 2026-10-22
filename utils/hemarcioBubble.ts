@@ -8,14 +8,6 @@ const COMPROVANTE_PATH = /^\/comprovante(\/|$)/;
 export const isHemarcioEnabled = (enabled: string | boolean | undefined) =>
   enabled === true || enabled === "true";
 
-export const isIframedContext = (
-  insideFrame: boolean,
-  query: Record<string, unknown>,
-) => {
-  const flag = Array.isArray(query.iframed) ? query.iframed[0] : query.iframed;
-  return insideFrame || flag === "true";
-};
-
 export const shouldShowHemarcioBubble = (input: {
   enabled: string | boolean | undefined;
   iframed: boolean;

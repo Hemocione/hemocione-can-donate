@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   hemarcioContextFor,
-  isIframedContext,
   shouldShowHemarcioBubble,
 } from "~/utils/hemarcioBubble";
 
@@ -28,16 +27,6 @@ describe("shouldShowHemarcioBubble", () => {
   });
   it("nao confunde rota parecida com comprovante", () => {
     expect(shouldShowHemarcioBubble({ ...base, path: "/comprovantes-x" })).toBe(true);
-  });
-});
-
-describe("isIframedContext", () => {
-  it("detecta iframe por janela ou por query", () => {
-    expect(isIframedContext(false, {})).toBe(false);
-    expect(isIframedContext(true, {})).toBe(true);
-    expect(isIframedContext(false, { iframed: "true" })).toBe(true);
-    expect(isIframedContext(false, { iframed: "false" })).toBe(false);
-    expect(isIframedContext(false, { iframed: ["true"] })).toBe(true);
   });
 });
 
