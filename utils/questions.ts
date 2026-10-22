@@ -6,6 +6,13 @@ interface Answer {
 
 export type Answers = Record<string, Answer | undefined>;
 
+export interface WaitingPeriod {
+  value: number;
+  unit: "days" | "months";
+  startsFrom: string;
+  upTo?: { value: number; unit: "days" | "months"; condition: string };
+}
+
 export interface Question {
   question: string;
   slug: string;
@@ -17,6 +24,7 @@ export interface Question {
   failingResponses: string[]; // Para comparar e ver se alguma pergunta falha
   //Se alguma falhar, salva o forms como falha, se não, não
   failingReason: string;
+  waitingPeriod?: WaitingPeriod;
   image: string;
 }
 
@@ -117,6 +125,16 @@ const questions: Question[] = [
     failingResponses: ["positive", "unknown"],
     failingReason:
       "Tatuagens ou piercings recentes podem representar um risco de infecção, impedindo a doação temporariamente.",
+    waitingPeriod: {
+      value: 7,
+      unit: "days",
+      startsFrom: "o procedimento",
+      upTo: {
+        value: 4,
+        unit: "months",
+        condition: "se o hemocentro não conseguir avaliar a segurança do local",
+      },
+    },
     image: "images/tattooOrPiercing.png",
   },
   {
@@ -129,6 +147,11 @@ const questions: Question[] = [
     failingResponses: ["positive", "unknown"],
     failingReason:
       "Quem esteve em área com risco de malária deve esperar 30 dias antes de doar.",
+    waitingPeriod: {
+      value: 30,
+      unit: "days",
+      startsFrom: "a saída da área com risco de malária",
+    },
     image: "images/traveledAbroad.png",
   },
   {
@@ -141,6 +164,11 @@ const questions: Question[] = [
     failingResponses: ["positive", "unknown"],
     failingReason:
       "Piercings recentes em áreas sensíveis podem representar um risco de infecção, impedindo a doação temporariamente.",
+    waitingPeriod: {
+      value: 4,
+      unit: "months",
+      startsFrom: "a retirada do piercing",
+    },
     image: "images/mouthPiercing.svg",
   },
   {
