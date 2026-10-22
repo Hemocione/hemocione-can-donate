@@ -57,6 +57,12 @@ export default defineNuxtConfig({
       hemocioneIdUrl:
         process.env.HEMOCIONE_ID_URL ?? "https://id.d.hemocione.com.br",
       siteUrl,
+      // sobrescreva em runtime com NUXT_PUBLIC_HEMARCIO_ENABLED / NUXT_PUBLIC_HEMARCIO_CHAT_URL
+      hemarcioEnabled: "false",
+      hemarcioChatUrl:
+        (currentEnv === "prod"
+          ? "https://chat.hemocione.com.br"
+          : "https://chat.d.hemocione.com.br"),
       eventosHemocione: process.env.EVENTOS_HEMOCIONE || "https://eventos.hemocione.com.br/",
       apoieHemocione: process.env.APOIE_HEMOCIONE || "https://apoie.hemocione.com.br/",
       ondeDoarHemocione: process.env.ONDE_DOAR_HEMOCIONE || "https://ondedoar.hemocione.com.br/",

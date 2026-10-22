@@ -46,3 +46,13 @@ npm run preview
 ```
 
 Checkout the [deployment documentation](https://nuxt.com/docs/getting-started/deployment#presets) for more information.
+
+## Chat do Hemárcio
+
+A bolha do chat vem desligada por padrão. Configure em runtime, sem rebuild:
+
+```dotenv
+NUXT_PUBLIC_HEMARCIO_ENABLED=true
+# Padrão: chat.d.hemocione.com.br fora de produção e chat.hemocione.com.br em produção
+NUXT_PUBLIC_HEMARCIO_CHAT_URL=https://chat.d.hemocione.com.br
+```
