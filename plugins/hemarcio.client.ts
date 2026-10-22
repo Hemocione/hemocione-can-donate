@@ -8,7 +8,15 @@ import {
   resolveIframed,
 } from "~/utils/hemarcioController";
 
-const SDK_URL = "https://chat.hemocione.com.br/sdk/0.1.0/hemocione-sdk.js";
+const SDK_URL = "https://chat.hemocione.com.br/sdk/0.1.1/hemocione-sdk.js";
+
+// os botoes de resposta do questionario ocupam o canto inferior direito ate 1240px de largura
+const BUTTONS_CLEARANCE_Y = 182;
+
+function resolveOffset() {
+  const narrow = window.matchMedia("(max-width: 1239px)").matches;
+  return { x: 16, y: narrow ? BUTTONS_CLEARANCE_Y : 16 };
+}
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig().public;
@@ -27,8 +35,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     buildContext: (route) => hemarcioContextFor(route.path),
     loadSdk: createSdkLoader(SDK_URL),
     chatUrl: config.hemarcioChatUrl as string,
-    // sobe a bolha acima do rodape de botoes do questionario no celular
-    chatOptions: { offset: { x: 16, y: 140 } },
+    chatOptions: { offset: resolveOffset() },
   });
 
   nuxtApp.hook("app:mounted", controller.sync);
